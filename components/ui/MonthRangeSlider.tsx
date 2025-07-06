@@ -33,9 +33,9 @@ const MonthRangeSlider: React.FC<MonthRangeSliderProps> = ({ months, value, onCh
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-4">
-        <input type="text" readOnly value={value.start} className="w-full text-center p-3 border-2 border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200" />
-        <span className="text-gray-600 dark:text-gray-400 font-semibold">to</span>
-        <input type="text" readOnly value={value.end} className="w-full text-center p-3 border-2 border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200" />
+        <input type="text" readOnly value={value.start} className="w-full text-center p-3 border-2 border-primary-dark rounded-lg bg-gray-50 dark:bg-gray-700 text-primary dark:text-gray-200" />
+        <span className="text-secondary dark:text-gray-400 font-semibold">to</span>
+        <input type="text" readOnly value={value.end} className="w-full text-center p-3 border-2 border-primary-dark rounded-lg bg-gray-50 dark:bg-gray-700 text-primary dark:text-gray-200" />
       </div>
 
       <div className="relative h-8 flex items-center">
