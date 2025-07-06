@@ -7,6 +7,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Wind,
+  Menu,
+  X,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -52,31 +54,83 @@ const navItems = [
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, setActiveSection }) => {
   return (
-    <aside className={`relative bg-white dark:bg-gray-800 border-r border-neutral-border dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col ${isOpen ? 'w-64' : 'w-20'}`}>
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      
+      {/* Mobile toggle button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg lg:hidden"
+      >
+        {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      </button>
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed lg:relative
+        bg-white dark:bg-gray-800 
+        border-r border-neutral-border dark:border-gray-700 
+        transition-all duration-300 ease-in-out 
+        flex flex-col
+        z-50 lg:z-auto
+        h-full
+        ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0 lg:w-20'}
+      `}>
+        {/* Logo section */}
         <div className="relative flex items-center justify-center p-4 border-b border-neutral-border dark:border-gray-700 h-24 flex-shrink-0">
-             <img src="/APP Logo.png" alt="MBR App Logo" className={`transition-all duration-300 ${isOpen ? 'h-16' : 'h-12'}`} />
-             <button onClick={() => setIsOpen(!isOpen)} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 absolute -right-4 top-8 bg-white dark:bg-gray-800 border-2 border-neutral-border dark:border-gray-700 text-secondary hover:text-primary transition-all duration-300">
-                {isOpen ? <ChevronsLeft className="h-5 w-5" /> : <ChevronsRight className="h-5 w-5" />}
-            </button>
+          {/* Logo - hidden when sidebar is collapsed */}
+          {isOpen ? (
+            <img 
+              src="/APP Logo.png" 
+              alt="MBR App Logo" 
+              className="h-16 w-auto object-contain"
+            />
+          ) : (
+            /* Show a dot or abbreviated version when collapsed on desktop */
+            <div className="hidden lg:flex items-center justify-center">
+              <div className="w-3 h-3 bg-accent rounded-full"></div>
+            </div>
+          )}
+          
+          {/* Desktop toggle button */}
+          <button 
+            onClick={() => setIsOpen(!isOpen)} 
+            className="hidden lg:flex p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 absolute -right-4 top-8 bg-white dark:bg-gray-800 border-2 border-neutral-border dark:border-gray-700 text-secondary hover:text-primary transition-all duration-300"
+          >
+            {isOpen ? <ChevronsLeft className="h-5 w-5" /> : <ChevronsRight className="h-5 w-5" />}
+          </button>
         </div>
         
+        {/* Navigation */}
         <nav className="flex-grow p-4 overflow-y-auto">
-            <ul>
-                {navItems.map(item => (
-                    <NavItem 
-                        key={item.id}
-                        id={item.id}
-                        icon={item.icon}
-                        label={item.label}
-                        isOpen={isOpen}
-                        active={activeSection === item.id}
-                        onClick={setActiveSection}
-                    />
-                ))}
-            </ul>
+          <ul>
+            {navItems.map(item => (
+              <NavItem 
+                key={item.id}
+                id={item.id}
+                icon={item.icon}
+                label={item.label}
+                isOpen={isOpen}
+                active={activeSection === item.id}
+                onClick={(id) => {
+                  setActiveSection(id);
+                  // Auto-close sidebar on mobile after selection
+                  if (window.innerWidth < 1024) {
+                    setIsOpen(false);
+                  }
+                }}
+              />
+            ))}
+          </ul>
         </nav>
-        
-    </aside>
+      </aside>
+    </>
   );
 };
 
