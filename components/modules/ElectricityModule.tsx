@@ -16,7 +16,7 @@ import ChartCard from '../ui/ChartCard';
 import MonthRangeSlider from '../ui/MonthRangeSlider';
 import Button from '../ui/Button';
 
-const COLORS = ['#f59e0b', '#facc15', '#a3e635', '#4ade80', '#2dd4bf', '#22d3ee', '#38bdf8', '#60a5fa', '##818cf8', '#a78bfa'];
+const COLORS = ['#00D2B3', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#10B981', '#6366F1', '#EC4899', '#F97316', '#14B8A6'];
 
 const electricitySubSections = [
     { name: 'Overview', id: 'Overview', icon: LayoutDashboard, shortName: 'Over' },
@@ -25,16 +25,16 @@ const electricitySubSections = [
 ];
 
 const ModuleNavigation = ({ sections, activeSection, onSectionChange }: { sections: any[], activeSection: string, onSectionChange: (id: string) => void }) => (
-  <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-2 mb-6 border border-neutral-border dark:border-gray-700">
+  <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-3 mb-6 border border-gray-100">
     <nav className="flex flex-wrap items-center justify-center gap-2">
       {sections.map((section) => (
         <button
           key={section.id}
           onClick={() => onSectionChange(section.id)}
-          className={`flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent ${
+          className={`flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
             activeSection === section.id
-              ? 'bg-accent text-white shadow-md'
-              : 'text-secondary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+              ? 'bg-gradient-to-r from-accent to-accent/80 text-white shadow-lg'
+              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
           }`}
         >
           <section.icon className="w-5 h-5 mr-2" />
@@ -46,15 +46,24 @@ const ModuleNavigation = ({ sections, activeSection, onSectionChange }: { sectio
   </div>
 );
 
-
 const CustomTooltip = ({ active, payload, label, isCost = false }: any) => {
   if (active && payload && payload.length) {
     const unit = isCost ? 'OMR' : 'kWh';
     return (
-      <div className="bg-white/80 dark:bg-black/80 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-neutral-border dark:border-gray-700">
-        <p className="label font-bold text-primary dark:text-white">{`${label}`}</p>
+      <div className="bg-white/95 backdrop-blur-lg p-4 rounded-xl shadow-2xl border border-white/20">
+        <p className="font-bold text-gray-800 mb-2">{label}</p>
         {payload.map((pld: any, index: number) => (
-          <p key={index} style={{ color: pld.stroke || pld.fill }}>{`${pld.name}: ${pld.value.toLocaleString(undefined, { minimumFractionDigits: isCost ? 2 : 0, maximumFractionDigits: isCost ? 2 : 0 })} ${unit}`}</p>
+          <div key={index} className="flex items-center gap-2 mb-1">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pld.stroke || pld.fill }} />
+            <p className="text-sm text-gray-600">
+              {pld.name}: <span className="font-semibold text-gray-800">
+                {pld.value.toLocaleString(undefined, { 
+                  minimumFractionDigits: isCost ? 2 : 0, 
+                  maximumFractionDigits: isCost ? 2 : 0 
+                })} {unit}
+              </span>
+            </p>
+          </div>
         ))}
       </div>
     );
@@ -82,7 +91,6 @@ const ElectricityModule: React.FC = () => {
     const filtered = filterDataByType(electricityData, selectedType);
     return calculateElectricityTotalsForPeriod(filtered, dateRange.start, dateRange.end);
   }, [selectedType, dateRange]);
-
 
   const monthlyTrendData = useMemo(() => {
     return electricityMonthsAvailable.map(month => {
@@ -171,7 +179,9 @@ const ElectricityModule: React.FC = () => {
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
-      <h1 className="text-3xl font-bold text-primary dark:text-white">Electricity System Analysis</h1>
+      <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+        Electricity System Analysis
+      </h1>
       <ModuleNavigation 
         sections={electricitySubSections}
         activeSection={activeSubSection}
@@ -180,7 +190,7 @@ const ElectricityModule: React.FC = () => {
       
       {activeSubSection === 'Overview' && (
         <div className="space-y-6">
-          <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 border border-neutral-border dark:border-gray-700">
+          <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center">
               <div className="lg:col-span-2">
                 <MonthRangeSlider 
@@ -189,16 +199,20 @@ const ElectricityModule: React.FC = () => {
                   onChange={setDateRange}
                 />
               </div>
-              <Button onClick={resetDateRange} className="bg-secondary hover:bg-primary-light text-white flex items-center justify-center gap-2 h-10">
+              <Button 
+                onClick={resetDateRange} 
+                className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white flex items-center justify-center gap-2 h-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              >
                 <RotateCw size={16} />
                 Reset Range
               </Button>
             </div>
           </div>
           
-          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-            Consumption Overview for <span className="text-accent">{overviewCalculations.period}</span>
+          <h2 className="text-lg font-semibold text-gray-700">
+            Consumption Overview for <span className="text-accent font-bold">{overviewCalculations.period}</span>
           </h2>
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <MetricCard 
               title="Total Consumption"
@@ -241,28 +255,70 @@ const ElectricityModule: React.FC = () => {
                     <defs>
                       <linearGradient id="colorConsumption" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.1}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" fontSize={12} />
-                    <YAxis fontSize={12} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
+                    <CartesianGrid strokeDasharray="0" stroke="transparent" />
+                    <XAxis 
+                      dataKey="name" 
+                      fontSize={12} 
+                      stroke="#9CA3AF"
+                      tick={{ fill: '#6B7280' }}
+                      axisLine={{ stroke: '#E5E7EB', strokeWidth: 1 }}
+                    />
+                    <YAxis 
+                      fontSize={12} 
+                      tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} 
+                      stroke="#9CA3AF"
+                      tick={{ fill: '#6B7280' }}
+                      axisLine={{ stroke: '#E5E7EB', strokeWidth: 1 }}
+                      tickLine={false}
+                    />
                     <Tooltip content={<CustomTooltip />} />
-                    <Area type="monotone" dataKey="Total Consumption" stroke="#f59e0b" fill="url(#colorConsumption)" />
+                    <Area 
+                      type="monotone" 
+                      dataKey="Total Consumption" 
+                      stroke="#f59e0b" 
+                      fill="url(#colorConsumption)" 
+                      strokeWidth={2}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </ChartCard>
+              
               <ChartCard title="Consumption by Type">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={consumptionByTypeChartData} layout="vertical" margin={{ right: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
-                    <YAxis type="category" dataKey="name" width={100} fontSize={10} interval={0} />
-                    <Tooltip formatter={(value, name) => `${(value as number).toLocaleString()} ${String(name).includes('kWh') ? 'kWh' : 'OMR'}`}/>
-                    <Legend/>
-                    <Bar dataKey="Consumption (kWh)" barSize={20} radius={[0, 4, 4, 0]}>
+                    <defs>
+                      {COLORS.map((color, index) => (
+                        <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor={color} stopOpacity={1} />
+                          <stop offset="100%" stopColor={color} stopOpacity={0.7} />
+                        </linearGradient>
+                      ))}
+                    </defs>
+                    <CartesianGrid strokeDasharray="0" stroke="transparent" />
+                    <XAxis 
+                      type="number" 
+                      tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} 
+                      stroke="#9CA3AF"
+                      tick={{ fill: '#6B7280', fontSize: 11 }}
+                      axisLine={{ stroke: '#E5E7EB', strokeWidth: 1 }}
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="name" 
+                      width={100} 
+                      fontSize={11} 
+                      interval={0} 
+                      stroke="#9CA3AF"
+                      tick={{ fill: '#6B7280' }}
+                      axisLine={{ stroke: '#E5E7EB', strokeWidth: 1 }}
+                    />
+                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0, 0, 0, 0.02)' }} />
+                    <Bar dataKey="Consumption (kWh)" barSize={20} radius={[0, 8, 8, 0]}>
                       {consumptionByTypeChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell key={`cell-${index}`} fill={`url(#gradient-${index % COLORS.length})`} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -275,13 +331,15 @@ const ElectricityModule: React.FC = () => {
       {activeSubSection === 'AnalysisByType' && (
         <div className="space-y-6">
             <ChartCard title="Filter by Meter Type">
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                     {uniqueTypes.map(type => (
-                        <button key={type} onClick={() => setSelectedType(type)}
-                            className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 flex items-center gap-2 ${
+                        <button 
+                            key={type} 
+                            onClick={() => setSelectedType(type)}
+                            className={`px-5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2 ${
                                 selectedType === type 
-                                ? 'bg-accent text-white shadow-md' 
-                                : 'bg-gray-100 dark:bg-gray-700 text-secondary dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                ? 'bg-gradient-to-r from-accent to-accent/80 text-white shadow-lg' 
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
                             }`}
                         >
                             <Tag size={14} /> {type}
@@ -290,8 +348,8 @@ const ElectricityModule: React.FC = () => {
                 </div>
             </ChartCard>
 
-             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                Analysis for <span className="text-accent">{selectedType}</span> from <span className="text-accent">{dateRange.start}</span> to <span className="text-accent">{dateRange.end}</span>
+             <h2 className="text-lg font-semibold text-gray-700">
+                Analysis for <span className="text-accent font-bold">{selectedType}</span> from <span className="text-accent font-bold">{dateRange.start}</span> to <span className="text-accent font-bold">{dateRange.end}</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -335,14 +393,33 @@ const ElectricityModule: React.FC = () => {
                        <defs>
                         <linearGradient id="colorType" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#818cf8" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#818cf8" stopOpacity={0}/>
+                          <stop offset="95%" stopColor="#818cf8" stopOpacity={0.1}/>
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" fontSize={12} />
-                      <YAxis fontSize={12} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
+                      <CartesianGrid strokeDasharray="0" stroke="transparent" />
+                      <XAxis 
+                        dataKey="name" 
+                        fontSize={12} 
+                        stroke="#9CA3AF"
+                        tick={{ fill: '#6B7280' }}
+                        axisLine={{ stroke: '#E5E7EB', strokeWidth: 1 }}
+                      />
+                      <YAxis 
+                        fontSize={12} 
+                        tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} 
+                        stroke="#9CA3AF"
+                        tick={{ fill: '#6B7280' }}
+                        axisLine={{ stroke: '#E5E7EB', strokeWidth: 1 }}
+                        tickLine={false}
+                      />
                       <Tooltip content={<CustomTooltip />} />
-                      <Area type="monotone" dataKey="Consumption" stroke="#818cf8" fill="url(#colorType)" />
+                      <Area 
+                        type="monotone" 
+                        dataKey="Consumption" 
+                        stroke="#818cf8" 
+                        fill="url(#colorType)" 
+                        strokeWidth={2}
+                      />
                     </AreaChart>
                 </ResponsiveContainer>
             </ChartCard>
@@ -350,33 +427,41 @@ const ElectricityModule: React.FC = () => {
             <ChartCard title={`Meter Details for ${selectedType}`}>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
+                        <thead className="bg-gray-50/50 backdrop-blur-sm">
                         <tr>
-                            <th className="p-3 text-left font-semibold text-gray-700 dark:text-gray-200">Name</th>
-                            <th className="p-3 text-left font-semibold text-gray-700 dark:text-gray-200">Account #</th>
-                            <th className="p-3 text-right font-semibold text-gray-700 dark:text-gray-200">Total Consumption (kWh)</th>
-                            <th className="p-3 text-right font-semibold text-gray-700 dark:text-gray-200">Total Cost (OMR)</th>
+                            <th className="p-4 text-left font-semibold text-gray-700">Name</th>
+                            <th className="p-4 text-left font-semibold text-gray-700">Account #</th>
+                            <th className="p-4 text-right font-semibold text-gray-700">Total Consumption (kWh)</th>
+                            <th className="p-4 text-right font-semibold text-gray-700">Total Cost (OMR)</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-gray-100">
                         {paginatedData.map(meter => (
-                            <tr key={meter.id} className="border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                            <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{meter.name}</td>
-                            <td className="p-3 text-gray-600 dark:text-gray-400">{meter.accountNumber}</td>
-                            <td className="p-3 text-right font-semibold text-gray-800 dark:text-gray-200">{meter.totalConsumption.toLocaleString()}</td>
-                             <td className="p-3 text-right font-semibold text-green-700 dark:text-green-400">{(meter.totalConsumption * BILLING_RATE).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                            <tr key={meter.id} className="hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-transparent transition-all duration-200">
+                            <td className="p-4 font-medium text-gray-800">{meter.name}</td>
+                            <td className="p-4 text-gray-600">{meter.accountNumber}</td>
+                            <td className="p-4 text-right font-semibold text-gray-800">{meter.totalConsumption.toLocaleString()}</td>
+                             <td className="p-4 text-right font-semibold text-green-600">{(meter.totalConsumption * BILLING_RATE).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                             </tr>
                         ))}
                         </tbody>
                     </table>
                 </div>
-                 <div className="p-4 flex items-center justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                 <div className="p-4 flex items-center justify-between border-t border-gray-100">
+                    <span className="text-sm text-gray-600">
                         Page {currentPage} of {totalPages}
                     </span>
                     <div className="flex gap-2">
-                        <Button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
-                        <Button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</Button>
+                        <Button 
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                            disabled={currentPage === 1}
+                            className="rounded-xl"
+                        >Previous</Button>
+                        <Button 
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                            disabled={currentPage === totalPages}
+                            className="rounded-xl"
+                        >Next</Button>
                     </div>
                 </div>
             </ChartCard>
@@ -385,45 +470,63 @@ const ElectricityModule: React.FC = () => {
 
       {activeSubSection === 'Database' && (
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-primary dark:text-white">Electricity Meter Database</h2>
-            <Button onClick={handleExport} className="bg-primary hover:bg-primary-dark text-white flex items-center gap-2">
+          <div className="flex justify-between items-center flex-wrap gap-4">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              Electricity Meter Database
+            </h2>
+            <Button 
+              onClick={handleExport} 
+              className="bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white flex items-center gap-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
               <FileDown size={16} />
               Export to CSV
             </Button>
           </div>
+          
           <ChartCard title={`All Meters (${electricityData.length})`}>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+                <thead className="bg-gray-50/50 backdrop-blur-sm">
                   <tr>
-                    <th className="p-3 text-left font-semibold text-gray-700 dark:text-gray-200">Name</th>
-                    <th className="p-3 text-left font-semibold text-gray-700 dark:text-gray-200">Type</th>
-                    <th className="p-3 text-left font-semibold text-gray-700 dark:text-gray-200">Account #</th>
-                    <th className="p-3 text-right font-semibold text-gray-700 dark:text-gray-200">Total Consumption (kWh)</th>
-                    <th className="p-3 text-right font-semibold text-gray-700 dark:text-gray-200">Total Cost (OMR)</th>
+                    <th className="p-4 text-left font-semibold text-gray-700">Name</th>
+                    <th className="p-4 text-left font-semibold text-gray-700">Type</th>
+                    <th className="p-4 text-left font-semibold text-gray-700">Account #</th>
+                    <th className="p-4 text-right font-semibold text-gray-700">Total Consumption (kWh)</th>
+                    <th className="p-4 text-right font-semibold text-gray-700">Total Cost (OMR)</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-100">
                   {paginatedData.map(meter => (
-                    <tr key={meter.id} className="border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                      <td className="p-3 font-medium text-gray-800 dark:text-gray-200">{meter.name}</td>
-                      <td className="p-3 text-gray-600 dark:text-gray-400">{meter.type}</td>
-                      <td className="p-3 text-gray-600 dark:text-gray-400">{meter.accountNumber}</td>
-                      <td className="p-3 text-right font-semibold text-gray-800 dark:text-gray-200">{meter.totalConsumption.toLocaleString()}</td>
-                       <td className="p-3 text-right font-semibold text-green-700 dark:text-green-400">{(meter.totalConsumption * BILLING_RATE).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <tr key={meter.id} className="hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-transparent transition-all duration-200">
+                      <td className="p-4 font-medium text-gray-800">{meter.name}</td>
+                      <td className="p-4">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {meter.type}
+                        </span>
+                      </td>
+                      <td className="p-4 text-gray-600">{meter.accountNumber}</td>
+                      <td className="p-4 text-right font-semibold text-gray-800">{meter.totalConsumption.toLocaleString()}</td>
+                       <td className="p-4 text-right font-semibold text-green-600">{(meter.totalConsumption * BILLING_RATE).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div className="p-4 flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="p-4 flex items-center justify-between border-t border-gray-100">
+                <span className="text-sm text-gray-600">
                     Page {currentPage} of {totalPages}
                 </span>
                 <div className="flex gap-2">
-                    <Button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
-                    <Button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</Button>
+                    <Button 
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                        disabled={currentPage === 1}
+                        className="rounded-xl"
+                    >Previous</Button>
+                    <Button 
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                        disabled={currentPage === totalPages}
+                        className="rounded-xl"
+                    >Next</Button>
                 </div>
             </div>
           </ChartCard>
