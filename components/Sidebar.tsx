@@ -54,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, set
   return (
     <aside className={`relative bg-white dark:bg-gray-800 border-r border-neutral-border dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col ${isOpen ? 'w-64' : 'w-20'}`}>
         <div className="relative flex items-center justify-center p-4 border-b border-neutral-border dark:border-gray-700 h-24 flex-shrink-0">
-             <img src="/IMG_0856.png" alt="Muscat Bay Logo" className={`transition-all duration-300 ${isOpen ? 'h-16' : 'h-12'}`} />
+             <img src="/APP Logo.png" alt="MBR App Logo" className={`transition-all duration-300 ${isOpen ? 'h-16' : 'h-12'}`} />
              <button onClick={() => setIsOpen(!isOpen)} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 absolute -right-4 top-8 bg-white dark:bg-gray-800 border-2 border-neutral-border dark:border-gray-700 text-secondary hover:text-primary transition-all duration-300">
                 {isOpen ? <ChevronsLeft className="h-5 w-5" /> : <ChevronsRight className="h-5 w-5" />}
             </button>
