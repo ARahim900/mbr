@@ -258,7 +258,6 @@ const ElectricityModule: React.FC = () => {
                         <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.1}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="0" stroke="transparent" />
                     <XAxis 
                       dataKey="name" 
                       fontSize={12} 
@@ -297,7 +296,6 @@ const ElectricityModule: React.FC = () => {
                         </linearGradient>
                       ))}
                     </defs>
-                    <CartesianGrid strokeDasharray="0" stroke="transparent" />
                     <XAxis 
                       type="number" 
                       tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} 
@@ -396,7 +394,6 @@ const ElectricityModule: React.FC = () => {
                           <stop offset="95%" stopColor="#818cf8" stopOpacity={0.1}/>
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="0" stroke="transparent" />
                       <XAxis 
                         dataKey="name" 
                         fontSize={12} 
