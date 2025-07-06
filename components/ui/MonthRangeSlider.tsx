@@ -31,7 +31,7 @@ const MonthRangeSlider: React.FC<MonthRangeSliderProps> = ({ months, value, onCh
   const rightPercent = max > 0 ? (endIndex / max) * 100 : 0;
 
   return (
-    <div>
+    <div className="month-range-slider slider-container">
       <div className="flex items-center justify-between gap-4 mb-4">
         <input type="text" readOnly value={value.start} className="w-full text-center p-3 border-2 border-gray-400 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200" />
         <span className="text-gray-600 dark:text-gray-400 font-semibold">to</span>
@@ -41,8 +41,12 @@ const MonthRangeSlider: React.FC<MonthRangeSliderProps> = ({ months, value, onCh
       <div className="relative h-8 flex items-center">
         <div className="absolute top-0 bottom-0 left-0 right-0 h-1.5 my-auto bg-gray-300 dark:bg-gray-600 rounded-full"></div>
         <div 
-            className="absolute top-0 bottom-0 h-1.5 my-auto bg-gradient-to-r from-gray-600 to-gray-700 rounded-full"
-            style={{ left: `${leftPercent}%`, right: `${100 - rightPercent}%` }}
+            className="absolute top-0 bottom-0 h-1.5 my-auto rounded-full"
+            style={{ 
+              left: `${leftPercent}%`, 
+              right: `${100 - rightPercent}%`,
+              background: 'linear-gradient(to right, #374151, #4b5563)'
+            }}
         />
         <input
             type="range"
