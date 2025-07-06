@@ -2,16 +2,18 @@ import React, { useState, useMemo } from 'react';
 import { contractorData, getContractStats } from '../../database/contractorDatabase';
 import { Contractor } from '../../types';
 import MetricCard from '../ui/MetricCard';
-import { FileText, ShieldCheck, ShieldX, Coins, Search, ArrowUpDown, Filter, XCircle } from 'lucide-react';
+import { FileText, ShieldCheck, ShieldX, Coins, Search, ArrowUpDown, Filter, XCircle, Edit, Save, X } from 'lucide-react';
 import Button from '../ui/Button';
 
 const ContractorTrackerModule: React.FC = () => {
-  const [contracts] = useState<Contractor[]>(contractorData);
+  const [contracts, setContracts] = useState<Contractor[]>(contractorData);
   const [statusFilter, setStatusFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: keyof Contractor, direction: 'ascending' | 'descending' } | null>({ key: 'endDate', direction: 'ascending' });
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Contractor>>({});
   const itemsPerPage = 10;
 
   const stats = useMemo(() => getContractStats(contracts), [contracts]);
@@ -69,6 +71,11 @@ const ContractorTrackerModule: React.FC = () => {
     return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
   };
 
+  const formatDateForInput = (date: Date | null) => {
+    if (!date) return '';
+    return date.toISOString().split('T')[0];
+  };
+
   const isNearingExpiration = (endDate: Date | null) => {
       if (!endDate) return false;
       const today = new Date();
@@ -84,6 +91,44 @@ const ContractorTrackerModule: React.FC = () => {
     setSearchTerm('');
     setSortConfig({ key: 'endDate', direction: 'ascending' });
     setCurrentPage(1);
+  };
+
+  const startEdit = (contractor: Contractor) => {
+    setEditingId(contractor.id);
+    setEditForm({
+      ...contractor,
+      startDate: contractor.startDate,
+      endDate: contractor.endDate
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
+
+  const saveEdit = () => {
+    if (editingId !== null) {
+      setContracts(contracts.map(c => {
+        if (c.id === editingId) {
+          const updatedContract = {
+            ...c,
+            ...editForm,
+            startDate: editForm.startDate ? new Date(editForm.startDate as any) : null,
+            endDate: editForm.endDate ? new Date(editForm.endDate as any) : null,
+            status: editForm.endDate && new Date(editForm.endDate as any) < new Date() ? 'Expired' : 'Active'
+          };
+          return updatedContract;
+        }
+        return c;
+      }));
+      setEditingId(null);
+      setEditForm({});
+    }
+  };
+
+  const handleEditChange = (field: keyof Contractor, value: any) => {
+    setEditForm({ ...editForm, [field]: value });
   };
 
   return (
@@ -148,28 +193,123 @@ const ContractorTrackerModule: React.FC = () => {
                 </th>
               ))}
               <th className="p-3 text-left font-semibold text-primary dark:text-gray-200">Note</th>
+              <th className="p-3 text-center font-semibold text-primary dark:text-gray-200">Actions</th>
             </tr>
           </thead>
           <tbody>
             {paginatedContracts.map((c, index) => (
               <tr key={c.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                <td className="p-3 font-medium text-primary dark:text-gray-200">{c.contractor}</td>
-                <td className="p-3 text-secondary dark:text-gray-400">{c.serviceProvided}</td>
-                <td className="p-3">
-                  <span className={`px-2 py-1 text-xs font-bold rounded-full ${c.status === 'Active' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300'}`}>
-                    {c.status}
-                  </span>
-                </td>
-                <td className="p-3 text-secondary dark:text-gray-400">{c.contractType}</td>
-                <td className="p-3 text-secondary dark:text-gray-400">{formatDate(c.startDate)}</td>
-                <td className={`p-3 font-medium ${isNearingExpiration(c.endDate) ? 'text-yellow-600 dark:text-yellow-400' : 'text-secondary dark:text-gray-400'}`}>
-                  {formatDate(c.endDate)}
-                  {isNearingExpiration(c.endDate) && <div className="text-xs font-normal">Expires soon</div>}
-                </td>
-                <td className="p-3 text-right font-semibold text-primary dark:text-gray-300">
-                  {c.numericTotalOMRYear !== null ? c.numericTotalOMRYear.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'N/A'}
-                </td>
-                <td className="p-3 text-secondary dark:text-gray-400 max-w-xs truncate" title={c.note}>{c.note}</td>
+                {editingId === c.id ? (
+                  <>
+                    <td className="p-3">
+                      <input
+                        type="text"
+                        value={editForm.contractor || ''}
+                        onChange={(e) => handleEditChange('contractor', e.target.value)}
+                        className="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="text"
+                        value={editForm.serviceProvided || ''}
+                        onChange={(e) => handleEditChange('serviceProvided', e.target.value)}
+                        className="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <select
+                        value={editForm.status || ''}
+                        onChange={(e) => handleEditChange('status', e.target.value)}
+                        className="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      >
+                        <option value="Active">Active</option>
+                        <option value="Expired">Expired</option>
+                      </select>
+                    </td>
+                    <td className="p-3">
+                      <select
+                        value={editForm.contractType || ''}
+                        onChange={(e) => handleEditChange('contractType', e.target.value)}
+                        className="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      >
+                        <option value="Contract">Contract</option>
+                        <option value="PO">PO</option>
+                      </select>
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="date"
+                        value={formatDateForInput(editForm.startDate as Date)}
+                        onChange={(e) => handleEditChange('startDate', e.target.value)}
+                        className="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="date"
+                        value={formatDateForInput(editForm.endDate as Date)}
+                        onChange={(e) => handleEditChange('endDate', e.target.value)}
+                        className="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="number"
+                        value={editForm.numericTotalOMRYear || ''}
+                        onChange={(e) => handleEditChange('numericTotalOMRYear', parseFloat(e.target.value))}
+                        className="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="text"
+                        value={editForm.note || ''}
+                        onChange={(e) => handleEditChange('note', e.target.value)}
+                        className="w-full p-1 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      />
+                    </td>
+                    <td className="p-3 text-center">
+                      <div className="flex justify-center gap-2">
+                        <Button onClick={saveEdit} className="bg-green-500 hover:bg-green-600 text-white p-1">
+                          <Save size={16} />
+                        </Button>
+                        <Button onClick={cancelEdit} className="bg-gray-500 hover:bg-gray-600 text-white p-1">
+                          <X size={16} />
+                        </Button>
+                      </div>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td className="p-3 font-medium text-primary dark:text-gray-200">{c.contractor}</td>
+                    <td className="p-3 text-secondary dark:text-gray-400">{c.serviceProvided}</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-1 text-xs font-bold rounded-full ${c.status === 'Active' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300'}`}>
+                        {c.status}
+                      </span>
+                    </td>
+                    <td className="p-3 text-secondary dark:text-gray-400">{c.contractType}</td>
+                    <td className="p-3 text-secondary dark:text-gray-400">{formatDate(c.startDate)}</td>
+                    <td className={`p-3 font-medium ${isNearingExpiration(c.endDate) ? 'text-yellow-600 dark:text-yellow-400' : 'text-secondary dark:text-gray-400'}`}>
+                      {formatDate(c.endDate)}
+                      {isNearingExpiration(c.endDate) && <div className="text-xs font-normal">Expires soon</div>}
+                    </td>
+                    <td className="p-3 text-right font-semibold text-primary dark:text-gray-300">
+                      {c.numericTotalOMRYear !== null ? c.numericTotalOMRYear.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'N/A'}
+                    </td>
+                    <td className="p-3 text-secondary dark:text-gray-400 max-w-xs truncate" title={c.note}>{c.note}</td>
+                    <td className="p-3 text-center">
+                      <Button 
+                        onClick={() => startEdit(c)} 
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-1"
+                        title="Edit Contract"
+                      >
+                        <Edit size={16} />
+                      </Button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
