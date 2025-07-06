@@ -61,19 +61,33 @@
         appearance: none;
         width: 1.25rem; /* 20px */
         height: 1.25rem; /* 20px */
-        background: #0D1A26;
+        background: #374151; /* gray-700 */
         border-radius: 9999px;
         cursor: pointer;
         pointer-events: auto;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+      .slider-thumb::-webkit-slider-thumb:hover {
+        background: #1f2937; /* gray-800 */
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
       .slider-thumb::-moz-range-thumb {
         width: 1.25rem; /* 20px */
         height: 1.25rem; /* 20px */
-        background: #0D1A26;
+        background: #374151; /* gray-700 */
         border-radius: 9999px;
         cursor: pointer;
         pointer-events: auto;
         border: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+      .slider-thumb::-moz-range-thumb:hover {
+        background: #1f2937; /* gray-800 */
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
     </style>
   <script type="importmap">
