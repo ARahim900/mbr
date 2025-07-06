@@ -33,15 +33,15 @@ const MonthRangeSlider: React.FC<MonthRangeSliderProps> = ({ months, value, onCh
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-4">
-        <input type="text" readOnly value={value.start} className="w-full text-center p-3 border-2 border-primary-dark rounded-lg bg-gray-50 dark:bg-gray-700 text-primary dark:text-gray-200" />
-        <span className="text-secondary dark:text-gray-400 font-semibold">to</span>
-        <input type="text" readOnly value={value.end} className="w-full text-center p-3 border-2 border-primary-dark rounded-lg bg-gray-50 dark:bg-gray-700 text-primary dark:text-gray-200" />
+        <input type="text" readOnly value={value.start} className="w-full text-center p-3 border-2 border-gray-400 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200" />
+        <span className="text-gray-600 dark:text-gray-400 font-semibold">to</span>
+        <input type="text" readOnly value={value.end} className="w-full text-center p-3 border-2 border-gray-400 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200" />
       </div>
 
       <div className="relative h-8 flex items-center">
         <div className="absolute top-0 bottom-0 left-0 right-0 h-1.5 my-auto bg-gray-300 dark:bg-gray-600 rounded-full"></div>
         <div 
-            className="absolute top-0 bottom-0 h-1.5 my-auto bg-gradient-to-r from-gray-600 to-gray-700 dark:bg-gradient-to-r dark:from-gray-500 dark:to-gray-600 rounded-full"
+            className="absolute top-0 bottom-0 h-1.5 my-auto bg-gradient-to-r from-gray-600 to-gray-700 rounded-full"
             style={{ left: `${leftPercent}%`, right: `${100 - rightPercent}%` }}
         />
         <input
