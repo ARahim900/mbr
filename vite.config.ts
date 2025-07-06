@@ -12,6 +12,14 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      // Ensure proper handling of static assets
+      publicDir: 'public',
+      build: {
+        outDir: 'dist',
+        assetsDir: 'assets',
+        // Copy static files to dist
+        copyPublicDir: true
       }
     };
 });
