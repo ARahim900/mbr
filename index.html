@@ -43,6 +43,18 @@
       .dark body {
         background-color: #0D1A26;
       }
+      
+      /* Force slider colors to gray */
+      .slider-container .bg-primary-dark,
+      .slider-container .bg-accent,
+      .slider-container [class*="accent"] {
+        background-color: #374151 !important; /* gray-700 */
+      }
+      
+      .slider-container .bg-gradient-to-r {
+        background: linear-gradient(to right, #374151, #4b5563) !important; /* gray-700 to gray-600 */
+      }
+      
       .slider-thumb {
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -88,6 +100,12 @@
         background: #1f2937; /* gray-800 */
         transform: scale(1.1);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      
+      /* Override any accent color in MonthRangeSlider */
+      .month-range-slider [class*="accent"],
+      .month-range-slider .bg-accent {
+        background-color: #374151 !important;
       }
     </style>
   <script type="importmap">
