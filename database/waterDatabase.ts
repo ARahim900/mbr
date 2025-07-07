@@ -500,11 +500,16 @@ export const calculateAggregatedDataForPeriod = (startMonth: string, endMonth: s
     period: ''
   };
 
-  if (startIndex === -1 || endIndex === -1 || startIndex > endIndex) {
+  // If any of the months are not found, return default
+  if (startIndex === -1 || endIndex === -1) {
     return defaultReturn;
   }
 
-  const selectedMonths = waterMonthsAvailable.slice(startIndex, endIndex + 1);
+  // Ensure the range is always from the earlier month to the later month
+  const from = Math.min(startIndex, endIndex);
+  const to = Math.max(startIndex, endIndex);
+
+  const selectedMonths = waterMonthsAvailable.slice(from, to + 1);
   
   const totals = {
       A1_supply: 0, A2_total: 0, A3_total: 0, A4_total: 0,
@@ -539,7 +544,7 @@ export const calculateAggregatedDataForPeriod = (startMonth: string, endMonth: s
     stage3LossPercent: totals.A3_total > 0 ? (stage3Loss / totals.A3_total) * 100 : 0,
     totalLossPercent: totals.A1_supply > 0 ? (totalLoss / totals.A1_supply) * 100 : 0,
     systemEfficiency: totals.A1_supply > 0 ? (totals.A4_total / totals.A1_supply) * 100 : 0,
-    period: startMonth === endMonth ? startMonth : `${startMonth} to ${endMonth}`
+    period: from === to ? waterMonthsAvailable[from] : `${waterMonthsAvailable[from]} to ${waterMonthsAvailable[to]}`
   };
 };
 
