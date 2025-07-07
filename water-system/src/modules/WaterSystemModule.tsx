@@ -18,7 +18,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 const WaterSystemModule = () => {
   const [activeTab, setActiveTab] = useState('zone-analysis');
   const [selectedMonth, setSelectedMonth] = useState('May-25');
-  const [selectedZone, setSelectedZone] = useState('Sales Center');
+  const [selectedZone, setSelectedZone] = useState('Zone 03(A)');
   const [zoneData, setZoneData] = useState<any>(null);
   const [allZones, setAllZones] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +36,12 @@ const WaterSystemModule = () => {
     if (selectedZone && selectedMonth) {
       const data = waterDataService.getZoneAnalysisData(selectedZone, selectedMonth);
       setZoneData(data);
+      
+      // Debug logging
+      console.log('Zone Data:', data);
+      if (!waterDataService.hasData()) {
+        console.log('No data loaded. Please upload CSV file.');
+      }
     }
   };
 
@@ -49,6 +55,7 @@ const WaterSystemModule = () => {
       reader.onload = async (e) => {
         const csvContent = e.target?.result as string;
         await waterDataService.loadFromCSV(csvContent);
+        waterDataService.debugZoneBulkMeters(); // Debug output
         loadZoneData();
         setIsLoading(false);
       };
@@ -77,19 +84,25 @@ const WaterSystemModule = () => {
   };
 
   const renderZoneAnalysis = () => {
-    if (!zoneData) return <div>Loading...</div>;
+    if (!zoneData) return <div>Loading... Please upload CSV data.</div>;
 
     const {
       zoneBulkConsumption,
-      sumOfIndividualMeters,
-      distributionLoss,
-      efficiency,
+      buildingBulkConsumption,
+      villasConsumption,
+      buildingCount,
+      villaCount,
       meters
     } = zoneData;
 
-    const lossPercentage = zoneBulkConsumption > 0 
-      ? ((Math.abs(distributionLoss) / zoneBulkConsumption) * 100).toFixed(0)
-      : '0';
+    // Calculate percentages based on zone bulk
+    const buildingPercentage = zoneBulkConsumption > 0 
+      ? ((buildingBulkConsumption / zoneBulkConsumption) * 100)
+      : 0;
+    
+    const villasPercentage = zoneBulkConsumption > 0 
+      ? ((villasConsumption / zoneBulkConsumption) * 100)
+      : 0;
 
     return (
       <div className="space-y-6">
@@ -113,7 +126,7 @@ const WaterSystemModule = () => {
             {selectedZone} Analysis for {selectedMonth}
           </h2>
           <p className="text-gray-600">
-            Zone bulk vs individual meters consumption analysis
+            Zone bulk vs building/villas meters consumption analysis
           </p>
         </div>
 
@@ -124,7 +137,7 @@ const WaterSystemModule = () => {
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Zone Bulk Consumption */}
+            {/* Zone Bulk */}
             <div className="text-center">
               <div className="relative inline-flex items-center justify-center">
                 <svg className="w-40 h-40">
@@ -152,16 +165,16 @@ const WaterSystemModule = () => {
                   <span className="text-3xl font-bold">100%</span>
                 </div>
               </div>
-              <h4 className="text-lg font-semibold mt-4">Zone Bulk Consumption</h4>
+              <h4 className="text-lg font-semibold mt-4">Zone Bulk</h4>
               <p className="text-3xl font-bold text-blue-600 mt-2">
                 {formatNumber(zoneBulkConsumption)} m³
               </p>
               <p className="text-sm text-gray-600">
-                {selectedZone === 'Direct Connection' ? 'Main Bulk (NAMA)' : selectedZone} Total
+                {selectedZone} Total
               </p>
             </div>
 
-            {/* Sum of Individual Meters */}
+            {/* Building Bulk */}
             <div className="text-center">
               <div className="relative inline-flex items-center justify-center">
                 <svg className="w-40 h-40">
@@ -180,24 +193,24 @@ const WaterSystemModule = () => {
                     fill="none"
                     stroke="#3b82f6"
                     strokeWidth="12"
-                    strokeDasharray={`${2 * Math.PI * 70 * (efficiency/100)}, ${2 * Math.PI * 70}`}
+                    strokeDasharray={`${2 * Math.PI * 70 * (buildingPercentage/100)}, ${2 * Math.PI * 70}`}
                     transform="rotate(-90 80 80)"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-3xl font-bold">{efficiency.toFixed(0)}%</span>
+                  <span className="text-3xl font-bold">{buildingPercentage.toFixed(0)}%</span>
                 </div>
               </div>
-              <h4 className="text-lg font-semibold mt-4">Sum of Individual Meters</h4>
+              <h4 className="text-lg font-semibold mt-4">Building Bulk</h4>
               <p className="text-3xl font-bold text-blue-600 mt-2">
-                {formatNumber(sumOfIndividualMeters)} m³
+                {formatNumber(buildingBulkConsumption)} m³
               </p>
               <p className="text-sm text-gray-600">
-                {selectedZone === 'Direct Connection' ? 'Total A2 Consumption' : 'Total L3 Consumption'}
+                {buildingCount} Buildings
               </p>
             </div>
 
-            {/* Distribution Loss */}
+            {/* Villas */}
             <div className="text-center">
               <div className="relative inline-flex items-center justify-center">
                 <svg className="w-40 h-40">
@@ -214,23 +227,23 @@ const WaterSystemModule = () => {
                     cy="80"
                     r="70"
                     fill="none"
-                    stroke={distributionLoss > 0 ? "#ef4444" : "#10b981"}
+                    stroke="#3b82f6"
                     strokeWidth="12"
-                    strokeDasharray={`${2 * Math.PI * 70 * (Math.abs(distributionLoss)/zoneBulkConsumption)}, ${2 * Math.PI * 70}`}
+                    strokeDasharray={`${2 * Math.PI * 70 * (villasPercentage/100)}, ${2 * Math.PI * 70}`}
                     transform="rotate(-90 80 80)"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-3xl font-bold">{lossPercentage}%</span>
+                  <span className="text-3xl font-bold">{villasPercentage.toFixed(0)}%</span>
                 </div>
               </div>
-              <h4 className="text-lg font-semibold mt-4">
-                {distributionLoss > 0 ? 'Distribution Loss' : 'Distribution Gain'}
-              </h4>
-              <p className={`text-3xl font-bold mt-2 ${distributionLoss > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                {formatNumber(Math.abs(distributionLoss))} m³
+              <h4 className="text-lg font-semibold mt-4">Villas</h4>
+              <p className="text-3xl font-bold text-blue-600 mt-2">
+                {formatNumber(villasConsumption)} m³
               </p>
-              <p className="text-sm text-gray-600">from Zone Bulk</p>
+              <p className="text-sm text-gray-600">
+                {villaCount} Villas
+              </p>
             </div>
           </div>
         </div>
@@ -270,9 +283,11 @@ const WaterSystemModule = () => {
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 rounded text-sm ${
                           meter.Type === 'Zone Bulk' ? 'bg-blue-100 text-blue-800' : 
-                          meter.Type === 'A1 - NAMA' ? 'bg-purple-100 text-purple-800' :
+                          meter.Type === 'Building Bulk' ? 'bg-purple-100 text-purple-800' :
+                          meter.Type === 'Villa' ? 'bg-green-100 text-green-800' :
+                          meter.Type === 'A1 - NAMA' ? 'bg-red-100 text-red-800' :
                           meter.Type === 'DC - Direct Connection' ? 'bg-orange-100 text-orange-800' :
-                          'bg-green-100 text-green-800'
+                          'bg-gray-100 text-gray-800'
                         }`}>
                           {meter.Type}
                         </span>
@@ -284,9 +299,12 @@ const WaterSystemModule = () => {
                       <td className="text-center py-3 px-4">
                         <span className={`px-2 py-1 rounded text-sm ${
                           meter.Label.includes('L2') ? 'bg-blue-100 text-blue-800' :
-                          meter.Label.includes('A1') ? 'bg-purple-100 text-purple-800' :
+                          meter.Label.includes('L3') ? 'bg-purple-100 text-purple-800' :
+                          meter.Label.includes('L4') ? 'bg-green-100 text-green-800' :
+                          meter.Label.includes('L5') ? 'bg-yellow-100 text-yellow-800' :
+                          meter.Label.includes('A1') ? 'bg-red-100 text-red-800' :
                           meter.Label.includes('DC') ? 'bg-orange-100 text-orange-800' :
-                          'bg-green-100 text-green-800'
+                          'bg-gray-100 text-gray-800'
                         }`}>
                           {meter.Label}
                         </span>
@@ -299,23 +317,29 @@ const WaterSystemModule = () => {
           </div>
 
           {/* Summary Footer */}
-          <div className="mt-6 pt-4 border-t grid grid-cols-3 gap-4">
+          <div className="mt-6 pt-4 border-t grid grid-cols-4 gap-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">Zone Individual Total</p>
+              <p className="text-sm text-gray-600">Zone Bulk Total</p>
               <p className="text-2xl font-bold text-blue-600">
-                {formatNumber(sumOfIndividualMeters)} m³
+                {formatNumber(zoneBulkConsumption)} m³
               </p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Zone Efficiency</p>
+              <p className="text-sm text-gray-600">Building Bulk Total</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {formatNumber(buildingBulkConsumption)} m³
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600">Villas Total</p>
               <p className="text-2xl font-bold text-green-600">
-                {efficiency.toFixed(1)}%
+                {formatNumber(villasConsumption)} m³
               </p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Zone {distributionLoss > 0 ? 'Loss' : 'Gain'}</p>
-              <p className={`text-2xl font-bold ${distributionLoss > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                {formatNumber(Math.abs(distributionLoss))} m³
+              <p className="text-sm text-gray-600">Total Individual</p>
+              <p className="text-2xl font-bold text-gray-800">
+                {formatNumber(zoneData.sumOfIndividualMeters)} m³
               </p>
             </div>
           </div>
@@ -392,11 +416,15 @@ const WaterSystemModule = () => {
                     onChange={(e) => setSelectedZone(e.target.value)}
                     className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
-                    {allZones.map((zone) => (
-                      <option key={zone} value={zone}>
-                        {zone}
-                      </option>
-                    ))}
+                    {allZones.length === 0 ? (
+                      <option value="">Please upload CSV data</option>
+                    ) : (
+                      allZones.map((zone) => (
+                        <option key={zone} value={zone}>
+                          {zone}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
               </div>
@@ -405,7 +433,9 @@ const WaterSystemModule = () => {
                 <button 
                   onClick={() => {
                     setSelectedMonth('May-25');
-                    setSelectedZone('Sales Center');
+                    if (allZones.length > 0) {
+                      setSelectedZone(allZones[0]);
+                    }
                   }}
                   className="flex items-center justify-center px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors w-full"
                 >
