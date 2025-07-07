@@ -9,9 +9,10 @@ import {
   Calendar,
   Filter,
   RefreshCw,
-  FileDatabase
+  FileDatabase,
+  Upload
 } from 'lucide-react';
-import { getZoneAnalysisData, getAllZones, getMonthlyData } from '../data/waterDatabase';
+import { waterDataService } from '../data/waterDataService';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const WaterSystemModule = () => {
@@ -20,18 +21,43 @@ const WaterSystemModule = () => {
   const [selectedZone, setSelectedZone] = useState('Sales Center');
   const [zoneData, setZoneData] = useState<any>(null);
   const [allZones, setAllZones] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    loadZoneData();
+  }, [selectedZone, selectedMonth]);
+
+  const loadZoneData = () => {
     // Load all zones
-    const zones = getAllZones();
+    const zones = waterDataService.getAllZones();
     setAllZones(zones);
     
     // Load zone data
     if (selectedZone && selectedMonth) {
-      const data = getZoneAnalysisData(selectedZone, selectedMonth);
+      const data = waterDataService.getZoneAnalysisData(selectedZone, selectedMonth);
       setZoneData(data);
     }
-  }, [selectedZone, selectedMonth]);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsLoading(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const csvContent = e.target?.result as string;
+        await waterDataService.loadFromCSV(csvContent);
+        loadZoneData();
+        setIsLoading(false);
+      };
+      reader.readAsText(file);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setIsLoading(false);
+    }
+  };
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -62,11 +88,25 @@ const WaterSystemModule = () => {
     } = zoneData;
 
     const lossPercentage = zoneBulkConsumption > 0 
-      ? ((distributionLoss / zoneBulkConsumption) * 100).toFixed(0)
+      ? ((Math.abs(distributionLoss) / zoneBulkConsumption) * 100).toFixed(0)
       : '0';
 
     return (
       <div className="space-y-6">
+        {/* Upload Button */}
+        <div className="flex justify-end mb-4">
+          <label className="cursor-pointer flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            <Upload className="w-5 h-5 mr-2" />
+            Upload CSV Data
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+          </label>
+        </div>
+
         {/* Header */}
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -174,7 +214,7 @@ const WaterSystemModule = () => {
                     cy="80"
                     r="70"
                     fill="none"
-                    stroke="#ef4444"
+                    stroke={distributionLoss > 0 ? "#ef4444" : "#10b981"}
                     strokeWidth="12"
                     strokeDasharray={`${2 * Math.PI * 70 * (Math.abs(distributionLoss)/zoneBulkConsumption)}, ${2 * Math.PI * 70}`}
                     transform="rotate(-90 80 80)"
@@ -184,8 +224,10 @@ const WaterSystemModule = () => {
                   <span className="text-3xl font-bold">{lossPercentage}%</span>
                 </div>
               </div>
-              <h4 className="text-lg font-semibold mt-4">Distribution Loss</h4>
-              <p className="text-3xl font-bold text-red-600 mt-2">
+              <h4 className="text-lg font-semibold mt-4">
+                {distributionLoss > 0 ? 'Distribution Loss' : 'Distribution Gain'}
+              </h4>
+              <p className={`text-3xl font-bold mt-2 ${distributionLoss > 0 ? 'text-red-600' : 'text-green-600'}`}>
                 {formatNumber(Math.abs(distributionLoss))} m³
               </p>
               <p className="text-sm text-gray-600">from Zone Bulk</p>
@@ -229,6 +271,7 @@ const WaterSystemModule = () => {
                         <span className={`px-2 py-1 rounded text-sm ${
                           meter.Type === 'Zone Bulk' ? 'bg-blue-100 text-blue-800' : 
                           meter.Type === 'A1 - NAMA' ? 'bg-purple-100 text-purple-800' :
+                          meter.Type === 'DC - Direct Connection' ? 'bg-orange-100 text-orange-800' :
                           'bg-green-100 text-green-800'
                         }`}>
                           {meter.Type}
@@ -242,6 +285,7 @@ const WaterSystemModule = () => {
                         <span className={`px-2 py-1 rounded text-sm ${
                           meter.Label.includes('L2') ? 'bg-blue-100 text-blue-800' :
                           meter.Label.includes('A1') ? 'bg-purple-100 text-purple-800' :
+                          meter.Label.includes('DC') ? 'bg-orange-100 text-orange-800' :
                           'bg-green-100 text-green-800'
                         }`}>
                           {meter.Label}
@@ -269,8 +313,8 @@ const WaterSystemModule = () => {
               </p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Zone Loss</p>
-              <p className="text-2xl font-bold text-red-600">
+              <p className="text-sm text-gray-600">Zone {distributionLoss > 0 ? 'Loss' : 'Gain'}</p>
+              <p className={`text-2xl font-bold ${distributionLoss > 0 ? 'text-red-600' : 'text-green-600'}`}>
                 {formatNumber(Math.abs(distributionLoss))} m³
               </p>
             </div>
@@ -358,7 +402,13 @@ const WaterSystemModule = () => {
               </div>
 
               <div className="flex items-end">
-                <button className="flex items-center justify-center px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors w-full">
+                <button 
+                  onClick={() => {
+                    setSelectedMonth('May-25');
+                    setSelectedZone('Sales Center');
+                  }}
+                  className="flex items-center justify-center px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors w-full"
+                >
                   <Filter className="w-5 h-5 mr-2" />
                   Reset Filters
                 </button>
@@ -369,13 +419,22 @@ const WaterSystemModule = () => {
 
         {/* Content */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          {activeTab === 'zone-analysis' && renderZoneAnalysis()}
-          {activeTab !== 'zone-analysis' && (
-            <div className="text-center py-12 text-gray-500">
-              <p className="text-lg">
-                {tabs.find(t => t.id === activeTab)?.label} - Coming Soon
-              </p>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <RefreshCw className="w-8 h-8 animate-spin text-teal-500" />
+              <span className="ml-2 text-gray-600">Loading data...</span>
             </div>
+          ) : (
+            <>
+              {activeTab === 'zone-analysis' && renderZoneAnalysis()}
+              {activeTab !== 'zone-analysis' && (
+                <div className="text-center py-12 text-gray-500">
+                  <p className="text-lg">
+                    {tabs.find(t => t.id === activeTab)?.label} - Coming Soon
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
