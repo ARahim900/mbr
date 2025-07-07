@@ -1,238 +1,53 @@
 import { WaterMeter } from './waterDatabase';
 import { parseWaterConsumptionCSV, processWaterMeters } from '../utils/csvParser';
 
-// Sample data based on the CSV structure - replace with actual CSV parsing
-const sampleData: WaterMeter[] = [
-  // Main Bulk (NAMA) - A1
-  {
-    "Meter Label": "NAMA Main Bulk",
-    "Acct #": "1000001",
-    "Zone": "Direct Connection",
-    "Type": "A1 - NAMA",
-    "Parent Meter": "",
-    "Label": "A1 - NAMA",
-    "Jan-25": 25000,
-    "Feb-25": 26000,
-    "Mar-25": 27000,
-    "Apr-25": 26500,
-    "May-25": 27500,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 132000
-  },
+// Zone name mapping to handle different variations
+const ZONE_NAME_MAPPING: { [key: string]: string[] } = {
+  'Zone 03(A)': ['Zone 03(A)', 'Zone 3A', 'Zone 03 A', 'Zone 03A', '3A'],
+  'Zone 3A': ['Zone 03(A)', 'Zone 3A', 'Zone 03 A', 'Zone 03A', '3A'],
+  'Sales Center': ['Sales Center', 'Sales Centre', 'Sale Center', 'Sale Centre'],
+  'Zone 5A': ['Zone 5A', 'Zone 05A', 'Zone 05(A)', '5A'],
+  'Direct Connection': ['Direct Connection', 'Direct Connections', 'DC'],
+  // Add more mappings as needed
+};
+
+// Normalize zone names for consistent matching
+function normalizeZoneName(zone: string): string {
+  if (!zone) return '';
   
-  // Zone 3A
-  {
-    "Meter Label": "Zone 3A Bulk",
-    "Acct #": "4300295",
-    "Zone": "Zone 3A",
-    "Type": "Zone Bulk",
-    "Parent Meter": "NAMA Main Bulk",
-    "Label": "L2 - Zone Bulk",
-    "Jan-25": 2500,
-    "Feb-25": 2600,
-    "Mar-25": 2700,
-    "Apr-25": 2650,
-    "May-25": 2750,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 13200
-  },
-  // Zone 3A Individual meters
-  {
-    "Meter Label": "3A Shop 1",
-    "Acct #": "4300296",
-    "Zone": "Zone 3A",
-    "Type": "Retail",
-    "Parent Meter": "Zone 3A Bulk",
-    "Label": "Retail",
-    "Jan-25": 450,
-    "Feb-25": 470,
-    "Mar-25": 490,
-    "Apr-25": 480,
-    "May-25": 500,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 2390
-  },
-  {
-    "Meter Label": "3A Shop 2",
-    "Acct #": "4300297",
-    "Zone": "Zone 3A",
-    "Type": "Retail",
-    "Parent Meter": "Zone 3A Bulk",
-    "Label": "Retail",
-    "Jan-25": 380,
-    "Feb-25": 390,
-    "Mar-25": 400,
-    "Apr-25": 395,
-    "May-25": 410,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 1975
-  },
-  
-  // Sales Center
-  {
-    "Meter Label": "Sales Center Common Building",
-    "Acct #": "4300295",
-    "Zone": "Sales Center",
-    "Type": "Zone Bulk",
-    "Parent Meter": "NAMA Main Bulk",
-    "Label": "L2 - Zone Bulk",
-    "Jan-25": 60,
-    "Feb-25": 55,
-    "Mar-25": 58,
-    "Apr-25": 62,
-    "May-25": 63,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 298
-  },
-  {
-    "Meter Label": "Sale Centre Caffe & Bar (GF Shop No.592 A)",
-    "Acct #": "4300328",
-    "Zone": "Sales Center",
-    "Type": "Retail",
-    "Parent Meter": "Sales Center Common Building",
-    "Label": "Retail",
-    "Jan-25": 10,
-    "Feb-25": 11,
-    "Mar-25": 10,
-    "Apr-25": 11,
-    "May-25": 12,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 54
-  },
-  
-  // Zone 5A
-  {
-    "Meter Label": "Zone 5A Bulk",
-    "Acct #": "4300500",
-    "Zone": "Zone 5A",
-    "Type": "Zone Bulk",
-    "Parent Meter": "NAMA Main Bulk",
-    "Label": "L2 - Zone Bulk",
-    "Jan-25": 3200,
-    "Feb-25": 3300,
-    "Mar-25": 3400,
-    "Apr-25": 3350,
-    "May-25": 3450,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 16700
-  },
-  {
-    "Meter Label": "5A Office Building",
-    "Acct #": "4300501",
-    "Zone": "Zone 5A",
-    "Type": "Retail",
-    "Parent Meter": "Zone 5A Bulk",
-    "Label": "Retail",
-    "Jan-25": 1200,
-    "Feb-25": 1250,
-    "Mar-25": 1300,
-    "Apr-25": 1275,
-    "May-25": 1320,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 6345
-  },
-  
-  // Direct Connections (DC)
-  {
-    "Meter Label": "Direct Connection 1",
-    "Acct #": "4300600",
-    "Zone": "Direct Connection",
-    "Type": "DC - Direct Connection",
-    "Parent Meter": "NAMA Main Bulk",
-    "Label": "DC - Direct Connection",
-    "Jan-25": 800,
-    "Feb-25": 820,
-    "Mar-25": 840,
-    "Apr-25": 830,
-    "May-25": 850,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 4140
-  },
-  {
-    "Meter Label": "Direct Connection 2",
-    "Acct #": "4300601",
-    "Zone": "Direct Connection",
-    "Type": "DC - Direct Connection",
-    "Parent Meter": "NAMA Main Bulk",
-    "Label": "DC - Direct Connection",
-    "Jan-25": 600,
-    "Feb-25": 620,
-    "Mar-25": 640,
-    "Apr-25": 630,
-    "May-25": 650,
-    "Jun-25": "",
-    "Jul-25": "",
-    "Aug-25": "",
-    "Sep-25": "",
-    "Oct-25": "",
-    "Nov-25": "",
-    "Dec-25": "",
-    "Total": 3140
+  // Check if this zone name matches any mapping
+  for (const [normalized, variations] of Object.entries(ZONE_NAME_MAPPING)) {
+    if (variations.some(v => v.toLowerCase() === zone.toLowerCase())) {
+      return normalized;
+    }
   }
-];
+  
+  return zone;
+}
+
+// Sample data structure - will be replaced by CSV
+const sampleData: WaterMeter[] = [];
 
 export class WaterDataService {
-  private waterMeters: WaterMeter[] = sampleData;
+  private waterMeters: WaterMeter[] = [];
+  private isDataLoaded: boolean = false;
 
   // Load data from CSV file
   async loadFromCSV(csvContent: string) {
     try {
       const meters = parseWaterConsumptionCSV(csvContent);
       this.waterMeters = processWaterMeters(meters);
+      
+      // Normalize zone names
+      this.waterMeters = this.waterMeters.map(meter => ({
+        ...meter,
+        Zone: normalizeZoneName(meter.Zone)
+      }));
+      
+      this.isDataLoaded = true;
+      console.log('Loaded meters:', this.waterMeters.length);
+      console.log('Zones found:', this.getAllZones());
+      
       return this.waterMeters;
     } catch (error) {
       console.error('Error loading CSV:', error);
@@ -263,15 +78,32 @@ export class WaterDataService {
     distributionLoss: number;
     efficiency: number;
     meters: WaterMeter[];
+    buildingBulkConsumption: number;
+    villasConsumption: number;
+    buildingCount: number;
+    villaCount: number;
   } {
     let zoneBulkConsumption = 0;
     let sumOfIndividualMeters = 0;
+    let buildingBulkConsumption = 0;
+    let villasConsumption = 0;
+    let buildingCount = 0;
+    let villaCount = 0;
     const meters: WaterMeter[] = [];
 
-    if (zone === 'Direct Connection') {
+    // Normalize the search zone name
+    const normalizedZone = normalizeZoneName(zone);
+
+    if (normalizedZone === 'Direct Connection') {
       // Special case for Direct Connection
       // Zone Bulk = Main Bulk (NAMA) - A1
-      const mainBulk = this.waterMeters.find(m => m.Type === 'A1 - NAMA');
+      const mainBulk = this.waterMeters.find(m => 
+        m.Type === 'A1 - NAMA' || 
+        m.Label === 'A1 - NAMA' ||
+        m['Meter Label']?.toLowerCase().includes('nama main') ||
+        m['Meter Label']?.toLowerCase().includes('main bulk')
+      );
+      
       if (mainBulk) {
         zoneBulkConsumption = Number(mainBulk[month as keyof WaterMeter]) || 0;
         meters.push(mainBulk);
@@ -279,34 +111,77 @@ export class WaterDataService {
 
       // Individual Meters = All Zone Bulks (L2) + Direct Connections (DC) = A2
       this.waterMeters.forEach(meter => {
-        if (meter.Type === 'Zone Bulk' || meter.Type === 'DC - Direct Connection') {
+        if (meter.Type === 'Zone Bulk' || 
+            meter.Type === 'DC - Direct Connection' ||
+            meter.Label === 'L2 - Zone Bulk' ||
+            meter.Label === 'DC - Direct Connection') {
           const consumption = Number(meter[month as keyof WaterMeter]) || 0;
           sumOfIndividualMeters += consumption;
-          if (meter.Type !== 'A1 - NAMA') {
+          if (meter.Type !== 'A1 - NAMA' && meter.Label !== 'A1 - NAMA') {
             meters.push(meter);
           }
         }
       });
     } else {
       // Normal zone calculation
-      // Find zone bulk meter
-      const zoneBulkMeter = this.waterMeters.find(
-        m => m.Zone === zone && m.Type === 'Zone Bulk'
-      );
+      // Find zone bulk meter - try multiple matching strategies
+      const zoneBulkMeter = this.waterMeters.find(m => {
+        const meterZone = normalizeZoneName(m.Zone);
+        return (
+          meterZone === normalizedZone && 
+          (m.Type === 'Zone Bulk' || 
+           m.Label === 'L2 - Zone Bulk' ||
+           m['Meter Label']?.toLowerCase().includes('bulk') ||
+           m['Meter Label']?.toLowerCase().includes('common'))
+        );
+      });
       
       if (zoneBulkMeter) {
         zoneBulkConsumption = Number(zoneBulkMeter[month as keyof WaterMeter]) || 0;
         meters.push(zoneBulkMeter);
+      } else {
+        console.warn(`No zone bulk meter found for zone: ${normalizedZone}`);
       }
 
-      // Sum all individual meters in this zone
+      // Process all meters in this zone
       this.waterMeters.forEach(meter => {
-        if (meter.Zone === zone && meter.Type === 'Retail') {
+        const meterZone = normalizeZoneName(meter.Zone);
+        if (meterZone === normalizedZone) {
           const consumption = Number(meter[month as keyof WaterMeter]) || 0;
-          sumOfIndividualMeters += consumption;
-          meters.push(meter);
+          
+          // Check if it's a building bulk meter
+          if (meter.Type === 'Building Bulk' || 
+              meter.Label === 'L3 - Building Bulk' ||
+              (meter['Meter Label']?.toLowerCase().includes('building') && 
+               meter['Meter Label']?.toLowerCase().includes('bulk'))) {
+            buildingBulkConsumption += consumption;
+            buildingCount++;
+            if (meter !== zoneBulkMeter) {
+              meters.push(meter);
+            }
+          }
+          // Check if it's a villa meter
+          else if (meter.Type === 'Villa' || 
+                   meter.Label === 'L4 - Villa' ||
+                   meter['Meter Label']?.toLowerCase().includes('villa')) {
+            villasConsumption += consumption;
+            villaCount++;
+            meters.push(meter);
+          }
+          // Regular retail meter
+          else if (meter.Type === 'Retail' || 
+                   meter.Label === 'Retail' ||
+                   meter.Label === 'L5 - Retail') {
+            sumOfIndividualMeters += consumption;
+            if (meter !== zoneBulkMeter) {
+              meters.push(meter);
+            }
+          }
         }
       });
+
+      // Sum of individual meters includes building bulk + villas + retail
+      sumOfIndividualMeters += buildingBulkConsumption + villasConsumption;
     }
 
     const distributionLoss = zoneBulkConsumption - sumOfIndividualMeters;
@@ -319,7 +194,11 @@ export class WaterDataService {
       sumOfIndividualMeters,
       distributionLoss,
       efficiency,
-      meters
+      meters,
+      buildingBulkConsumption,
+      villasConsumption,
+      buildingCount,
+      villaCount
     };
   }
 
@@ -366,9 +245,46 @@ export class WaterDataService {
     };
   }
 
+  // Check if data is loaded
+  hasData(): boolean {
+    return this.isDataLoaded && this.waterMeters.length > 0;
+  }
+
   // Set water meters (for testing or manual data loading)
   setWaterMeters(meters: WaterMeter[]) {
-    this.waterMeters = meters;
+    this.waterMeters = meters.map(meter => ({
+      ...meter,
+      Zone: normalizeZoneName(meter.Zone)
+    }));
+    this.isDataLoaded = true;
+  }
+
+  // Get meters by zone
+  getMetersByZone(zone: string): WaterMeter[] {
+    const normalizedZone = normalizeZoneName(zone);
+    return this.waterMeters.filter(meter => 
+      normalizeZoneName(meter.Zone) === normalizedZone
+    );
+  }
+
+  // Debug method to check zone bulk meters
+  debugZoneBulkMeters(): void {
+    console.log('=== Zone Bulk Meters Debug ===');
+    const zones = this.getAllZones();
+    zones.forEach(zone => {
+      const meters = this.getMetersByZone(zone);
+      const bulkMeters = meters.filter(m => 
+        m.Type === 'Zone Bulk' || 
+        m.Label === 'L2 - Zone Bulk' ||
+        m['Meter Label']?.toLowerCase().includes('bulk')
+      );
+      console.log(`Zone: ${zone}`);
+      console.log(`Total meters: ${meters.length}`);
+      console.log(`Bulk meters found: ${bulkMeters.length}`);
+      bulkMeters.forEach(m => {
+        console.log(`  - ${m['Meter Label']} (Type: ${m.Type}, Label: ${m.Label})`);
+      });
+    });
   }
 }
 
