@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
+import { Bell, Search, Menu, User, Settings } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -32,20 +33,65 @@ const Layout: React.FC<LayoutProps> = ({ children, activeSection, setActiveSecti
   }, []);
 
   return (
-    <div className="flex h-screen bg-background-primary dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar 
         isOpen={isSidebarOpen} 
         setIsOpen={setIsSidebarOpen} 
         activeSection={activeSection} 
         setActiveSection={setActiveSection} 
       />
-      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
-        // Add padding-left on mobile when sidebar is open to prevent content overlap
-        isSidebarOpen && window.innerWidth < 1024 ? 'lg:ml-0' : ''
-      }`}>
-        {/* Add padding top on mobile to account for menu button */}
-        <div className="flex-1 overflow-x-hidden overflow-y-auto pt-16 lg:pt-0">
-          {children}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Modern Top Header Bar */}
+        <header className="bg-[#4E4456] shadow-lg z-40">
+          <div className="flex items-center justify-between p-4">
+            {/* Left side - Menu button and title */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="lg:hidden p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-white">{activeSection}</h1>
+                <p className="text-sm text-gray-300">Muscat Bay Resource Management</p>
+              </div>
+            </div>
+
+            {/* Right side - Actions */}
+            <div className="flex items-center space-x-3">
+              {/* Search button */}
+              <button className="p-2.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors hidden sm:block">
+                <Search className="h-5 w-5" />
+              </button>
+
+              {/* Notifications */}
+              <button className="relative p-2.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
+              </button>
+
+              {/* Settings */}
+              <button className="p-2.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors hidden sm:block">
+                <Settings className="h-5 w-5" />
+              </button>
+
+              {/* User avatar */}
+              <button className="flex items-center space-x-2 p-2 pr-4 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
+                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+                  <User className="h-5 w-5" />
+                </div>
+                <span className="hidden md:block text-sm font-medium">Admin</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Main content area */}
+        <div className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900">
+          <div className="container mx-auto">
+            {children}
+          </div>
         </div>
       </div>
     </div>
