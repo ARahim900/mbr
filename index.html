@@ -12,6 +12,8 @@
           extend: {
             colors: {
               'background-primary': '#F7F8FC',
+              'header-primary': '#4E4456',
+              'header-secondary': '#3A353F',
               'primary': '#0D1A26',
               'primary-light': '#4A5568',
               'primary-dark': '#0D1A26',
@@ -106,6 +108,27 @@
       .month-range-slider [class*="accent"],
       .month-range-slider .bg-accent {
         background-color: #374151 !important;
+      }
+      
+      /* Mobile optimizations */
+      @media (max-width: 640px) {
+        .container {
+          padding: 0;
+        }
+      }
+      
+      /* Pull to refresh indicator */
+      .pull-to-refresh {
+        position: fixed;
+        top: -80px;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: top 0.3s;
+        z-index: 60;
+      }
+      
+      .pull-to-refresh.show {
+        top: 20px;
       }
     </style>
   <script type="importmap">
