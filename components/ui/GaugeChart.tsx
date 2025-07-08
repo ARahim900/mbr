@@ -40,16 +40,17 @@ const RadialProgress: React.FC<GaugeChartProps> = ({ percentage, value, title, s
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-           <span className="text-2xl font-bold text-primary dark:text-white">
-            {isFinite(percentage) ? `${Math.round(percentage)}%` : 'N/A'}
+          <span className="text-xl font-bold text-primary dark:text-white">
+            {value.toLocaleString(undefined, {maximumFractionDigits: 0})}
           </span>
+          <span className="text-sm font-medium text-secondary">{unit}</span>
         </div>
       </div>
       <p className="text-sm font-semibold text-primary dark:text-white leading-tight">{title}</p>
-      <p className="text-lg font-bold" style={{ color }}>
-         {value.toLocaleString(undefined, {maximumFractionDigits: 0})} <span className="text-sm font-medium text-secondary">{unit}</span>
-      </p>
       <p className="text-xs text-secondary dark:text-gray-400">{subtitle}</p>
+      <p className="text-lg font-bold mt-2" style={{ color }}>
+        {isFinite(percentage) ? `${Math.round(percentage)}%` : 'N/A'}
+      </p>
     </div>
   );
 };

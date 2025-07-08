@@ -6,8 +6,8 @@ import { WaterDataEntry } from '../types';
 export const waterRawDataString = `Meter Label,Acct #,Zone,Type,Parent Meter,Label,Jan-25,Feb-25,Mar-25,Apr-25,May-25
 Main Bulk (NAMA),C43659,Main Bulk,Main BULK,NAMA,L1,32580,44043,34915,46039,58425
 ZONE 8 (Bulk Zone 8),4300342,Zone_08,Zone Bulk,Main Bulk (NAMA),L2,1547,1498,2605,3203,2937
-ZONE 3A (Bulk Zone 3A),4300343,Zone_03_(A),Zone Bulk,Main Bulk (NAMA),L2,4235,4273,3591,4041,4898
-ZONE 3B (Bulk Zone 3B),4300344,Zone_03_(B),Zone Bulk,Main Bulk (NAMA),L2,3256,2962,3331,2157,3093
+ZONE 3A (BULK ZONE 3A),4300343,Zone_03_(A),Zone Bulk,Main Bulk (NAMA),L2,4235,4273,3591,4041,4898
+ZONE 3B (BULK ZONE 3B),4300344,Zone_03_(B),Zone Bulk,Main Bulk (NAMA),L2,3256,2962,3331,2157,3093
 ZONE 5 (Bulk Zone 5),4300345,Zone_05,Zone Bulk,Main Bulk (NAMA),L2,4267,4231,3862,3737,3849
 ZONE FM ( BULK ZONE FM ),4300346,Zone_01_(FM),Zone Bulk,Main Bulk (NAMA),L2,2008,1740,1880,1880,1693
 Village Square (Zone Bulk),4300335,Zone_VS,Zone Bulk,Main Bulk (NAMA),L2,14,12,21,13,21
@@ -724,7 +724,7 @@ export const zoneData: any = {
   },
   'Zone_03B': {
     name: 'Zone 03(B)',
-    bulk: 'ZONE 3B (Bulk Zone 3B)',
+    bulk: 'ZONE 3B (BULK ZONE 3B)',
     bulkAccount: '4300344',
     buildingBulkMeters: [
       { label: 'D-52 Building Bulk Meter', account: '4300186', type: 'D_Building_Bulk' },

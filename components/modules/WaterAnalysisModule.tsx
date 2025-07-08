@@ -112,12 +112,17 @@ const WaterAnalysisModule: React.FC = () => {
     start: waterMonthsAvailable[0],
     end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
   });
-  const [selectedZoneForAnalysis, setSelectedZoneForAnalysis] = useState('Zone_FM');
+  const [selectedZoneForAnalysis, setSelectedZoneForAnalysis] = useState('Zone_03A');
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [aiAnalysisResult, setAiAnalysisResult] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [useRangeSelector, setUseRangeSelector] = useState(false);
+  const [zoneAnalysisDateRange, setZoneAnalysisDateRange] = useState({
+    start: waterMonthsAvailable[0],
+    end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
+  });
 
   const [consumptionVisibility, setConsumptionVisibility] = useState({
     'L1 - Main Source': true,
@@ -194,8 +199,89 @@ const WaterAnalysisModule: React.FC = () => {
   }, [selectedWaterMonth]);
 
   const zoneAnalysisData = useMemo(() => {
-    return getZoneAnalysis(selectedZoneForAnalysis, selectedWaterMonth);
-  }, [selectedZoneForAnalysis, selectedWaterMonth]);
+    if (!selectedZoneForAnalysis) return null;
+    
+    if (useRangeSelector) {
+      // For range selector, we need to aggregate data across the selected range
+      const startIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.start);
+      const endIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.end);
+      
+      if (startIndex === -1 || endIndex === -1) return null;
+      
+      const monthsInRange = waterMonthsAvailable.slice(startIndex, endIndex + 1);
+      
+      // Get zone analysis for each month in range and aggregate
+      const monthlyAnalyses = monthsInRange.map(month => getZoneAnalysis(selectedZoneForAnalysis, month));
+      
+      if (monthlyAnalyses.some(analysis => !analysis)) return null;
+      
+      // Aggregate the data
+      const firstAnalysis = monthlyAnalyses[0];
+      const aggregatedData = {
+        ...firstAnalysis,
+        zoneBulkConsumption: monthlyAnalyses.reduce((sum, analysis) => sum + (analysis?.zoneBulkConsumption || 0), 0),
+        totalIndividualConsumption: monthlyAnalyses.reduce((sum, analysis) => sum + (analysis?.totalIndividualConsumption || 0), 0),
+        difference: 0,
+        lossPercentage: 0,
+        efficiency: 0,
+        // Aggregate individual meters data
+        individualMetersData: firstAnalysis?.individualMetersData?.map((meter: any) => ({
+          ...meter,
+          totalConsumption: monthlyAnalyses.reduce((sum, analysis) => {
+            const meterInMonth = analysis?.individualMetersData?.find((m: any) => m.account === meter.account);
+            const monthlyConsumption = Object.values(meterInMonth?.consumption || {}).reduce((a: number, b: number) => a + b, 0);
+            return sum + monthlyConsumption;
+          }, 0),
+          consumption: monthsInRange.reduce((acc: any, month) => {
+            const meterInMonth = analysis?.individualMetersData?.find((m: any) => m.account === meter.account);
+            acc[month] = meterInMonth?.consumption[month] || 0;
+            return acc;
+          }, {})
+        })) || [],
+        // Aggregate building data
+        buildingBulkData: firstAnalysis?.buildingBulkData?.map((building: any) => ({
+          ...building,
+          totalConsumption: monthlyAnalyses.reduce((sum, analysis) => {
+            const buildingInMonth = analysis?.buildingBulkData?.find((b: any) => b.account === building.account);
+            const monthlyConsumption = Object.values(buildingInMonth?.consumption || {}).reduce((a: number, b: number) => a + b, 0);
+            return sum + monthlyConsumption;
+          }, 0),
+          consumption: monthsInRange.reduce((acc: any, month) => {
+            const buildingInMonth = analysis?.buildingBulkData?.find((b: any) => b.account === building.account);
+            acc[month] = buildingInMonth?.consumption[month] || 0;
+            return acc;
+          }, {})
+        })) || [],
+        // Aggregate villa data
+        villaData: firstAnalysis?.villaData?.map((villa: any) => ({
+          ...villa,
+          totalConsumption: monthlyAnalyses.reduce((sum, analysis) => {
+            const villaInMonth = analysis?.villaData?.find((v: any) => v.account === villa.account);
+            const monthlyConsumption = Object.values(villaInMonth?.consumption || {}).reduce((a: number, b: number) => a + b, 0);
+            return sum + monthlyConsumption;
+          }, 0),
+          consumption: monthsInRange.reduce((acc: any, month) => {
+            const villaInMonth = analysis?.villaData?.find((v: any) => v.account === villa.account);
+            acc[month] = villaInMonth?.consumption[month] || 0;
+            return acc;
+          }, {})
+        })) || []
+      };
+      
+      // Recalculate derived values
+      aggregatedData.difference = aggregatedData.zoneBulkConsumption - aggregatedData.totalIndividualConsumption;
+      aggregatedData.lossPercentage = aggregatedData.zoneBulkConsumption > 0 ? 
+        (aggregatedData.difference / aggregatedData.zoneBulkConsumption) * 100 : 0;
+      aggregatedData.efficiency = aggregatedData.zoneBulkConsumption > 0 ? 
+        (aggregatedData.totalIndividualConsumption / aggregatedData.zoneBulkConsumption) * 100 : 0;
+      
+      return aggregatedData;
+    } else {
+      // For single month selector
+      if (!selectedWaterMonth) return null;
+      return getZoneAnalysis(selectedZoneForAnalysis, selectedWaterMonth);
+    }
+  }, [selectedZoneForAnalysis, selectedWaterMonth, useRangeSelector, zoneAnalysisDateRange]);
   
   const resetDateRange = () => {
     setOverviewDateRange({
@@ -415,15 +501,15 @@ Total System Loss: Overall efficiency
                             <Tooltip content={<CustomTooltip />} />
                             
                             {consumptionVisibility['L1 - Main Source'] && <Area type="monotone" dataKey="L1 - Main Source" stroke={COLORS.chart[0]} fillOpacity={1} fill="url(#colorL1)" strokeWidth={2}>
-                                <LabelList dataKey="L1 - Main Source" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: number) => value > 0 ? value.toLocaleString() : ''} />
+                                <LabelList dataKey="L1 - Main Source" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value > 0 ? value.toLocaleString() : ''} />
                             </Area>}
 
                             {consumptionVisibility['L2 - Zone Bulk Meters'] && <Area type="monotone" dataKey="L2 - Zone Bulk Meters" stroke={COLORS.chart[1]} fillOpacity={1} fill="url(#colorL2)" strokeWidth={2}>
-                                <LabelList dataKey="L2 - Zone Bulk Meters" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: number) => value > 0 ? value.toLocaleString() : ''} />
+                                <LabelList dataKey="L2 - Zone Bulk Meters" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value > 0 ? value.toLocaleString() : ''} />
                             </Area>}
 
                             {consumptionVisibility['L3 - Building/Villa Meters'] && <Area type="monotone" dataKey="L3 - Building/Villa Meters" stroke={COLORS.chart[2]} fillOpacity={1} fill="url(#colorL3)" strokeWidth={2}>
-                                <LabelList dataKey="L3 - Building/Villa Meters" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: number) => value > 0 ? value.toLocaleString() : ''} />
+                                <LabelList dataKey="L3 - Building/Villa Meters" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value > 0 ? value.toLocaleString() : ''} />
                             </Area>}
                         </AreaChart>
                     </ResponsiveContainer>
@@ -456,15 +542,15 @@ Total System Loss: Overall efficiency
                             <Tooltip content={<CustomTooltip />} />
                             
                             {lossVisibility['Stage 1 Loss'] && <Area type="monotone" dataKey="Stage 1 Loss" stroke={'#991B1B'} fillOpacity={1} fill="url(#colorS1)" strokeWidth={2}>
-                                <LabelList dataKey="Stage 1 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: number) => value !== 0 ? value.toLocaleString() : ''} />
+                                <LabelList dataKey="Stage 1 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value !== 0 ? value.toLocaleString() : ''} />
                             </Area>}
 
                             {lossVisibility['Stage 2 Loss'] && <Area type="monotone" dataKey="Stage 2 Loss" stroke={'#DC2626'} fillOpacity={1} fill="url(#colorS2)" strokeWidth={2}>
-                                <LabelList dataKey="Stage 2 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: number) => value !== 0 ? value.toLocaleString() : ''} />
+                                <LabelList dataKey="Stage 2 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value !== 0 ? value.toLocaleString() : ''} />
                             </Area>}
                             
                             {lossVisibility['Stage 3 Loss'] && <Area type="monotone" dataKey="Stage 3 Loss" stroke={'#F87171'} fillOpacity={1} fill="url(#colorS3)" strokeWidth={2}>
-                                <LabelList dataKey="Stage 3 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: number) => value !== 0 ? value.toLocaleString() : ''} />
+                                <LabelList dataKey="Stage 3 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value !== 0 ? value.toLocaleString() : ''} />
                             </Area>}
                         </AreaChart>
                     </ResponsiveContainer>
@@ -540,64 +626,132 @@ Total System Loss: Overall efficiency
       
       {activeWaterSubSection === 'ZoneAnalysis' && (
         <>
-          {/* Zone Analysis Filter */}
+          {/* Zone Analysis Filter - RESTORED ORIGINAL DESIGN */}
           <div className="bg-white dark:bg-gray-800 shadow p-4 rounded-lg mb-6 print:hidden border border-neutral-border dark:border-gray-600">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Select Month</label>
-                <div className="relative">
-                  <select 
-                    value={selectedWaterMonth} 
-                    onChange={(e) => setSelectedWaterMonth(e.target.value)} 
-                    className="appearance-none w-full p-2.5 pr-10 border border-neutral-border dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:outline-none bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-                  >
-                    {waterMonthsAvailable.map(month => ( 
-                      <option key={month} value={month}>{month}</option> 
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-gray-400">
-                    <CalendarDays size={16} />
-                  </div>
-                </div>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Filter Options</h3>
+              <div className="flex items-center space-x-2">
+                <label className="text-sm text-gray-600 dark:text-gray-400">Range Selection</label>
+                <button
+                  onClick={() => setUseRangeSelector(!useRangeSelector)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    useRangeSelector ? 'bg-accent' : 'bg-gray-200 dark:bg-gray-700'
+                  }`}
+                >
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    useRangeSelector ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+                </button>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Filter by Zone</label>
-                <div className="relative">
-                  <select 
-                    value={selectedZoneForAnalysis} 
-                    onChange={(e) => setSelectedZoneForAnalysis(e.target.value)} 
-                    className="appearance-none w-full p-2.5 pr-10 border border-neutral-border dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:outline-none bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-                  >
-                    {getAvailableZones().map(zone => ( 
-                      <option key={zone.key} value={zone.key}>{zone.name}</option> 
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-gray-400">
-                    <Building size={16} />
-                  </div>
-                </div>
-              </div>
-              
-              <button 
-                onClick={() => {
-                  setSelectedWaterMonth('May-25');
-                  setSelectedZoneForAnalysis('Zone_FM');
-                }} 
-                className="bg-primary dark:bg-blue-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2 h-[46px] w-full hover:shadow-lg" 
-              > 
-                <Filter size={16}/> 
-                <span>Reset Filters</span> 
-              </button>
             </div>
+            
+            {useRangeSelector ? (
+              <div className="space-y-4">
+                <MonthRangeSlider 
+                  months={waterMonthsAvailable} 
+                  value={zoneAnalysisDateRange} 
+                  onChange={setZoneAnalysisDateRange}
+                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Filter by Zone</label>
+                    <div className="relative">
+                      <select
+                        value={selectedZoneForAnalysis} 
+                        onChange={(e) => setSelectedZoneForAnalysis(e.target.value)} 
+                        className="appearance-none w-full p-2.5 pr-10 border border-neutral-border dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:outline-none bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                      >
+                        {getAvailableZones().map(zone => ( 
+                          <option key={zone.key} value={zone.key}>{zone.name}</option> 
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-gray-400">
+                        <Building size={16} />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={() => {
+                      setZoneAnalysisDateRange({
+                        start: waterMonthsAvailable[0],
+                        end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
+                      });
+                      setSelectedZoneForAnalysis('Zone_03A');
+                    }} 
+                    className="bg-primary dark:bg-blue-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2 h-[46px] w-full hover:shadow-lg" 
+                  > 
+                    <Filter size={16}/> 
+                    <span>Reset Filters</span> 
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Select Month</label>
+                  <div className="relative">
+                    <select
+                      value={selectedWaterMonth} 
+                      onChange={(e) => setSelectedWaterMonth(e.target.value)} 
+                      className="appearance-none w-full p-2.5 pr-10 border border-neutral-border dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:outline-none bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                    >
+                      {waterMonthsAvailable.map(month => ( 
+                        <option key={month} value={month}>{month}</option> 
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-gray-400">
+                      <CalendarDays size={16} />
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Filter by Zone</label>
+                  <div className="relative">
+                    <select
+                      value={selectedZoneForAnalysis} 
+                      onChange={(e) => setSelectedZoneForAnalysis(e.target.value)} 
+                      className="appearance-none w-full p-2.5 pr-10 border border-neutral-border dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:outline-none bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                    >
+                      {getAvailableZones().map(zone => ( 
+                        <option key={zone.key} value={zone.key}>{zone.name}</option> 
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 dark:text-gray-400">
+                      <Building size={16} />
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    setSelectedWaterMonth('May-25');
+                    setSelectedZoneForAnalysis('Zone_03A');
+                  }} 
+                  className="bg-primary dark:bg-blue-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2 h-[46px] w-full hover:shadow-lg" 
+                > 
+                  <Filter size={16}/> 
+                  <span>Reset Filters</span> 
+                </button>
+              </div>
+            )}
           </div>
 
-          {zoneAnalysisData && (
+          {/* Zone Analysis Data Display */}
+          {!zoneAnalysisData ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400">Loading zone analysis data...</p>
+              </div>
+            </div>
+          ) : (
             <>
               {/* Zone Analysis Header */}
               <div className="mb-6 text-center">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-                  {zoneAnalysisData.zone.name} Analysis for {selectedWaterMonth}
+                  {zoneAnalysisData.zone?.name || 'Zone'} Analysis for {useRangeSelector ? `${zoneAnalysisDateRange.start} to ${zoneAnalysisDateRange.end}` : selectedWaterMonth}
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
                   {zoneAnalysisData.isDirectConnection ? 
@@ -609,7 +763,7 @@ Total System Loss: Overall efficiency
                 </p>
               </div>
 
-              {/* Gauge Charts Section */}
+              {/* Gauge Charts Section - RESTORED */}
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Water Consumption Analysis</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-neutral-border dark:border-gray-600">
@@ -625,7 +779,7 @@ Total System Loss: Overall efficiency
                         size={140}
                       />
                       <GaugeChart
-                        percentage={zoneAnalysisData.mainBulkUsagePercent}
+                        percentage={zoneAnalysisData.mainBulkUsagePercent || 0}
                         value={zoneAnalysisData.totalIndividualConsumption}
                         title="Direct Connections"
                         subtitle="Total DC Consumption"
@@ -633,7 +787,7 @@ Total System Loss: Overall efficiency
                         size={140}
                       />
                       <GaugeChart
-                        percentage={100 - zoneAnalysisData.mainBulkUsagePercent}
+                        percentage={100 - (zoneAnalysisData.mainBulkUsagePercent || 0)}
                         value={zoneAnalysisData.zoneBulkConsumption - zoneAnalysisData.totalIndividualConsumption}
                         title="Other Zones Usage"
                         subtitle="Remaining Consumption"
@@ -641,61 +795,32 @@ Total System Loss: Overall efficiency
                         size={140}
                       />
                     </>
-                  ) : zoneAnalysisData.hasBuildings ? (
-                    <>
-                      {/* For zones with buildings - show Zone, Buildings, Villas */}
-                      <GaugeChart
-                        percentage={100}
-                        value={zoneAnalysisData.zoneBulkConsumption}
-                        title="Zone Bulk"
-                        subtitle={`${zoneAnalysisData.zone.name} Total`}
-                        color="#1D4ED8"
-                        size={140}
-                      />
-                      <GaugeChart
-                        percentage={zoneAnalysisData.zoneBulkConsumption > 0 ? 
-                          (zoneAnalysisData.totalBuildingConsumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0}
-                        value={zoneAnalysisData.totalBuildingConsumption}
-                        title="Building Bulk"
-                        subtitle={`${zoneAnalysisData.buildingBulkData.length} Buildings`}
-                        color="#3B82F6"
-                        size={140}
-                      />
-                      <GaugeChart
-                        percentage={zoneAnalysisData.zoneBulkConsumption > 0 ? 
-                          (zoneAnalysisData.totalVillaConsumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0}
-                        value={zoneAnalysisData.totalVillaConsumption}
-                        title="Villas"
-                        subtitle={`${zoneAnalysisData.villaData.length} Villas`}
-                        color="#60A5FA"
-                        size={140}
-                      />
-                    </>
                   ) : (
                     <>
-                      {/* For regular zones - show Zone Bulk vs Individual meters */}
+                      {/* For all zones - show Zone Bulk, Sum of Individual Meters, and Water Loss */}
                       <GaugeChart
                         percentage={100}
                         value={zoneAnalysisData.zoneBulkConsumption}
-                        title="Zone Bulk Consumption"
+                        title="Zone Bulk Meter"
                         subtitle={`${zoneAnalysisData.zone.name} Total`}
                         color="#1D4ED8"
                         size={140}
                       />
                       <GaugeChart
-                        percentage={zoneAnalysisData.efficiency}
+                        percentage={zoneAnalysisData.zoneBulkConsumption > 0 ? 
+                          (zoneAnalysisData.totalIndividualConsumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0}
                         value={zoneAnalysisData.totalIndividualConsumption}
-                        title="Sum of Individual Meters"
-                        subtitle="Total L3 Consumption"
+                        title="Individual Meters Sum"
+                        subtitle="Total Consumption"
                         color="#3B82F6"
                         size={140}
                       />
                       <GaugeChart
                         percentage={Math.abs(zoneAnalysisData.lossPercentage)}
                         value={Math.abs(zoneAnalysisData.difference)}
-                        title={zoneAnalysisData.difference < 0 ? "Meter Variance" : "Distribution Loss"}
-                        subtitle="from Zone Bulk"
-                        color={"#EF4444"}
+                        title="Water Loss"
+                        subtitle="Distribution Loss"
+                        color="#EF4444"
                         size={140}
                       />
                     </>
@@ -703,276 +828,315 @@ Total System Loss: Overall efficiency
                 </div>
               </div>
 
-              {/* Zone Details Table */}
-              {zoneAnalysisData.hasBuildings ? (
-                <>
-                  {/* Building Bulk Meters Table */}
-                  <div className="bg-white dark:bg-gray-800 shadow rounded-lg border border-neutral-border dark:border-gray-600 mb-6">
-                    <div className="p-6 border-b border-neutral-border dark:border-gray-600">
+              {/* Zone Consumption Trend Chart - NEW */}
+              <div className="mb-8">
+                <ChartCard title="Zone Consumption Trend" subtitle="Monthly comparison of zone bulk meter vs individual meters total">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={(() => {
+                      // Generate trend data for all months
+                      return waterMonthsAvailable.map(month => {
+                        const monthAnalysis = getZoneAnalysis(selectedZoneForAnalysis, month);
+                        return {
+                          name: month,
+                          'Zone Bulk': monthAnalysis?.zoneBulkConsumption || 0,
+                          'Individual Total': monthAnalysis?.totalIndividualConsumption || 0,
+                          'Water Loss': Math.abs((monthAnalysis?.zoneBulkConsumption || 0) - (monthAnalysis?.totalIndividualConsumption || 0))
+                        };
+                      });
+                    })()} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorZoneBulk" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#1D4ED8" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#1D4ED8" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorIndividual" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend />
+                      <Area type="monotone" dataKey="Zone Bulk" stroke="#1D4ED8" fillOpacity={1} fill="url(#colorZoneBulk)" />
+                      <Area type="monotone" dataKey="Individual Total" stroke="#3B82F6" fillOpacity={1} fill="url(#colorIndividual)" />
+                      <Area type="monotone" dataKey="Water Loss" stroke="#EF4444" fillOpacity={1} fill="url(#colorLoss)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+              </div>
+
+              {/* Zone Summary Cards - Keep existing */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <MetricCard 
+                  title={zoneAnalysisData.isDirectConnection ? "Main Source Total" : "Zone Bulk Meter"} 
+                  value={zoneAnalysisData.zoneBulkConsumption.toLocaleString()} 
+                  unit="m³" 
+                  icon={Droplets} 
+                  subtitle={zoneAnalysisData.zone.name} 
+                  iconColor="text-blue-600" 
+                />
+                <MetricCard 
+                  title="Individual Meters Total" 
+                  value={zoneAnalysisData.totalIndividualConsumption.toLocaleString()} 
+                  unit="m³" 
+                  icon={Building2} 
+                  subtitle={`${
+                    zoneAnalysisData.hasBuildings 
+                      ? `${(zoneAnalysisData.buildingBulkData || []).length} buildings, ${(zoneAnalysisData.villaData || []).length} villas`
+                      : `${(zoneAnalysisData.individualMetersData || []).length} meters`
+                  }`} 
+                  iconColor="text-green-600" 
+                />
+                <MetricCard 
+                  title="Water Loss/Variance" 
+                  value={Math.abs(zoneAnalysisData.difference).toFixed(0)} 
+                  unit="m³" 
+                  icon={TrendingUp} 
+                  subtitle={`${Math.abs(zoneAnalysisData.lossPercentage).toFixed(1)}% variance`} 
+                  iconColor={zoneAnalysisData.difference < 0 ? "text-orange-600" : "text-red-600"} 
+                />
+                <MetricCard 
+                  title="Zone Efficiency" 
+                  value={`${zoneAnalysisData.efficiency.toFixed(1)}%`} 
+                  unit="" 
+                  icon={CheckCircle} 
+                  subtitle="Meter coverage" 
+                  iconColor={zoneAnalysisData.efficiency > 90 ? "text-green-600" : "text-yellow-600"} 
+                />
+              </div>
+
+              {/* Zone Analysis Table */}
+              <div className="bg-white dark:bg-gray-800 shadow rounded-lg border border-neutral-border dark:border-gray-600">
+                <div className="p-6 border-b border-neutral-border dark:border-gray-600">
+                  <div className="flex justify-between items-start">
+                    <div>
                       <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                        Building Bulk Meters - {zoneAnalysisData.zone.name}
+                        Individual Meters - {zoneAnalysisData.zone.name}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {zoneAnalysisData.buildingBulkData.length} building bulk meters
+                        All individual meters in this {zoneAnalysisData.isDirectConnection ? 'connection group' : 'zone'} with monthly consumption data
                       </p>
                     </div>
-                    
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
-                          <tr>
-                            <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Building Meter</th>
-                            <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Account #</th>
-                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Consumption (m³)</th>
-                            <th className="text-center p-4 font-semibold text-gray-700 dark:text-gray-200">% of Zone</th>
-                            <th className="text-center p-4 font-semibold text-gray-700 dark:text-gray-200">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {zoneAnalysisData.buildingBulkData
-                            .sort((a: any, b: any) => b.consumption - a.consumption)
-                            .map((building: any) => {
-                              const percentage = zoneAnalysisData.zoneBulkConsumption > 0 ? 
-                                (building.consumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0;
-                              
-                              return (
-                                <tr key={building.account} className="border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                  <td className="p-4 font-medium text-gray-800 dark:text-gray-200">{building.label}</td>
-                                  <td className="p-4 text-gray-600 dark:text-gray-400">{building.account}</td>
-                                  <td className="p-4 text-right font-semibold text-gray-800 dark:text-gray-200">
-                                    {building.consumption.toLocaleString()}
-                                  </td>
-                                  <td className="p-4 text-center">
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                      percentage > 10 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                                      percentage > 5 ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                                      'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                    }`}>
-                                      {percentage.toFixed(1)}%
-                                    </span>
-                                  </td>
-                                  <td className="p-4 text-center">
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                      building.consumption === 0 ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300' :
-                                      building.consumption > 100 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                                      'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                    }`}>
-                                      {building.consumption === 0 ? 'No Usage' : 'Active'}
-                                    </span>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                        </tbody>
-                      </table>
-                    </div>
                   </div>
-
-                  {/* Villa Meters Table */}
-                  <div className="bg-white dark:bg-gray-800 shadow rounded-lg border border-neutral-border dark:border-gray-600">
-                    <div className="p-6 border-b border-neutral-border dark:border-gray-600">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                        Villa Meters - {zoneAnalysisData.zone.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {zoneAnalysisData.villaData.length} individual villas
-                      </p>
-                    </div>
-                    
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
-                          <tr>
-                            <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Villa</th>
-                            <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Account #</th>
-                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Consumption (m³)</th>
-                            <th className="text-center p-4 font-semibold text-gray-700 dark:text-gray-200">% of Zone</th>
-                            <th className="text-center p-4 font-semibold text-gray-700 dark:text-gray-200">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {zoneAnalysisData.villaData
-                            .sort((a: any, b: any) => b.consumption - a.consumption)
-                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                            .map((villa: any) => {
-                              const percentage = zoneAnalysisData.zoneBulkConsumption > 0 ? 
-                                (villa.consumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0;
-                              
-                              return (
-                                <tr key={villa.account} className="border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                  <td className="p-4 font-medium text-gray-800 dark:text-gray-200">{villa.label}</td>
-                                  <td className="p-4 text-gray-600 dark:text-gray-400">{villa.account}</td>
-                                  <td className="p-4 text-right font-semibold text-gray-800 dark:text-gray-200">
-                                    {villa.consumption.toLocaleString()}
-                                  </td>
-                                  <td className="p-4 text-center">
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                      percentage > 10 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                                      percentage > 5 ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                                      'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                    }`}>
-                                      {percentage.toFixed(1)}%
-                                    </span>
-                                  </td>
-                                  <td className="p-4 text-center">
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                      villa.consumption === 0 ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300' :
-                                      villa.consumption > 500 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                                      villa.consumption > 200 ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                                      'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                    }`}>
-                                      {villa.consumption === 0 ? 'No Usage' :
-                                       villa.consumption > 500 ? 'High' :
-                                       villa.consumption > 200 ? 'Medium' : 'Normal'}
-                                    </span>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Pagination for villas */}
-                    {zoneAnalysisData.villaData.length > itemsPerPage && (
-                      <div className="p-4 border-t border-neutral-border dark:border-gray-600 bg-white dark:bg-gray-800">
-                        <div className="flex items-center justify-between">
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
-                            Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, zoneAnalysisData.villaData.length)} of {zoneAnalysisData.villaData.length} villas
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                              disabled={currentPage === 1}
-                              className={`px-3 py-1 rounded text-sm ${
-                                currentPage === 1 
-                                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' 
-                                  : 'bg-white dark:bg-gray-700 border border-neutral-border dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                              }`}
-                            >
-                              Previous
-                            </button>
-                            
-                            <button
-                              onClick={() => setCurrentPage(Math.min(Math.ceil(zoneAnalysisData.villaData.length / itemsPerPage), currentPage + 1))}
-                              disabled={currentPage === Math.ceil(zoneAnalysisData.villaData.length / itemsPerPage)}
-                              className={`px-3 py-1 rounded text-sm ${
-                                currentPage === Math.ceil(zoneAnalysisData.villaData.length / itemsPerPage) 
-                                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' 
-                                  : 'bg-white dark:bg-gray-700 border border-neutral-border dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                              }`}
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                /* Regular zone table without buildings */
-                <div className="bg-white dark:bg-gray-800 shadow rounded-lg border border-neutral-border dark:border-gray-600">
-                  <div className="p-6 border-b border-neutral-border dark:border-gray-600">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                          {zoneAnalysisData.zone.name} - Meter Details for {selectedWaterMonth}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          {zoneAnalysisData.individualMetersData.length} meters in this {zoneAnalysisData.isDirectConnection ? 'connection group' : 'zone'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead className="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                          <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Meter Label</th>
-                          <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Account #</th>
-                          <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Type</th>
-                          <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Consumption (m³)</th>
-                          <th className="text-center p-4 font-semibold text-gray-700 dark:text-gray-200">% of {zoneAnalysisData.isDirectConnection ? 'Total DC' : 'Zone Total'}</th>
-                          <th className="text-center p-4 font-semibold text-gray-700 dark:text-gray-200">Status</th>
+                </div>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
+                      <tr>
+                        <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200 sticky left-0 bg-gray-50 dark:bg-gray-700 z-10">Meter Label</th>
+                        <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Account #</th>
+                        <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Type</th>
+                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Jan-25</th>
+                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Feb-25</th>
+                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Mar-25</th>
+                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Apr-25</th>
+                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">May-25</th>
+                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Total</th>
+                        <th className="text-center p-4 font-semibold text-gray-700 dark:text-gray-200">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Zone Bulk Meter Row (if not Direct Connection) */}
+                      {!zoneAnalysisData.isDirectConnection && zoneAnalysisData.zone.bulk && (
+                        <tr className="border-b border-neutral-border dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
+                          <td className="p-4 font-semibold text-blue-800 dark:text-blue-200 sticky left-0 bg-blue-50 dark:bg-blue-900/20">{zoneAnalysisData.zone.bulk}</td>
+                          <td className="p-4 text-blue-700 dark:text-blue-300">{zoneAnalysisData.zone.bulkAccount}</td>
+                          <td className="p-4 text-blue-700 dark:text-blue-300">Zone Bulk</td>
+                          {waterMonthsAvailable.map(month => {
+                            const zoneBulkMeter = waterSystemData.find(item => item.meterLabel === zoneAnalysisData.zone.bulk);
+                            return (
+                              <td key={month} className="p-4 text-right font-semibold text-blue-800 dark:text-blue-200">
+                                {(zoneBulkMeter?.consumption[month] || 0).toLocaleString()}
+                              </td>
+                            );
+                          })}
+                          <td className="p-4 text-right font-bold text-blue-800 dark:text-blue-200">
+                            {(() => {
+                              const zoneBulkMeter = waterSystemData.find(item => item.meterLabel === zoneAnalysisData.zone.bulk);
+                              return (zoneBulkMeter?.totalConsumption || 0).toLocaleString();
+                            })()}
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                              L2 - Zone Bulk
+                            </span>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {/* Zone Bulk Meter Row (if not Direct Connection) */}
-                        {!zoneAnalysisData.isDirectConnection && (
-                          <tr className="border-b border-neutral-border dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
-                            <td className="p-4 font-semibold text-blue-800 dark:text-blue-200">{zoneAnalysisData.zone.bulk}</td>
-                            <td className="p-4 text-blue-700 dark:text-blue-300">{zoneAnalysisData.zone.bulkAccount}</td>
-                            <td className="p-4 text-blue-700 dark:text-blue-300">Zone Bulk</td>
-                            <td className="p-4 text-right font-semibold text-blue-800 dark:text-blue-200">
-                              {zoneAnalysisData.zoneBulkConsumption.toLocaleString()}
-                            </td>
-                            <td className="p-4 text-center">
-                              <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                                100.0%
-                              </span>
-                            </td>
-                            <td className="p-4 text-center">
-                              <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                                L2 - Zone Bulk
-                              </span>
-                            </td>
-                          </tr>
-                        )}
+                      )}
+                      
+                      {/* All Individual Meters (including buildings and villas) */}
+                      {(() => {
+                        // Combine all meter data based on zone type
+                        let allMeters: any[] = [];
                         
-                        {/* Individual Meters */}
-                        {zoneAnalysisData.individualMetersData
-                          .sort((a: any, b: any) => b.consumption - a.consumption)
+                        if (zoneAnalysisData.hasBuildings) {
+                          // For zones with buildings (Zone 3A, 3B)
+                          // First add building bulk meters
+                          const buildingRows: any[] = [];
+                          (zoneAnalysisData.buildingBulkData || []).forEach((building: any) => {
+                            const buildingMeterData = building.meterData || waterSystemData.find(item => item.acctNo === building.account);
+                            
+                            // Add the building bulk meter
+                            buildingRows.push({
+                              ...building,
+                              consumption: buildingMeterData?.consumption || {},
+                              totalConsumption: buildingMeterData?.totalConsumption || 0,
+                              isBuilding: true
+                            });
+                            
+                            // Find and add all apartments under this building
+                            const buildingLabel = building.label;
+                            const apartments = waterSystemData.filter(item => 
+                              item.label === 'L4' && item.parentMeter === buildingLabel
+                            );
+                            
+                            apartments.forEach(apt => {
+                              buildingRows.push({
+                                label: apt.meterLabel,
+                                account: apt.acctNo,
+                                type: apt.type,
+                                consumption: apt.consumption,
+                                totalConsumption: apt.totalConsumption,
+                                isApartment: true,
+                                parentBuilding: buildingLabel
+                              });
+                            });
+                          });
+                          
+                          // Then add villas and other meters
+                          allMeters = [
+                            ...buildingRows,
+                            ...(zoneAnalysisData.villaData || []).map((villa: any) => {
+                              const villaData = villa.meterData || waterSystemData.find(item => item.acctNo === villa.account);
+                              return {
+                                ...villa,
+                                consumption: villaData?.consumption || {},
+                                totalConsumption: villaData?.totalConsumption || 0
+                              };
+                            }),
+                            ...(zoneAnalysisData.otherData || []).map((other: any) => {
+                              const otherData = other.meterData || waterSystemData.find(item => item.acctNo === other.account);
+                              return {
+                                ...other,
+                                consumption: otherData?.consumption || {},
+                                totalConsumption: otherData?.totalConsumption || 0
+                              };
+                            })
+                          ];
+                        } else {
+                          // For regular zones
+                          allMeters = (zoneAnalysisData.individualMetersData || []).map((meter: any) => {
+                            const meterDataFromDB = meter.meterData || waterSystemData.find(item => item.acctNo === meter.account);
+                            return {
+                              ...meter,
+                              consumption: meterDataFromDB?.consumption || {},
+                              totalConsumption: meterDataFromDB?.totalConsumption || 0
+                            };
+                          });
+                        }
+                        
+                        return allMeters
                           .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                           .map((meter: any) => {
+                            const currentMonthConsumption = meter.consumption[selectedWaterMonth] || 0;
                             const percentage = zoneAnalysisData.isDirectConnection ? 
-                              (zoneAnalysisData.totalIndividualConsumption > 0 ? (meter.consumption / zoneAnalysisData.totalIndividualConsumption) * 100 : 0) :
-                              (zoneAnalysisData.zoneBulkConsumption > 0 ? (meter.consumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0);
+                              (zoneAnalysisData.totalIndividualConsumption > 0 ? (currentMonthConsumption / zoneAnalysisData.totalIndividualConsumption) * 100 : 0) :
+                              (zoneAnalysisData.zoneBulkConsumption > 0 ? (currentMonthConsumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0);
                             
                             return (
-                              <tr key={meter.account} className="border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td className="p-4 font-medium text-gray-800 dark:text-gray-200">{meter.label}</td>
+                              <tr key={meter.account} className={`border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                                meter.isBuilding ? 'bg-purple-50 dark:bg-purple-900/20' : 
+                                meter.isApartment ? 'pl-8' : ''
+                              }`}>
+                                <td className={`p-4 font-medium text-gray-800 dark:text-gray-200 sticky left-0 ${
+                                  meter.isBuilding ? 'bg-purple-50 dark:bg-purple-900/20' : 
+                                  'bg-white dark:bg-gray-800'
+                                }`}>
+                                  {meter.isApartment && <span className="text-gray-400 mr-2">└</span>}
+                                  {meter.label}
+                                </td>
                                 <td className="p-4 text-gray-600 dark:text-gray-400">{meter.account}</td>
                                 <td className="p-4 text-gray-600 dark:text-gray-400">{meter.type}</td>
-                                <td className="p-4 text-right font-semibold text-gray-800 dark:text-gray-200">
-                                  {meter.consumption.toLocaleString()}
+                                {waterMonthsAvailable.map(month => (
+                                  <td key={month} className="p-4 text-right text-gray-800 dark:text-gray-200">
+                                    {(meter.consumption[month] || 0).toLocaleString()}
+                                  </td>
+                                ))}
+                                <td className="p-4 text-right font-bold text-gray-800 dark:text-gray-200">
+                                  {meter.totalConsumption.toLocaleString()}
                                 </td>
                                 <td className="p-4 text-center">
                                   <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                    percentage > 20 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                                    percentage > 10 ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                                    percentage > 5 ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
-                                    'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300'
-                                  }`}>
-                                    {percentage.toFixed(1)}%
-                                  </span>
-                                </td>
-                                <td className="p-4 text-center">
-                                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                    meter.consumption === 0 ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300' :
-                                    meter.consumption > 1000 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                                    meter.consumption > 500 ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                                    meter.isBuilding ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200' :
+                                    currentMonthConsumption === 0 ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300' :
+                                    currentMonthConsumption > 1000 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                                    currentMonthConsumption > 500 ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
                                     'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
                                   }`}>
-                                    {meter.consumption === 0 ? 'No Usage' :
-                                     meter.consumption > 1000 ? 'High' :
-                                     meter.consumption > 500 ? 'Medium' : 'Normal'}
+                                    {meter.isBuilding ? 'L3 - Building' :
+                                     meter.isApartment ? 'L4 - Apartment' :
+                                     currentMonthConsumption === 0 ? 'No Usage' :
+                                     currentMonthConsumption > 1000 ? 'High' :
+                                     currentMonthConsumption > 500 ? 'Medium' : 'Normal'}
                                   </span>
                                 </td>
                               </tr>
                             );
-                          })}
-                      </tbody>
-                    </table>
-                  </div>
+                          });
+                      })()}
+                    </tbody>
+                  </table>
+                </div>
 
-                  {/* Pagination Controls */}
-                  {zoneAnalysisData.individualMetersData.length > itemsPerPage && (
+                {/* Pagination Controls */}
+                {(() => {
+                  let allMeters: any[] = [];
+                  
+                  if (zoneAnalysisData.hasBuildings) {
+                    // For zones with buildings (Zone 3A, 3B)
+                    const buildingRows: any[] = [];
+                    (zoneAnalysisData.buildingBulkData || []).forEach((building: any) => {
+                      // Add the building bulk meter
+                      buildingRows.push(building);
+                      
+                      // Find and add all apartments under this building
+                      const buildingLabel = building.label;
+                      const apartments = waterSystemData.filter(item => 
+                        item.label === 'L4' && item.parentMeter === buildingLabel
+                      );
+                      
+                      apartments.forEach(apt => {
+                        buildingRows.push({
+                          account: apt.acctNo
+                        });
+                      });
+                    });
+                    
+                    allMeters = [
+                      ...buildingRows,
+                      ...(zoneAnalysisData.villaData || []),
+                      ...(zoneAnalysisData.otherData || [])
+                    ];
+                  } else {
+                    // For regular zones
+                    allMeters = zoneAnalysisData.individualMetersData || [];
+                  }
+                  
+                  const totalMeters = allMeters.length;
+                  const totalPages = Math.ceil(totalMeters / itemsPerPage);
+                  
+                  return totalMeters > itemsPerPage ? (
                     <div className="p-4 border-t border-neutral-border dark:border-gray-600 bg-white dark:bg-gray-800">
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                          Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, zoneAnalysisData.individualMetersData.length)} of {zoneAnalysisData.individualMetersData.length} meters
+                          Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalMeters)} of {totalMeters} meters
                         </div>
                         <div className="flex items-center space-x-2">
                           <button
@@ -988,54 +1152,52 @@ Total System Loss: Overall efficiency
                           </button>
                           
                           <button
-                            onClick={() => setCurrentPage(Math.min(Math.ceil(zoneAnalysisData.individualMetersData.length / itemsPerPage), currentPage + 1))}
-                            disabled={currentPage === Math.ceil(zoneAnalysisData.individualMetersData.length / itemsPerPage)}
+                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                            disabled={currentPage === totalPages}
                             className={`px-3 py-1 rounded text-sm ${
-                              currentPage === Math.ceil(zoneAnalysisData.individualMetersData.length / itemsPerPage) 
+                              currentPage === totalPages 
                                 ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' 
                                 : 'bg-white dark:bg-gray-700 border border-neutral-border dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                              }`}
+                            }`}
                           >
                             Next
                           </button>
                         </div>
                       </div>
                     </div>
-                  )}
+                  ) : null;
+                })()}
 
-                  {/* Summary Footer */}
-                  <div className="p-4 bg-gray-50 dark:bg-gray-700 border-t border-neutral-border dark:border-gray-600">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                      <div className="text-center">
-                        <p className="font-semibold text-gray-800 dark:text-gray-200">
-                          {zoneAnalysisData.isDirectConnection ? 'Total DC Consumption' : 'Zone Individual Total'}
-                        </p>
-                        <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                          {zoneAnalysisData.totalIndividualConsumption.toLocaleString()} m³
-                        </p>
-                      </div>
-                      {!zoneAnalysisData.isDirectConnection && (
-                        <>
-                          <div className="text-center">
-                            <p className="font-semibold text-gray-800 dark:text-gray-200">Zone Efficiency</p>
-                            <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                              {zoneAnalysisData.efficiency.toFixed(1)}%
-                            </p>
-                          </div>
-                          <div className="text-center">
-                            <p className="font-semibold text-gray-800 dark:text-gray-200">
-                              {zoneAnalysisData.difference < 0 ? 'Meter Variance' : 'Zone Loss'}
-                            </p>
-                            <p className={`text-xl font-bold ${zoneAnalysisData.difference < 0 ? 'text-orange-600' : 'text-red-600'}`}>
-                              {Math.abs(zoneAnalysisData.difference).toFixed(0)} m³
-                            </p>
-                          </div>
-                        </>
-                      )}
+                {/* Summary Footer */}
+                <div className="p-4 bg-gray-50 dark:bg-gray-700 border-t border-neutral-border dark:border-gray-600">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                    <div className="text-center">
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        Zone Bulk Total
+                      </p>
+                      <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                        {zoneAnalysisData.zoneBulkConsumption.toLocaleString()} m³
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        Individual Meters Total
+                      </p>
+                      <p className="text-xl font-bold text-green-600 dark:text-green-400">
+                        {zoneAnalysisData.totalIndividualConsumption.toLocaleString()} m³
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        Water Loss
+                      </p>
+                      <p className="text-xl font-bold text-red-600 dark:text-red-400">
+                        {Math.abs(zoneAnalysisData.difference).toFixed(0)} m³ ({Math.abs(zoneAnalysisData.lossPercentage).toFixed(1)}%)
+                      </p>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </>
           )}
         </>
@@ -1072,7 +1234,7 @@ Total System Loss: Overall efficiency
                                 <tr key={row.type} className="border-b border-neutral-border dark:border-gray-700">
                                     <td className="p-3 font-medium text-primary dark:text-gray-200">{row.type}</td>
                                     {byTypeData.months.map(month => (
-                                        <td key={month} className="p-3 text-right text-secondary dark:text-gray-400">{row[month].toLocaleString()}</td>
+                                        <td key={month} className="p-3 text-right text-secondary dark:text-gray-400">{(row as any)[month].toLocaleString()}</td>
                                     ))}
                                     <td className="p-3 text-right font-bold text-primary dark:text-white">{row.total.toLocaleString()}</td>
                                     <td className="p-3 text-right text-secondary dark:text-gray-400">{row.percentL1.toFixed(1)}%</td>
@@ -1116,7 +1278,7 @@ Total System Loss: Overall efficiency
                                     paddingAngle={5}
                                     dataKey="value"
                                     labelLine={false}
-                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
+                                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(1)}%`}
                                 >
                                     {byTypeData.donutChart.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />
@@ -1324,6 +1486,39 @@ Total System Loss: Overall efficiency
               <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 font-mono">
                 {aiAnalysisResult}
               </pre>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Analysis Modal */}
+      {isAiModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-accent" />
+                AI Water System Analysis
+              </h3>
+              <button
+                onClick={() => setIsAiModalOpen(false)}
+                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-8rem)]">
+              {isAiLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+                </div>
+              ) : (
+                <div className="prose dark:prose-invert max-w-none">
+                  <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 font-sans">
+                    {aiAnalysisResult}
+                  </pre>
+                </div>
+              )}
             </div>
           </div>
         </div>
