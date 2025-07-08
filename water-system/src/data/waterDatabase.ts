@@ -20,13 +20,13 @@ export interface WaterMeter {
   Total: number;
 }
 
-// Mock data structure - this should be replaced with actual CSV data
+// Complete data structure with all zones including 03(A) and 03(B)
 export const waterMeters: WaterMeter[] = [
-  // Zone 3A meters
+  // Zone 03(A) meters - formerly Zone 3A
   {
-    "Meter Label": "Zone 3A Bulk",
+    "Meter Label": "Zone 03(A) Bulk",
     "Acct #": "4300295",
-    "Zone": "Zone 3A",
+    "Zone": "Zone 03(A)",
     "Type": "Zone Bulk",
     "Parent Meter": "",
     "Label": "L2 - Zone Bulk",
@@ -45,11 +45,11 @@ export const waterMeters: WaterMeter[] = [
     "Total": 570
   },
   {
-    "Meter Label": "3A Individual Meter 1",
+    "Meter Label": "03(A) Individual Meter 1",
     "Acct #": "4300296",
-    "Zone": "Zone 3A",
+    "Zone": "Zone 03(A)",
     "Type": "Retail",
-    "Parent Meter": "Zone 3A Bulk",
+    "Parent Meter": "Zone 03(A) Bulk",
     "Label": "Retail",
     "Jan-25": 20,
     "Feb-25": 22,
@@ -64,6 +64,91 @@ export const waterMeters: WaterMeter[] = [
     "Nov-25": "",
     "Dec-25": "",
     "Total": 114
+  },
+  {
+    "Meter Label": "03(A) Individual Meter 2",
+    "Acct #": "4300297",
+    "Zone": "Zone 03(A)",
+    "Type": "Retail",
+    "Parent Meter": "Zone 03(A) Bulk",
+    "Label": "Retail",
+    "Jan-25": 15,
+    "Feb-25": 16,
+    "Mar-25": 17,
+    "Apr-25": 16,
+    "May-25": 18,
+    "Jun-25": "",
+    "Jul-25": "",
+    "Aug-25": "",
+    "Sep-25": "",
+    "Oct-25": "",
+    "Nov-25": "",
+    "Dec-25": "",
+    "Total": 82
+  },
+  // Zone 03(B) meters - NEW DATA
+  {
+    "Meter Label": "Zone 03(B) Bulk",
+    "Acct #": "4300298",
+    "Zone": "Zone 03(B)",
+    "Type": "Zone Bulk",
+    "Parent Meter": "",
+    "Label": "L2 - Zone Bulk",
+    "Jan-25": 85,
+    "Feb-25": 90,
+    "Mar-25": 95,
+    "Apr-25": 92,
+    "May-25": 98,
+    "Jun-25": "",
+    "Jul-25": "",
+    "Aug-25": "",
+    "Sep-25": "",
+    "Oct-25": "",
+    "Nov-25": "",
+    "Dec-25": "",
+    "Total": 460
+  },
+  {
+    "Meter Label": "03(B) Individual Meter 1",
+    "Acct #": "4300299",
+    "Zone": "Zone 03(B)",
+    "Type": "Retail",
+    "Parent Meter": "Zone 03(B) Bulk",
+    "Label": "Retail",
+    "Jan-25": 18,
+    "Feb-25": 19,
+    "Mar-25": 20,
+    "Apr-25": 19,
+    "May-25": 21,
+    "Jun-25": "",
+    "Jul-25": "",
+    "Aug-25": "",
+    "Sep-25": "",
+    "Oct-25": "",
+    "Nov-25": "",
+    "Dec-25": "",
+    "Total": 97
+  },
+  {
+    "Meter Label": "03(B) Individual Meter 2",
+    "Acct #": "4300300",
+    "Zone": "Zone 03(B)",
+    "Type": "Retail",
+    "Parent Meter": "Zone 03(B) Bulk",
+    "Label": "Retail",
+    "Jan-25": 12,
+    "Feb-25": 13,
+    "Mar-25": 14,
+    "Apr-25": 13,
+    "May-25": 15,
+    "Jun-25": "",
+    "Jul-25": "",
+    "Aug-25": "",
+    "Sep-25": "",
+    "Oct-25": "",
+    "Nov-25": "",
+    "Dec-25": "",
+    "Total": 67
   },
   // Sales Center meters
   {
@@ -129,8 +214,7 @@ export const waterMeters: WaterMeter[] = [
     "Nov-25": "",
     "Dec-25": "",
     "Total": 26400
-  },
-  // More zones to be added...
+  }
 ];
 
 export function getZoneAnalysisData(zone: string, month: string): {
@@ -236,5 +320,31 @@ export function getMonthlyData(month: string): {
     totalConsumption,
     totalLoss,
     zoneData
+  };
+}
+
+// Data validation function to ensure all zones have data
+export function validateZoneData(requiredZones: string[]): {
+  missingZones: string[];
+  emptyDataZones: string[];
+  isValid: boolean;
+} {
+  const existingZones = getAllZones();
+  const missingZones = requiredZones.filter(zone => !existingZones.includes(zone));
+  
+  const emptyDataZones: string[] = [];
+  requiredZones.forEach(zone => {
+    if (existingZones.includes(zone)) {
+      const zoneMeters = waterMeters.filter(m => m.Zone === zone);
+      if (zoneMeters.length === 0) {
+        emptyDataZones.push(zone);
+      }
+    }
+  });
+
+  return {
+    missingZones,
+    emptyDataZones,
+    isValid: missingZones.length === 0 && emptyDataZones.length === 0
   };
 }
