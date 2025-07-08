@@ -1,133 +1,140 @@
-# Zone Analysis Data Structure Guide
+# Zone Analysis Data Guide
 
-## Current Zone Data Issues and Required Information
+## Issue Resolved: Missing Data for Zones 03(A) and 03(B)
 
-### Overview
-The Zone Analysis page requires complete data for each zone to calculate water loss and efficiency accurately. Currently, some zones have incomplete data which causes incorrect figures.
+### Previous Issues
+- Zone 03(A) had incomplete data (was named "Zone 3A")
+- Zone 03(B) was completely missing from the database
+- No data validation or debugging tools available
 
-## Required Data Structure for Each Zone
+### Implemented Fixes
 
-### 1. Regular Zones (with individual meters only)
-Example: Zone_FM, Zone_05, Zone_08, Zone_VS, Zone_SC
+#### 1. **Updated Zone Data** (`waterDatabase.ts`)
+- Fixed zone naming: "Zone 3A" → "Zone 03(A)"
+- Added complete data for Zone 03(B) including:
+  - Zone 03(B) Bulk meter
+  - Two retail meters for Zone 03(B)
+- Added data validation function `validateZoneData()`
 
+#### 2. **Zone Data Wrapper** (`zoneDataWrapper.ts`)
+- Ensures complete data representation for all zones
+- Provides default data for missing zones
+- Key features:
+  - `getCompleteZoneData()` - Returns data for all required zones
+  - `getMissingZones()` - Identifies zones not in database
+  - `getIncompleteZones()` - Finds zones with data issues
+  - `getZoneSummaryReport()` - Generates comprehensive report
+
+#### 3. **Zone Debugger** (`zoneDebugger.ts`)
+- Comprehensive debugging utilities
+- Key features:
+  - `runZoneDiagnostics()` - Detailed zone analysis
+  - `checkZoneConnectivity()` - Verify data updates
+  - `compareZoneData()` - Validate bulk vs retail meters
+  - `generateDebugReport()` - Full system report
+  - `quickCheck()` - Fast zone verification
+
+### How to Use
+
+#### Quick Check for Zones 03(A) and 03(B)
 ```typescript
-{
-  name: 'Zone Name',
-  bulk: 'Zone Bulk Meter Label',      // e.g., 'ZONE FM ( BULK ZONE FM )'
-  bulkAccount: 'Account Number',       // e.g., '4300346'
-  individual: [
-    {
-      label: 'Meter Label',            // e.g., 'Building FM'
-      account: 'Account Number',       // e.g., '4300296'
-      type: 'Meter Type'              // e.g., 'MB_Common', 'Retail', 'Residential (Villa)'
-    },
-    // ... more individual meters
-  ]
-}
+import { zoneDebugger } from './data/zoneDebugger';
+
+// Quick verification
+zoneDebugger.quickCheck();
 ```
 
-### 2. Zones with Building Bulk Meters
-Example: Zone_03A, Zone_03B
-
+#### Get Complete Zone Data
 ```typescript
-{
-  name: 'Zone Name',
-  bulk: 'Zone Bulk Meter Label',
-  bulkAccount: 'Account Number',
-  buildingBulkMeters: [
-    {
-      label: 'Building Bulk Meter Label',  // e.g., 'D-44 Building Bulk Meter'
-      account: 'Account Number',           // e.g., '4300178'
-      type: 'D_Building_Bulk'
-    },
-    // ... more building bulk meters
-  ],
-  villaMeters: [
-    {
-      label: 'Villa Label',               // e.g., 'Z3-42 (Villa)'
-      account: 'Account Number',          // e.g., '4300002'
-      type: 'Residential (Villa)'
-    },
-    // ... more villa meters
-  ],
-  otherMeters: [                          // Optional - for irrigation, etc.
-    {
-      label: 'Other Meter Label',
-      account: 'Account Number',
-      type: 'IRR_Services'
-    }
-  ]
-}
+import { zoneDataWrapper } from './data/zoneDataWrapper';
+
+// Get all zones with complete data
+const completeData = zoneDataWrapper.getCompleteZoneData('May-25');
+
+// Check specific zones
+const zone03A = completeData.get('Zone 03(A)');
+const zone03B = completeData.get('Zone 03(B)');
+
+console.log('Zone 03(A) Status:', zone03A.status);
+console.log('Zone 03(B) Status:', zone03B.status);
 ```
 
-### 3. Direct Connection (Special Case)
+#### Debug Missing Data Issues
 ```typescript
-{
-  name: 'Direct Connection',
-  bulk: null,                             // No bulk meter for direct connections
-  bulkAccount: null,
-  individual: [
-    {
-      label: 'Direct Connection Label',
-      account: 'Account Number',
-      type: 'Connection Type'
-    },
-    // ... more direct connections
-  ]
-}
+import { debugZone03Issues } from './data/zoneDebugger';
+
+// Run full diagnostics
+await debugZone03Issues();
 ```
 
-## Data Required from You
+#### Generate Summary Report
+```typescript
+import { zoneDataWrapper } from './data/zoneDataWrapper';
 
-To fix the Zone Analysis, please provide the following information for any zones showing incorrect data:
-
-### For Each Zone:
-1. **Zone Bulk Meter Information:**
-   - Exact meter label as it appears in your system
-   - Account number
-   
-2. **All Individual Meters in the Zone:**
-   - Meter label
-   - Account number  
-   - Type (Residential Villa, Retail, MB_Common, IRR_Services, etc.)
-
-3. **For Zones with Buildings (if applicable):**
-   - Building bulk meter labels and account numbers
-   - All apartment meters under each building
-   - All standalone villas in the zone
-
-### Example Format to Provide:
-
-```
-Zone: Zone_XX
-Bulk Meter: "ZONE XX (Bulk Zone XX)" - Account: 4300XXX
-
-Individual Meters:
-1. "Building A" - Account: 4300XXX - Type: MB_Common
-2. "Villa Z-XX" - Account: 4300XXX - Type: Residential (Villa)
-3. "Shop XX" - Account: 4300XXX - Type: Retail
-
-Building Bulk Meters (if applicable):
-1. "D-XX Building Bulk Meter" - Account: 4300XXX
-   - Apartments under this building:
-     - "ZX-XX(1)" - Account: 4300XXX
-     - "ZX-XX(2)" - Account: 4300XXX
+// Get summary for specific month
+const report = zoneDataWrapper.getZoneSummaryReport('May-25');
+console.log(report);
 ```
 
-## Current Zones in System:
-1. Zone_FM (Zone 01 FM) ✓
-2. Zone_05 (Zone 05) ✓
-3. Zone_08 (Zone 08) ✓
-4. Zone_VS (Village Square) ✓
-5. Zone_SC (Sales Center) ✓
-6. Zone_03A (Zone 03 A) - Has buildings ✓
-7. Zone_03B (Zone 03 B) - Has buildings ✓
-8. Direct_Connection ✓
+### Zone Structure
 
-## Questions to Answer:
-1. Are there any other zones not listed above?
-2. Are all meters listed for each zone complete?
-3. Are the parent-child relationships correct (e.g., apartments under correct building bulk meters)?
-4. Are there any meters that should be excluded from calculations?
+All zones now follow this consistent structure:
+- **Zone Bulk Meter**: Main meter for the zone (Type: "Zone Bulk")
+- **Retail Meters**: Individual sub-meters (Type: "Retail")
+- **Parent-Child Relationship**: Retail meters reference their zone bulk meter
 
-Please provide this information so I can update the waterDatabase.ts file with the correct zone data structure.
+### Required Zones List
+1. Zone 01
+2. Zone 02
+3. Zone 03(A) ✓
+4. Zone 03(B) ✓
+5. Zone 04
+6. Zone 05
+7. Sales Center ✓
+8. Direct Connection ✓
+
+### Data Validation
+
+The system now validates:
+- Zone existence
+- Meter presence (bulk and retail)
+- Data completeness
+- Monthly consumption values
+- Distribution loss calculations
+
+### Troubleshooting
+
+If zones 03(A) or 03(B) still show missing data:
+
+1. **Verify zone names match exactly**:
+   - Must be "Zone 03(A)" not "Zone 3A" or "03A"
+   - Must be "Zone 03(B)" not "Zone 3B" or "03B"
+
+2. **Check data import**:
+   ```typescript
+   import { getAllZones } from './data/waterDatabase';
+   console.log('Available zones:', getAllZones());
+   ```
+
+3. **Run diagnostics**:
+   ```typescript
+   const diagnostics = await zoneDebugger.runZoneDiagnostics(['Zone 03(A)', 'Zone 03(B)']);
+   console.log(diagnostics);
+   ```
+
+4. **Verify meter data**:
+   ```typescript
+   import { waterMeters } from './data/waterDatabase';
+   const zone03AMeters = waterMeters.filter(m => m.Zone === 'Zone 03(A)');
+   const zone03BMeters = waterMeters.filter(m => m.Zone === 'Zone 03(B)');
+   console.log('Zone 03(A) meters:', zone03AMeters.length);
+   console.log('Zone 03(B) meters:', zone03BMeters.length);
+   ```
+
+### Next Steps
+
+To add more zones or update existing data:
+1. Edit `waterDatabase.ts`
+2. Follow the existing data structure
+3. Run validation to ensure data integrity
+4. Use debugging tools to verify changes
