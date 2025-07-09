@@ -1,0 +1,82 @@
+import React from 'react';
+import { ChevronRight } from 'lucide-react';
+
+interface MobileDataCardProps {
+  title: string;
+  subtitle?: string;
+  fields: Array<{
+    label: string;
+    value: string | number;
+    highlight?: boolean;
+    color?: string;
+  }>;
+  status?: {
+    label: string;
+    color: string;
+  };
+  onClick?: () => void;
+  className?: string;
+}
+
+const MobileDataCard: React.FC<MobileDataCardProps> = ({
+  title,
+  subtitle,
+  fields,
+  status,
+  onClick,
+  className = ''
+}) => {
+  return (
+    <div 
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      onClick={onClick}
+    >
+      {/* Card Header */}
+      <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 border-b border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-semibold text-gray-800 dark:text-white truncate">{title}</h3>
+            {subtitle && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>
+            )}
+          </div>
+          {status && (
+            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${status.color}`}>
+              {status.label}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Card Body */}
+      <div className="px-4 py-3 space-y-2">
+        {fields.map((field, index) => (
+          <div key={index} className="flex items-center justify-between">
+            <span className="text-sm text-gray-600 dark:text-gray-400">{field.label}:</span>
+            <span 
+              className={`text-sm font-medium ${
+                field.highlight 
+                  ? field.color || 'text-gray-900 dark:text-white' 
+                  : 'text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              {typeof field.value === 'number' ? field.value.toLocaleString() : field.value}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Click Indicator */}
+      {onClick && (
+        <div className="px-4 py-2 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
+            <span>Tap for details</span>
+            <ChevronRight className="w-3 h-3 ml-1" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MobileDataCard;
