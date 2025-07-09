@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
   PieChart, Pie, Cell, AreaChart, Area, LabelList
@@ -107,7 +107,7 @@ const ModuleNavigation = ({ sections, activeSection, onSectionChange }: { sectio
 
 const WaterAnalysisModule: React.FC = () => {
   const [activeWaterSubSection, setActiveWaterSubSection] = useState('Overview');
-  const [selectedWaterMonth, setSelectedWaterMonth] = useState('May-25'); // For tabs other than Overview
+  const [selectedWaterMonth, setSelectedWaterMonth] = useState('May-25');
   const [overviewDateRange, setOverviewDateRange] = useState({
     start: waterMonthsAvailable[0],
     end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
@@ -123,6 +123,7 @@ const WaterAnalysisModule: React.FC = () => {
     start: waterMonthsAvailable[0],
     end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
   });
+  const [isZoneDataLoading, setIsZoneDataLoading] = useState(false);
 
   const [consumptionVisibility, setConsumptionVisibility] = useState({
     'L1 - Main Source': true,
@@ -198,97 +199,101 @@ const WaterAnalysisModule: React.FC = () => {
     })).sort((a, b) => b.consumption - a.consumption);
   }, [selectedWaterMonth]);
 
+  // Optimized zone analysis data calculation with loading state
   const zoneAnalysisData = useMemo(() => {
     if (!selectedZoneForAnalysis) return null;
     
-    if (useRangeSelector) {
-      // For range selector, we need to aggregate data across the selected range
-      const startIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.start);
-      const endIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.end);
-      
-      if (startIndex === -1 || endIndex === -1) return null;
-      
-      const monthsInRange = waterMonthsAvailable.slice(startIndex, endIndex + 1);
-      
-      // Get zone analysis for each month in range and aggregate
-      const monthlyAnalyses = monthsInRange.map(month => getZoneAnalysis(selectedZoneForAnalysis, month));
-      
-      if (monthlyAnalyses.some(analysis => !analysis)) return null;
-      
-      // Aggregate the data
-      const firstAnalysis = monthlyAnalyses[0];
-      const aggregatedData = {
-        ...firstAnalysis,
-        zoneBulkConsumption: monthlyAnalyses.reduce((sum, analysis) => sum + (analysis?.zoneBulkConsumption || 0), 0),
-        totalIndividualConsumption: monthlyAnalyses.reduce((sum, analysis) => sum + (analysis?.totalIndividualConsumption || 0), 0),
-        difference: 0,
-        lossPercentage: 0,
-        efficiency: 0,
-        // Aggregate individual meters data
-        individualMetersData: firstAnalysis?.individualMetersData?.map((meter: any) => ({
-          ...meter,
-          totalConsumption: monthlyAnalyses.reduce((sum, analysis) => {
-            const meterInMonth = analysis?.individualMetersData?.find((m: any) => m.account === meter.account);
-            const monthlyConsumption = Object.values(meterInMonth?.consumption || {}).reduce((a: number, b: number) => a + b, 0);
-            return sum + monthlyConsumption;
-          }, 0),
-          consumption: monthsInRange.reduce((acc: any, month) => {
-            const meterInMonth = analysis?.individualMetersData?.find((m: any) => m.account === meter.account);
-            acc[month] = meterInMonth?.consumption[month] || 0;
-            return acc;
-          }, {})
-        })) || [],
-        // Aggregate building data
-        buildingBulkData: firstAnalysis?.buildingBulkData?.map((building: any) => ({
-          ...building,
-          totalConsumption: monthlyAnalyses.reduce((sum, analysis) => {
-            const buildingInMonth = analysis?.buildingBulkData?.find((b: any) => b.account === building.account);
-            const monthlyConsumption = Object.values(buildingInMonth?.consumption || {}).reduce((a: number, b: number) => a + b, 0);
-            return sum + monthlyConsumption;
-          }, 0),
-          consumption: monthsInRange.reduce((acc: any, month) => {
-            const buildingInMonth = analysis?.buildingBulkData?.find((b: any) => b.account === building.account);
-            acc[month] = buildingInMonth?.consumption[month] || 0;
-            return acc;
-          }, {})
-        })) || [],
-        // Aggregate villa data
-        villaData: firstAnalysis?.villaData?.map((villa: any) => ({
-          ...villa,
-          totalConsumption: monthlyAnalyses.reduce((sum, analysis) => {
-            const villaInMonth = analysis?.villaData?.find((v: any) => v.account === villa.account);
-            const monthlyConsumption = Object.values(villaInMonth?.consumption || {}).reduce((a: number, b: number) => a + b, 0);
-            return sum + monthlyConsumption;
-          }, 0),
-          consumption: monthsInRange.reduce((acc: any, month) => {
-            const villaInMonth = analysis?.villaData?.find((v: any) => v.account === villa.account);
-            acc[month] = villaInMonth?.consumption[month] || 0;
-            return acc;
-          }, {})
-        })) || []
-      };
-      
-      // Recalculate derived values
-      aggregatedData.difference = aggregatedData.zoneBulkConsumption - aggregatedData.totalIndividualConsumption;
-      aggregatedData.lossPercentage = aggregatedData.zoneBulkConsumption > 0 ? 
-        (aggregatedData.difference / aggregatedData.zoneBulkConsumption) * 100 : 0;
-      aggregatedData.efficiency = aggregatedData.zoneBulkConsumption > 0 ? 
-        (aggregatedData.totalIndividualConsumption / aggregatedData.zoneBulkConsumption) * 100 : 0;
-      
-      return aggregatedData;
-    } else {
-      // For single month selector
-      if (!selectedWaterMonth) return null;
-      return getZoneAnalysis(selectedZoneForAnalysis, selectedWaterMonth);
+    // Set loading state
+    setIsZoneDataLoading(true);
+    
+    try {
+      if (useRangeSelector) {
+        // Optimized range selector logic
+        const startIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.start);
+        const endIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.end);
+        
+        if (startIndex === -1 || endIndex === -1) {
+          setIsZoneDataLoading(false);
+          return null;
+        }
+        
+        const monthsInRange = waterMonthsAvailable.slice(startIndex, endIndex + 1);
+        
+        // Get first month analysis for structure
+        const firstAnalysis = getZoneAnalysis(selectedZoneForAnalysis, monthsInRange[0]);
+        if (!firstAnalysis) {
+          setIsZoneDataLoading(false);
+          return null;
+        }
+        
+        // Aggregate data more efficiently
+        let totalZoneBulk = 0;
+        let totalIndividual = 0;
+        let totalBuilding = 0;
+        let totalVilla = 0;
+        let totalOther = 0;
+        
+        // Process each month
+        monthsInRange.forEach(month => {
+          const monthAnalysis = getZoneAnalysis(selectedZoneForAnalysis, month);
+          if (monthAnalysis) {
+            totalZoneBulk += monthAnalysis.zoneBulkConsumption || 0;
+            totalIndividual += monthAnalysis.totalIndividualConsumption || 0;
+            
+            if (monthAnalysis.hasBuildings) {
+              totalBuilding += monthAnalysis.totalBuildingConsumption || 0;
+              totalVilla += monthAnalysis.totalVillaConsumption || 0;
+              totalOther += monthAnalysis.totalOtherConsumption || 0;
+            }
+          }
+        });
+        
+        // Create aggregated result
+        const aggregatedData = {
+          ...firstAnalysis,
+          zoneBulkConsumption: totalZoneBulk,
+          totalIndividualConsumption: totalIndividual,
+          totalBuildingConsumption: totalBuilding,
+          totalVillaConsumption: totalVilla,
+          totalOtherConsumption: totalOther,
+          difference: totalZoneBulk - totalIndividual,
+          lossPercentage: totalZoneBulk > 0 ? ((totalZoneBulk - totalIndividual) / totalZoneBulk) * 100 : 0,
+          efficiency: totalZoneBulk > 0 ? (totalIndividual / totalZoneBulk) * 100 : 0,
+          dateRange: `${zoneAnalysisDateRange.start} to ${zoneAnalysisDateRange.end}`,
+          monthsCount: monthsInRange.length
+        };
+        
+        setIsZoneDataLoading(false);
+        return aggregatedData;
+      } else {
+        // Single month selector
+        const data = getZoneAnalysis(selectedZoneForAnalysis, selectedWaterMonth);
+        setIsZoneDataLoading(false);
+        return data;
+      }
+    } catch (error) {
+      console.error('Error calculating zone analysis data:', error);
+      setIsZoneDataLoading(false);
+      return null;
     }
   }, [selectedZoneForAnalysis, selectedWaterMonth, useRangeSelector, zoneAnalysisDateRange]);
-  
-  const resetDateRange = () => {
+
+  // Optimized reset functions
+  const resetDateRange = useCallback(() => {
     setOverviewDateRange({
-        start: waterMonthsAvailable[0],
-        end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
+      start: waterMonthsAvailable[0],
+      end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
     });
-  };
+  }, []);
+
+  const resetZoneFilters = useCallback(() => {
+    setSelectedWaterMonth('May-25');
+    setSelectedZoneForAnalysis('Zone_03A');
+    setZoneAnalysisDateRange({
+      start: waterMonthsAvailable[0],
+      end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
+    });
+  }, []);
 
   const handleAiAnalysis = async () => {
     setIsAiModalOpen(true);
@@ -358,6 +363,13 @@ Total System Loss: Overall efficiency
     }, 1500);
   };
 
+  // Handle range selector toggle with optimization
+  const handleRangeSelectorToggle = useCallback(() => {
+    setUseRangeSelector(prev => !prev);
+    // Reset page when switching modes
+    setCurrentPage(1);
+  }, []);
+
   return (
     <div className="space-y-6 p-4 sm:p-6">
       <h2 className="text-3xl font-bold text-primary dark:text-white">Water System Analysis</h2>
@@ -366,6 +378,7 @@ Total System Loss: Overall efficiency
         activeSection={activeWaterSubSection}
         onSectionChange={setActiveWaterSubSection}
       />
+      
       {activeWaterSubSection === 'Overview' && (
         <>
           <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6 border border-neutral-border dark:border-gray-700">
@@ -626,19 +639,19 @@ Total System Loss: Overall efficiency
       
       {activeWaterSubSection === 'ZoneAnalysis' && (
         <>
-          {/* Zone Analysis Filter - RESTORED ORIGINAL DESIGN */}
+          {/* Zone Analysis Filter - Optimized */}
           <div className="bg-white dark:bg-gray-800 shadow p-4 rounded-lg mb-6 print:hidden border border-neutral-border dark:border-gray-600">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Filter Options</h3>
               <div className="flex items-center space-x-2">
                 <label className="text-sm text-gray-600 dark:text-gray-400">Range Selection</label>
                 <button
-                  onClick={() => setUseRangeSelector(!useRangeSelector)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  onClick={handleRangeSelectorToggle}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 ${
                     useRangeSelector ? 'bg-accent' : 'bg-gray-200 dark:bg-gray-700'
                   }`}
                 >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
                     useRangeSelector ? 'translate-x-6' : 'translate-x-1'
                   }`} />
                 </button>
@@ -672,13 +685,7 @@ Total System Loss: Overall efficiency
                   </div>
                   
                   <button 
-                    onClick={() => {
-                      setZoneAnalysisDateRange({
-                        start: waterMonthsAvailable[0],
-                        end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
-                      });
-                      setSelectedZoneForAnalysis('Zone_03A');
-                    }} 
+                    onClick={resetZoneFilters}
                     className="bg-primary dark:bg-blue-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2 h-[46px] w-full hover:shadow-lg" 
                   > 
                     <Filter size={16}/> 
@@ -725,10 +732,7 @@ Total System Loss: Overall efficiency
                 </div>
 
                 <button 
-                  onClick={() => {
-                    setSelectedWaterMonth('May-25');
-                    setSelectedZoneForAnalysis('Zone_03A');
-                  }} 
+                  onClick={resetZoneFilters}
                   className="bg-primary dark:bg-blue-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2 h-[46px] w-full hover:shadow-lg" 
                 > 
                   <Filter size={16}/> 
@@ -738,20 +742,33 @@ Total System Loss: Overall efficiency
             )}
           </div>
 
-          {/* Zone Analysis Data Display */}
-          {!zoneAnalysisData ? (
+          {/* Zone Analysis Data Display - Optimized Loading State */}
+          {isZoneDataLoading ? (
             <div className="flex items-center justify-center h-64">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
                 <p className="text-gray-600 dark:text-gray-400">Loading zone analysis data...</p>
               </div>
             </div>
+          ) : !zoneAnalysisData ? (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+              <p className="text-red-600 dark:text-red-400">
+                No data available for the selected zone and {useRangeSelector ? 'date range' : 'month'} combination.
+              </p>
+            </div>
           ) : (
             <>
               {/* Zone Analysis Header */}
               <div className="mb-6 text-center">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-                  {zoneAnalysisData.zone?.name || 'Zone'} Analysis for {useRangeSelector ? `${zoneAnalysisDateRange.start} to ${zoneAnalysisDateRange.end}` : selectedWaterMonth}
+                  {zoneAnalysisData.zone?.name || 'Zone'} Analysis for {
+                    useRangeSelector ? zoneAnalysisData.dateRange : selectedWaterMonth
+                  }
+                  {useRangeSelector && (
+                    <span className="text-sm font-normal text-gray-600 dark:text-gray-400 block mt-1">
+                      ({zoneAnalysisData.monthsCount} months aggregated)
+                    </span>
+                  )}
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
                   {zoneAnalysisData.isDirectConnection ? 
@@ -828,7 +845,7 @@ Total System Loss: Overall efficiency
                 </div>
               </div>
 
-              {/* Zone Consumption Trend Chart - NEW */}
+              {/* Zone Consumption Trend Chart */}
               <div className="mb-8">
                 <ChartCard title="Zone Consumption Trend" subtitle="Monthly comparison of zone bulk meter vs individual meters total">
                   <ResponsiveContainer width="100%" height={300}>
@@ -911,7 +928,7 @@ Total System Loss: Overall efficiency
                 />
               </div>
 
-              {/* Zone Analysis Table */}
+              {/* Zone Analysis Table - Simplified for Range Selection */}
               <div className="bg-white dark:bg-gray-800 shadow rounded-lg border border-neutral-border dark:border-gray-600">
                 <div className="p-6 border-b border-neutral-border dark:border-gray-600">
                   <div className="flex justify-between items-start">
@@ -920,7 +937,10 @@ Total System Loss: Overall efficiency
                         Individual Meters - {zoneAnalysisData.zone.name}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        All individual meters in this {zoneAnalysisData.isDirectConnection ? 'connection group' : 'zone'} with monthly consumption data
+                        {useRangeSelector ? 
+                          `Aggregated consumption data for ${zoneAnalysisData.monthsCount} months` :
+                          `All individual meters in this ${zoneAnalysisData.isDirectConnection ? 'connection group' : 'zone'} with monthly consumption data`
+                        }
                       </p>
                     </div>
                   </div>
@@ -933,12 +953,21 @@ Total System Loss: Overall efficiency
                         <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200 sticky left-0 bg-gray-50 dark:bg-gray-700 z-10">Meter Label</th>
                         <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Account #</th>
                         <th className="text-left p-4 font-semibold text-gray-700 dark:text-gray-200">Type</th>
-                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Jan-25</th>
-                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Feb-25</th>
-                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Mar-25</th>
-                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Apr-25</th>
-                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">May-25</th>
-                        <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Total</th>
+                        {useRangeSelector ? (
+                          <>
+                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Period Total</th>
+                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Avg/Month</th>
+                          </>
+                        ) : (
+                          <>
+                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Jan-25</th>
+                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Feb-25</th>
+                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Mar-25</th>
+                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Apr-25</th>
+                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">May-25</th>
+                            <th className="text-right p-4 font-semibold text-gray-700 dark:text-gray-200">Total</th>
+                          </>
+                        )}
                         <th className="text-center p-4 font-semibold text-gray-700 dark:text-gray-200">Status</th>
                       </tr>
                     </thead>
@@ -949,20 +978,33 @@ Total System Loss: Overall efficiency
                           <td className="p-4 font-semibold text-blue-800 dark:text-blue-200 sticky left-0 bg-blue-50 dark:bg-blue-900/20">{zoneAnalysisData.zone.bulk}</td>
                           <td className="p-4 text-blue-700 dark:text-blue-300">{zoneAnalysisData.zone.bulkAccount}</td>
                           <td className="p-4 text-blue-700 dark:text-blue-300">Zone Bulk</td>
-                          {waterMonthsAvailable.map(month => {
-                            const zoneBulkMeter = waterSystemData.find(item => item.meterLabel === zoneAnalysisData.zone.bulk);
-                            return (
-                              <td key={month} className="p-4 text-right font-semibold text-blue-800 dark:text-blue-200">
-                                {(zoneBulkMeter?.consumption[month] || 0).toLocaleString()}
+                          {useRangeSelector ? (
+                            <>
+                              <td className="p-4 text-right font-bold text-blue-800 dark:text-blue-200">
+                                {zoneAnalysisData.zoneBulkConsumption.toLocaleString()}
                               </td>
-                            );
-                          })}
-                          <td className="p-4 text-right font-bold text-blue-800 dark:text-blue-200">
-                            {(() => {
-                              const zoneBulkMeter = waterSystemData.find(item => item.meterLabel === zoneAnalysisData.zone.bulk);
-                              return (zoneBulkMeter?.totalConsumption || 0).toLocaleString();
-                            })()}
-                          </td>
+                              <td className="p-4 text-right font-semibold text-blue-800 dark:text-blue-200">
+                                {(zoneAnalysisData.zoneBulkConsumption / zoneAnalysisData.monthsCount).toFixed(0).toLocaleString()}
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              {waterMonthsAvailable.map(month => {
+                                const zoneBulkMeter = waterSystemData.find(item => item.meterLabel === zoneAnalysisData.zone.bulk);
+                                return (
+                                  <td key={month} className="p-4 text-right font-semibold text-blue-800 dark:text-blue-200">
+                                    {(zoneBulkMeter?.consumption[month] || 0).toLocaleString()}
+                                  </td>
+                                );
+                              })}
+                              <td className="p-4 text-right font-bold text-blue-800 dark:text-blue-200">
+                                {(() => {
+                                  const zoneBulkMeter = waterSystemData.find(item => item.meterLabel === zoneAnalysisData.zone.bulk);
+                                  return (zoneBulkMeter?.totalConsumption || 0).toLocaleString();
+                                })()}
+                              </td>
+                            </>
+                          )}
                           <td className="p-4 text-center">
                             <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
                               L2 - Zone Bulk
@@ -971,14 +1013,13 @@ Total System Loss: Overall efficiency
                         </tr>
                       )}
                       
-                      {/* All Individual Meters (including buildings and villas) */}
+                      {/* All Individual Meters - Simplified for Performance */}
                       {(() => {
-                        // Combine all meter data based on zone type
+                        // Get all meters based on zone type
                         let allMeters: any[] = [];
                         
                         if (zoneAnalysisData.hasBuildings) {
                           // For zones with buildings (Zone 3A, 3B)
-                          // First add building bulk meters
                           const buildingRows: any[] = [];
                           (zoneAnalysisData.buildingBulkData || []).forEach((building: any) => {
                             const buildingMeterData = building.meterData || waterSystemData.find(item => item.acctNo === building.account);
@@ -989,24 +1030,6 @@ Total System Loss: Overall efficiency
                               consumption: buildingMeterData?.consumption || {},
                               totalConsumption: buildingMeterData?.totalConsumption || 0,
                               isBuilding: true
-                            });
-                            
-                            // Find and add all apartments under this building
-                            const buildingLabel = building.label;
-                            const apartments = waterSystemData.filter(item => 
-                              item.label === 'L4' && item.parentMeter === buildingLabel
-                            );
-                            
-                            apartments.forEach(apt => {
-                              buildingRows.push({
-                                label: apt.meterLabel,
-                                account: apt.acctNo,
-                                type: apt.type,
-                                consumption: apt.consumption,
-                                totalConsumption: apt.totalConsumption,
-                                isApartment: true,
-                                parentBuilding: buildingLabel
-                              });
                             });
                           });
                           
@@ -1019,14 +1042,6 @@ Total System Loss: Overall efficiency
                                 ...villa,
                                 consumption: villaData?.consumption || {},
                                 totalConsumption: villaData?.totalConsumption || 0
-                              };
-                            }),
-                            ...(zoneAnalysisData.otherData || []).map((other: any) => {
-                              const otherData = other.meterData || waterSystemData.find(item => item.acctNo === other.account);
-                              return {
-                                ...other,
-                                consumption: otherData?.consumption || {},
-                                totalConsumption: otherData?.totalConsumption || 0
                               };
                             })
                           ];
@@ -1052,26 +1067,37 @@ Total System Loss: Overall efficiency
                             
                             return (
                               <tr key={meter.account} className={`border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                                meter.isBuilding ? 'bg-purple-50 dark:bg-purple-900/20' : 
-                                meter.isApartment ? 'pl-8' : ''
+                                meter.isBuilding ? 'bg-purple-50 dark:bg-purple-900/20' : ''
                               }`}>
                                 <td className={`p-4 font-medium text-gray-800 dark:text-gray-200 sticky left-0 ${
                                   meter.isBuilding ? 'bg-purple-50 dark:bg-purple-900/20' : 
                                   'bg-white dark:bg-gray-800'
                                 }`}>
-                                  {meter.isApartment && <span className="text-gray-400 mr-2">└</span>}
                                   {meter.label}
                                 </td>
                                 <td className="p-4 text-gray-600 dark:text-gray-400">{meter.account}</td>
                                 <td className="p-4 text-gray-600 dark:text-gray-400">{meter.type}</td>
-                                {waterMonthsAvailable.map(month => (
-                                  <td key={month} className="p-4 text-right text-gray-800 dark:text-gray-200">
-                                    {(meter.consumption[month] || 0).toLocaleString()}
-                                  </td>
-                                ))}
-                                <td className="p-4 text-right font-bold text-gray-800 dark:text-gray-200">
-                                  {meter.totalConsumption.toLocaleString()}
-                                </td>
+                                {useRangeSelector ? (
+                                  <>
+                                    <td className="p-4 text-right font-bold text-gray-800 dark:text-gray-200">
+                                      {meter.totalConsumption?.toLocaleString() || '0'}
+                                    </td>
+                                    <td className="p-4 text-right text-gray-800 dark:text-gray-200">
+                                      {(meter.totalConsumption / zoneAnalysisData.monthsCount).toFixed(0).toLocaleString()}
+                                    </td>
+                                  </>
+                                ) : (
+                                  <>
+                                    {waterMonthsAvailable.map(month => (
+                                      <td key={month} className="p-4 text-right text-gray-800 dark:text-gray-200">
+                                        {(meter.consumption[month] || 0).toLocaleString()}
+                                      </td>
+                                    ))}
+                                    <td className="p-4 text-right font-bold text-gray-800 dark:text-gray-200">
+                                      {meter.totalConsumption.toLocaleString()}
+                                    </td>
+                                  </>
+                                )}
                                 <td className="p-4 text-center">
                                   <span className={`px-2 py-1 rounded text-xs font-medium ${
                                     meter.isBuilding ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200' :
@@ -1081,7 +1107,6 @@ Total System Loss: Overall efficiency
                                     'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
                                   }`}>
                                     {meter.isBuilding ? 'L3 - Building' :
-                                     meter.isApartment ? 'L4 - Apartment' :
                                      currentMonthConsumption === 0 ? 'No Usage' :
                                      currentMonthConsumption > 1000 ? 'High' :
                                      currentMonthConsumption > 500 ? 'Medium' : 'Normal'}
@@ -1095,41 +1120,18 @@ Total System Loss: Overall efficiency
                   </table>
                 </div>
 
-                {/* Pagination Controls */}
+                {/* Pagination Controls - Simplified */}
                 {(() => {
-                  let allMeters: any[] = [];
+                  let totalMeters = 0;
                   
                   if (zoneAnalysisData.hasBuildings) {
-                    // For zones with buildings (Zone 3A, 3B)
-                    const buildingRows: any[] = [];
-                    (zoneAnalysisData.buildingBulkData || []).forEach((building: any) => {
-                      // Add the building bulk meter
-                      buildingRows.push(building);
-                      
-                      // Find and add all apartments under this building
-                      const buildingLabel = building.label;
-                      const apartments = waterSystemData.filter(item => 
-                        item.label === 'L4' && item.parentMeter === buildingLabel
-                      );
-                      
-                      apartments.forEach(apt => {
-                        buildingRows.push({
-                          account: apt.acctNo
-                        });
-                      });
-                    });
-                    
-                    allMeters = [
-                      ...buildingRows,
-                      ...(zoneAnalysisData.villaData || []),
-                      ...(zoneAnalysisData.otherData || [])
-                    ];
+                    totalMeters = (zoneAnalysisData.buildingBulkData || []).length +
+                                  (zoneAnalysisData.villaData || []).length +
+                                  (zoneAnalysisData.otherData || []).length;
                   } else {
-                    // For regular zones
-                    allMeters = zoneAnalysisData.individualMetersData || [];
+                    totalMeters = (zoneAnalysisData.individualMetersData || []).length;
                   }
                   
-                  const totalMeters = allMeters.length;
                   const totalPages = Math.ceil(totalMeters / itemsPerPage);
                   
                   return totalMeters > itemsPerPage ? (
@@ -1466,29 +1468,6 @@ Total System Loss: Overall efficiency
             </div>
           </div>
         </>
-      )}
-
-      {isAiModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-            <div className="p-6 border-b border-neutral-border dark:border-gray-700 flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
-                AI Water System Analysis Results
-              </h3>
-              <button
-                onClick={() => setIsAiModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-8rem)]">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 font-mono">
-                {aiAnalysisResult}
-              </pre>
-            </div>
-          </div>
-        </div>
       )}
 
       {/* AI Analysis Modal */}
