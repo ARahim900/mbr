@@ -26,6 +26,7 @@ interface AuthContextType {
   }) => Promise<void>;
   logout: () => void;
   clearError: () => void;
+  debugInfo: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,26 +72,88 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Debug function to check localStorage
+const checkLocalStorageHealth = () => {
+  try {
+    const testKey = '__mbr_test__';
+    localStorage.setItem(testKey, 'test');
+    const retrieved = localStorage.getItem(testKey);
+    localStorage.removeItem(testKey);
+    
+    if (retrieved !== 'test') {
+      console.error('❌ LocalStorage test failed: read/write mismatch');
+      return false;
+    }
+    console.log('✅ LocalStorage is working properly');
+    return true;
+  } catch (error) {
+    console.error('❌ LocalStorage is not available:', error);
+    return false;
+  }
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Start with loading true
   const [error, setError] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Check for existing session on component mount
+  // Enhanced initialization with debugging
   useEffect(() => {
-    const savedUser = localStorage.getItem('mbr_user');
-    if (savedUser) {
-      try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-      } catch (error) {
-        console.error('Error parsing saved user data:', error);
-        localStorage.removeItem('mbr_user');
+    const initializeAuth = async () => {
+      console.log('🔍 AuthContext: Initializing...');
+      
+      // Check localStorage health
+      const isStorageHealthy = checkLocalStorageHealth();
+      
+      if (!isStorageHealthy) {
+        setError('LocalStorage is not available. Please check your browser settings.');
+        setIsLoading(false);
+        setIsInitialized(true);
+        return;
       }
-    }
+
+      try {
+        // Log all MBR-related localStorage keys
+        console.log('📦 Current localStorage state:');
+        ['mbr_user', 'mbr_registered_users', 'mbr_login_time'].forEach(key => {
+          const value = localStorage.getItem(key);
+          if (value) {
+            console.log(`  ${key}:`, value.substring(0, 100) + '...');
+          } else {
+            console.log(`  ${key}: Not found`);
+          }
+        });
+
+        // Try to restore user session
+        const savedUser = localStorage.getItem('mbr_user');
+        if (savedUser) {
+          console.log('👤 Found saved user, attempting to restore session...');
+          const userData = JSON.parse(savedUser);
+          console.log('✅ User data parsed successfully:', userData.username);
+          setUser(userData);
+        } else {
+          console.log('🔓 No saved user found, showing login page');
+        }
+      } catch (error) {
+        console.error('❌ Error during initialization:', error);
+        setError('Failed to restore session. Please login again.');
+        
+        // Clean up corrupted data
+        localStorage.removeItem('mbr_user');
+        localStorage.removeItem('mbr_login_time');
+      } finally {
+        setIsLoading(false);
+        setIsInitialized(true);
+      }
+    };
+
+    // Small delay to ensure DOM is ready
+    setTimeout(initializeAuth, 100);
   }, []);
 
   const login = async (credentials: { username: string; password: string }) => {
+    console.log('🔐 Login attempt for:', credentials.username);
     setIsLoading(true);
     setError(null);
 
@@ -103,30 +166,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Check demo users first
       const userRecord = demoUsers[username.toLowerCase()];
       if (userRecord && userRecord.password === password) {
+        console.log('✅ Demo user authenticated');
         const userData = userRecord.user;
         setUser(userData);
         localStorage.setItem('mbr_user', JSON.stringify(userData));
         localStorage.setItem('mbr_login_time', new Date().toISOString());
+        console.log('💾 Demo user session saved');
         return;
       }
 
       // Check registered users
-      const registeredUsers = JSON.parse(localStorage.getItem('mbr_registered_users') || '{}');
+      const registeredUsersStr = localStorage.getItem('mbr_registered_users');
+      console.log('📋 Checking registered users:', registeredUsersStr ? 'Found' : 'None');
+      
+      const registeredUsers = JSON.parse(registeredUsersStr || '{}');
       const registeredUser = registeredUsers[username.toLowerCase()];
       
       if (!registeredUser || registeredUser.password !== password) {
         throw new Error('Invalid username or password');
       }
 
+      console.log('✅ Registered user authenticated');
       const userData = registeredUser.user;
       setUser(userData);
       
       // Save user data to localStorage for persistence
       localStorage.setItem('mbr_user', JSON.stringify(userData));
       localStorage.setItem('mbr_login_time', new Date().toISOString());
+      
+      // Verify save
+      const savedCheck = localStorage.getItem('mbr_user');
+      console.log('💾 User data saved:', savedCheck ? 'Success' : 'Failed');
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      console.error('❌ Login error:', errorMessage);
       setError(errorMessage);
       throw err;
     } finally {
@@ -142,6 +216,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fullName: string;
     department: string;
   }) => {
+    console.log('📝 Signup attempt for:', userData.username);
     setIsLoading(true);
     setError(null);
 
@@ -151,8 +226,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const { username, email, password, fullName, department } = userData;
 
-      // Check if username already exists (demo users + registered users)
-      const registeredUsers = JSON.parse(localStorage.getItem('mbr_registered_users') || '{}');
+      // Check if username already exists
+      const registeredUsersStr = localStorage.getItem('mbr_registered_users');
+      const registeredUsers = JSON.parse(registeredUsersStr || '{}');
+      
+      console.log('📊 Current registered users count:', Object.keys(registeredUsers).length);
       
       if (demoUsers[username.toLowerCase()] || registeredUsers[username.toLowerCase()]) {
         throw new Error('Username already exists. Please choose a different username.');
@@ -166,14 +244,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('Email address already registered. Please use a different email.');
       }
 
-      // Create new user - default to 'operator' role
+      // Create new user
       const newUser: User = {
         id: Date.now().toString(),
         username: username.toLowerCase(),
-        role: 'operator', // Default role for all new signups
+        role: 'operator',
         fullName,
         department,
-        permissions: ['read', 'write'], // Default operator permissions
+        permissions: ['read', 'write'],
         email: email.toLowerCase()
       };
 
@@ -183,15 +261,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         user: newUser
       };
       
+      console.log('💾 Saving new user to localStorage...');
       localStorage.setItem('mbr_registered_users', JSON.stringify(registeredUsers));
+      
+      // Verify save
+      const savedUsers = localStorage.getItem('mbr_registered_users');
+      const verifyUsers = JSON.parse(savedUsers || '{}');
+      if (!verifyUsers[username.toLowerCase()]) {
+        throw new Error('Failed to save user data. Please check browser settings.');
+      }
+      
+      console.log('✅ User registered successfully');
+      console.log('📊 Total registered users:', Object.keys(verifyUsers).length);
 
       // Auto-login the new user
       setUser(newUser);
       localStorage.setItem('mbr_user', JSON.stringify(newUser));
       localStorage.setItem('mbr_login_time', new Date().toISOString());
+      
+      console.log('🎉 New user auto-logged in');
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+      console.error('❌ Signup error:', errorMessage);
       setError(errorMessage);
       throw err;
     } finally {
@@ -200,15 +292,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
+    console.log('👋 Logging out...');
     setUser(null);
     setError(null);
     localStorage.removeItem('mbr_user');
     localStorage.removeItem('mbr_login_time');
+    console.log('🔓 Logout complete');
   };
 
   const clearError = () => {
     setError(null);
   };
+
+  const debugInfo = () => {
+    console.log('🔍 Debug Information:');
+    console.log('Current user:', user);
+    console.log('Is authenticated:', !!user);
+    console.log('Is initialized:', isInitialized);
+    console.log('LocalStorage mbr_user:', localStorage.getItem('mbr_user'));
+    console.log('LocalStorage mbr_registered_users:', localStorage.getItem('mbr_registered_users'));
+    console.log('LocalStorage mbr_login_time:', localStorage.getItem('mbr_login_time'));
+    console.log('Browser info:', {
+      userAgent: navigator.userAgent,
+      localStorage: typeof Storage !== 'undefined',
+      url: window.location.href,
+      protocol: window.location.protocol,
+      hostname: window.location.hostname,
+      port: window.location.port
+    });
+    
+    // Test localStorage
+    try {
+      const test = Date.now().toString();
+      localStorage.setItem('mbr_debug_test', test);
+      const retrieved = localStorage.getItem('mbr_debug_test');
+      localStorage.removeItem('mbr_debug_test');
+      console.log('LocalStorage test:', retrieved === test ? '✅ Working' : '❌ Failed');
+    } catch (e) {
+      console.log('LocalStorage test:', '❌ Error -', e);
+    }
+  };
+
+  // Don't render children until initialization is complete
+  if (!isInitialized) {
+    return null;
+  }
 
   const value: AuthContextType = {
     user,
@@ -218,7 +346,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     signUp,
     logout,
-    clearError
+    clearError,
+    debugInfo
   };
 
   return (
@@ -236,4 +365,4 @@ export const useAuth = (): AuthContextType => {
   return context;
 };
 
-export default AuthContext; 
+export default AuthContext;
