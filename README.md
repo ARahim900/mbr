@@ -76,6 +76,23 @@ npm run dev
 
 The application will be available at `http://localhost:5173`
 
+## 🔄 Pulling Latest Changes
+
+We provide convenient scripts to help you pull the latest changes:
+
+### Quick Method:
+- **Mac/Linux**: Run `./pull-latest.sh`
+- **Windows**: Double-click `pull-latest.bat`
+
+### Manual Method:
+```bash
+git pull origin main
+npm install
+npm run dev
+```
+
+> 📚 For detailed instructions and troubleshooting, see [PULL_GUIDE.md](./PULL_GUIDE.md)
+
 ## 🌐 Deployment
 
 ### Netlify Deployment (Recommended)
@@ -128,6 +145,9 @@ mbr/
 ├── tailwind.config.js      # Tailwind CSS configuration
 ├── package.json            # Project dependencies
 ├── netlify.toml            # Netlify deployment config
+├── pull-latest.sh          # Pull script for Mac/Linux
+├── pull-latest.bat         # Pull script for Windows
+├── PULL_GUIDE.md           # Detailed pull instructions
 └── DESIGN_GUIDELINES_AND_STANDARDS.md  # Design system documentation
 ```
 
@@ -158,6 +178,7 @@ Required environment variables for deployment:
 ## 📚 Documentation
 
 - [Design Guidelines](./DESIGN_GUIDELINES_AND_STANDARDS.md) - **MUST READ before making changes**
+- [Pull Guide](./PULL_GUIDE.md) - Instructions for pulling latest changes
 - [Modernization Summary](./MODERNIZATION_SUMMARY.md) - Overview of design improvements
 - [Mobile Transformation Guide](./MOBILE_TRANSFORMATION_GUIDE.md) - Mobile-specific features
 - [UI Navigation Enhancement](./UI_NAVIGATION_ENHANCEMENT.md) - Navigation system details
@@ -173,9 +194,10 @@ Required environment variables for deployment:
 
 Before contributing:
 1. Read the [Design Guidelines](./DESIGN_GUIDELINES_AND_STANDARDS.md)
-2. Test on all device sizes
-3. Ensure no visual regressions
-4. Document any new patterns
+2. Pull latest changes using the provided scripts
+3. Test on all device sizes
+4. Ensure no visual regressions
+5. Document any new patterns
 
 ## 📄 License
 
