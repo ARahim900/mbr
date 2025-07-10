@@ -7,6 +7,7 @@ import StpPlantModule from './components/modules/StpPlantModule';
 import HvacSystemModule from './components/modules/HvacSystemModule';
 import LoginPage from './components/auth/LoginPage';
 import SignUpPage from './components/auth/SignUpPage';
+import AuthDebugPanel from './components/auth/AuthDebugPanel';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 const MainApp: React.FC = () => {
@@ -59,29 +60,38 @@ const MainApp: React.FC = () => {
     if (!isAuthenticated) {
         if (authMode === 'signup') {
             return (
-                <SignUpPage 
-                    onSignUp={handleSignUp}
-                    onBackToLogin={() => setAuthMode('login')}
-                    isLoading={isLoading}
-                    error={error || undefined}
-                />
+                <>
+                    <SignUpPage 
+                        onSignUp={handleSignUp}
+                        onBackToLogin={() => setAuthMode('login')}
+                        isLoading={isLoading}
+                        error={error || undefined}
+                    />
+                    <AuthDebugPanel />
+                </>
             );
         }
         
         return (
-            <LoginPage 
-                onLogin={handleLogin}
-                onGoToSignUp={() => setAuthMode('signup')}
-                isLoading={isLoading}
-                error={error || undefined}
-            />
+            <>
+                <LoginPage 
+                    onLogin={handleLogin}
+                    onGoToSignUp={() => setAuthMode('signup')}
+                    isLoading={isLoading}
+                    error={error || undefined}
+                />
+                <AuthDebugPanel />
+            </>
         );
     }
 
     return (
-        <Layout activeSection={activeSection} setActiveSection={setActiveSection}>
-            {renderContent()}
-        </Layout>
+        <>
+            <Layout activeSection={activeSection} setActiveSection={setActiveSection}>
+                {renderContent()}
+            </Layout>
+            <AuthDebugPanel />
+        </>
     );
 };
 
