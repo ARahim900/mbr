@@ -13,6 +13,7 @@ import {
   Search,
   User,
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -56,6 +57,8 @@ const navItems = [
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, setActiveSection }) => {
+  const { user } = useAuth();
+
   return (
     <>
       {/* Mobile overlay */}
@@ -133,8 +136,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, set
             <button className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors w-full p-2 rounded-lg hover:bg-white/10">
               <User className="h-6 w-6" />
               <div className="text-left">
-                <p className="text-sm font-semibold">Admin User</p>
-                <p className="text-xs opacity-75">admin@muscatbay.com</p>
+                <p className="text-sm font-semibold">{user?.fullName || 'User'}</p>
+                <p className="text-xs opacity-75">{user?.email || user?.username || 'user@muscatbay.com'}</p>
               </div>
             </button>
           </div>
