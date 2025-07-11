@@ -29,10 +29,17 @@ npm install @clerk/clerk-react
 
 Create a `.env.local` file in your project root and add your Clerk keys:
 
+```bash
+# Copy the example file and edit it
+cp .env.example .env.local
+```
+
+Then edit `.env.local` with your actual keys:
+
 ```env
 # Clerk Configuration
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key_here
-CLERK_SECRET_KEY=sk_test_your_secret_key_here
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_actual_publishable_key_here
+CLERK_SECRET_KEY=sk_test_your_actual_secret_key_here
 
 # Existing environment variables
 GEMINI_API_KEY=your_gemini_api_key_here
