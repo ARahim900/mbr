@@ -346,6 +346,25 @@ const ElectricityModule: React.FC = () => {
                 </div>
             </ChartCard>
 
+            <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center">
+                    <div className="lg:col-span-2">
+                        <MonthRangeSlider 
+                            months={electricityMonthsAvailable} 
+                            value={dateRange} 
+                            onChange={setDateRange}
+                        />
+                    </div>
+                    <Button 
+                        onClick={resetDateRange} 
+                        className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white flex items-center justify-center gap-2 h-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                        <RotateCw size={16} />
+                        Reset Range
+                    </Button>
+                </div>
+            </div>
+
              <h2 className="text-lg font-semibold text-gray-700">
                 Analysis for <span className="text-accent font-bold">{selectedType}</span> from <span className="text-accent font-bold">{dateRange.start}</span> to <span className="text-accent font-bold">{dateRange.end}</span>
             </h2>
