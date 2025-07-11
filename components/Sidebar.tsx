@@ -13,7 +13,7 @@ import {
   Search,
   User,
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useUser, UserButton } from '@clerk/clerk-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -57,7 +57,7 @@ const navItems = [
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, setActiveSection }) => {
-  const { user } = useAuth();
+  const { user } = useUser();
 
   return (
     <>
@@ -133,13 +133,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, set
         {/* User section at bottom - only when expanded */}
         {isOpen && (
           <div className="p-4 border-t border-[#5A5563]">
-            <button className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors w-full p-2 rounded-lg hover:bg-white/10">
-              <User className="h-6 w-6" />
+            <div className="flex items-center space-x-3 text-gray-300 p-2 rounded-lg">
+              <UserButton 
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-8 h-8",
+                    userButtonPopoverCard: "bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700",
+                    userButtonPopoverActionButton: "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
+                    userButtonPopoverActionButtonText: "text-gray-700 dark:text-gray-300",
+                    userButtonPopoverActionButtonIcon: "text-gray-500 dark:text-gray-400",
+                  }
+                }}
+                afterSignOutUrl="/"
+              />
               <div className="text-left">
-                <p className="text-sm font-semibold">{user?.fullName || 'User'}</p>
-                <p className="text-xs opacity-75">{user?.email || user?.username || 'user@muscatbay.com'}</p>
+                <p className="text-sm font-semibold">{user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'User'}</p>
+                <p className="text-xs opacity-75">{user?.primaryEmailAddress?.emailAddress || 'user@muscatbay.com'}</p>
               </div>
-            </button>
+            </div>
           </div>
         )}
       </aside>

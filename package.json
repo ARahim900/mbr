@@ -5,15 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && cp \"APP Logo.png\" dist/",
+    "build": "vite build && copy \"APP Logo.png\" dist\\",
     "preview": "vite preview"
   },
   "dependencies": {
-    "react-dom": "^19.1.0",
-    "react": "^19.1.0",
-    "recharts": "^3.0.2",
+    "@clerk/clerk-react": "^5.33.0",
+    "@supabase/supabase-js": "^2.50.4",
+    "luc": "^0.3.1",
     "lucide-react": "^0.417.0",
-    "luc": "^0.3.1"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "recharts": "^3.0.2"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
