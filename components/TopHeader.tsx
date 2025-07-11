@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Droplets, User, LogOut, ChevronDown } from 'lucide-react';
 import TopNavigation from './TopNavigation';
-import { useAuth } from '../contexts/AuthContext';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import { useClickOutside } from '../hooks/useClickOutside';
 
 interface TopHeaderProps {
@@ -10,22 +10,14 @@ interface TopHeaderProps {
 }
 
 const TopHeader: React.FC<TopHeaderProps> = ({ activeSection, onSectionChange }) => {
-  const { user, logout } = useAuth();
+  const { user } = useUser();
+  const { signOut } = useClerk();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const dropdownRef = useClickOutside(() => setShowUserMenu(false));
 
   const handleLogout = () => {
-    logout();
+    signOut();
     setShowUserMenu(false);
-  };
-
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'admin': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'manager': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'operator': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-    }
   };
 
   return (
@@ -52,10 +44,10 @@ const TopHeader: React.FC<TopHeaderProps> = ({ activeSection, onSectionChange })
               </div>
               <div className="hidden md:block text-left">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  {user?.fullName}
+                  {user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'User'}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {user?.department}
+                  {user?.primaryEmailAddress?.emailAddress || 'user@muscatbay.com'}
                 </p>
               </div>
               <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
@@ -66,28 +58,21 @@ const TopHeader: React.FC<TopHeaderProps> = ({ activeSection, onSectionChange })
               <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1">
                 <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {user?.fullName}
+                    {user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'User'}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    @{user?.username}
+                    {user?.primaryEmailAddress?.emailAddress || 'user@muscatbay.com'}
                   </p>
-                  <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded-full ${getRoleColor(user?.role || '')}`}>
-                    {user?.role?.toUpperCase()}
+                  <span className="inline-block mt-1 px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    USER
                   </span>
                 </div>
                 
                 <div className="px-4 py-2">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Permissions:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {user?.permissions.map((permission) => (
-                      <span
-                        key={permission}
-                        className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
-                      >
-                        {permission}
-                      </span>
-                    ))}
-                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">User ID:</p>
+                  <p className="text-xs text-gray-700 dark:text-gray-300 font-mono">
+                    {user?.id || 'N/A'}
+                  </p>
                 </div>
                 
                 <div className="border-t border-gray-200 dark:border-gray-700">
