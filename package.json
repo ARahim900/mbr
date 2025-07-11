@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && copy \"APP Logo.png\" dist\\",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
