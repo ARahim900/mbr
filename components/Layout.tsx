@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { Bell, Search, Menu, User, Settings } from 'lucide-react';
-import { useUser } from '@clerk/clerk-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,7 +11,6 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, activeSection, setActiveSection }) => {
   // Start with sidebar closed on mobile, open on desktop
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user } = useUser();
 
   // Set initial state based on screen size
   useEffect(() => {
@@ -83,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeSection, setActiveSecti
                 <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
                   <User className="h-5 w-5" />
                 </div>
-                <span className="hidden md:block text-sm font-medium">{user?.firstName || 'User'}</span>
+                <span className="hidden md:block text-sm font-medium">Admin</span>
               </button>
             </div>
           </div>

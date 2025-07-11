@@ -13,7 +13,6 @@ import {
   Search,
   User,
 } from 'lucide-react';
-import { useUser, UserButton } from '@clerk/clerk-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -57,8 +56,6 @@ const navItems = [
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, setActiveSection }) => {
-  const { user } = useUser();
-
   return (
     <>
       {/* Mobile overlay */}
@@ -129,30 +126,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, set
             ))}
           </ul>
         </nav>
-
-        {/* User section at bottom - only when expanded */}
-        {isOpen && (
-          <div className="p-4 border-t border-[#5A5563]">
-            <div className="flex items-center space-x-3 text-gray-300 p-2 rounded-lg">
-              <UserButton 
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox: "w-8 h-8",
-                    userButtonPopoverCard: "bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700",
-                    userButtonPopoverActionButton: "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
-                    userButtonPopoverActionButtonText: "text-gray-700 dark:text-gray-300",
-                    userButtonPopoverActionButtonIcon: "text-gray-500 dark:text-gray-400",
-                  }
-                }}
-                afterSignOutUrl="/"
-              />
-              <div className="text-left">
-                <p className="text-sm font-semibold">{user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'User'}</p>
-                <p className="text-xs opacity-75">{user?.primaryEmailAddress?.emailAddress || 'user@muscatbay.com'}</p>
-              </div>
-            </div>
-          </div>
-        )}
       </aside>
     </>
   );
