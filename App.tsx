@@ -97,8 +97,12 @@ const MainApp: React.FC = () => {
                                             card: "bg-transparent shadow-none border-none",
                                             headerTitle: "hidden",
                                             headerSubtitle: "hidden",
-                                            socialButtonsBlockButton: "bg-white dark:bg-gray-700 border border-neutral-border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-primary dark:text-white",
-                                            formButtonPrimary: "bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-accent focus:ring-offset-2 shadow-lg hover:shadow-xl",
+                                            socialButtonsBlockButton: "w-full mb-4 bg-white dark:bg-gray-700 border-2 border-neutral-border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-primary dark:text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-accent focus:ring-offset-2 shadow-lg hover:shadow-xl flex items-center justify-center gap-3",
+                                            socialButtonsBlockButtonText: "font-medium text-primary dark:text-white",
+                                            socialButtonsBlockButtonArrow: "text-primary dark:text-white",
+                                            dividerLine: "bg-neutral-border dark:bg-gray-600",
+                                            dividerText: "text-secondary dark:text-gray-400 bg-white dark:bg-gray-800 px-4",
+                                            formButtonPrimary: "w-full bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-accent focus:ring-offset-2 shadow-lg hover:shadow-xl",
                                             formFieldInput: "w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-accent transition-colors border-neutral-border",
                                             formFieldLabel: "block text-sm font-medium text-primary dark:text-gray-300 mb-2",
                                             identityPreviewText: "text-secondary dark:text-gray-400",
@@ -108,7 +112,8 @@ const MainApp: React.FC = () => {
                                         },
                                         layout: {
                                             socialButtonsPlacement: "top",
-                                            socialButtonsVariant: "blockButton"
+                                            socialButtonsVariant: "blockButton",
+                                            showOptionalFields: true
                                         }
                                     }}
                                     routing="hash"
@@ -122,8 +127,12 @@ const MainApp: React.FC = () => {
                                             card: "bg-transparent shadow-none border-none",
                                             headerTitle: "hidden",
                                             headerSubtitle: "hidden",
-                                            socialButtonsBlockButton: "bg-white dark:bg-gray-700 border border-neutral-border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-primary dark:text-white",
-                                            formButtonPrimary: "bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-accent focus:ring-offset-2 shadow-lg hover:shadow-xl",
+                                            socialButtonsBlockButton: "w-full mb-4 bg-white dark:bg-gray-700 border-2 border-neutral-border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-primary dark:text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-accent focus:ring-offset-2 shadow-lg hover:shadow-xl flex items-center justify-center gap-3",
+                                            socialButtonsBlockButtonText: "font-medium text-primary dark:text-white",
+                                            socialButtonsBlockButtonArrow: "text-primary dark:text-white",
+                                            dividerLine: "bg-neutral-border dark:bg-gray-600",
+                                            dividerText: "text-secondary dark:text-gray-400 bg-white dark:bg-gray-800 px-4",
+                                            formButtonPrimary: "w-full bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:ring-2 focus:ring-accent focus:ring-offset-2 shadow-lg hover:shadow-xl",
                                             formFieldInput: "w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-accent transition-colors border-neutral-border",
                                             formFieldLabel: "block text-sm font-medium text-primary dark:text-gray-300 mb-2",
                                             identityPreviewText: "text-secondary dark:text-gray-400",
@@ -133,7 +142,8 @@ const MainApp: React.FC = () => {
                                         },
                                         layout: {
                                             socialButtonsPlacement: "top",
-                                            socialButtonsVariant: "blockButton"
+                                            socialButtonsVariant: "blockButton",
+                                            showOptionalFields: true
                                         }
                                     }}
                                     routing="hash"
