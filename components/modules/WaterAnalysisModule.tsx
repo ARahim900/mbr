@@ -137,6 +137,80 @@ const WaterAnalysisModule: React.FC = () => {
     'Stage 3 Loss': true,
   });
 
+  // --- Add state for ByTypeAnalysis ---
+  const [selectedType, setSelectedType] = useState('Commercial');
+  const [dateRange, setDateRange] = useState({
+    start: byTypeData.months[0],
+    end: byTypeData.months[byTypeData.months.length - 1],
+  });
+  const resetByTypeDateRange = () => {
+    setDateRange({
+      start: byTypeData.months[0],
+      end: byTypeData.months[byTypeData.months.length - 1],
+    });
+  };
+
+  // Get unique types from byTypeData.table
+  const uniqueTypes = useMemo(() => byTypeData.table.map(row => row.type), []);
+
+  // Filter months based on dateRange
+  const startIdx = byTypeData.months.indexOf(dateRange.start);
+  const endIdx = byTypeData.months.indexOf(dateRange.end);
+  const filteredMonths = byTypeData.months.slice(startIdx, endIdx + 1);
+
+  // Filtered data for selected type and month range
+  const filteredRow = useMemo(() => byTypeData.table.find(row => row.type === selectedType), [selectedType]);
+
+  // Table data for filtered months
+  const filteredTableData = useMemo(() => {
+    if (!filteredRow) return [];
+    return [filteredRow];
+  }, [filteredRow]);
+
+  // Monthly trend data for selected type
+  const typeMonthlyTrendData = useMemo(() => {
+    if (!filteredRow) return [];
+    return filteredMonths.map(month => ({
+      name: month,
+      'Consumption': (filteredRow as any)[month] || 0,
+    }));
+  }, [filteredRow, filteredMonths]);
+
+  // Calculate detailed metrics for selected type
+  const typeDetailedMetrics = useMemo(() => {
+    if (!filteredRow) return null;
+    
+    const monthlyConsumption = filteredMonths.map(month => (filteredRow as any)[month] || 0);
+    const totalConsumption = monthlyConsumption.reduce((sum, val) => sum + val, 0);
+    const avgMonthlyConsumption = totalConsumption / filteredMonths.length;
+    const maxMonth = filteredMonths[monthlyConsumption.indexOf(Math.max(...monthlyConsumption))];
+    const minMonth = filteredMonths[monthlyConsumption.indexOf(Math.min(...monthlyConsumption))];
+    const maxConsumption = Math.max(...monthlyConsumption);
+    const minConsumption = Math.min(...monthlyConsumption);
+    
+    return {
+      totalConsumption,
+      avgMonthlyConsumption,
+      maxMonth,
+      minMonth,
+      maxConsumption,
+      minConsumption,
+      percentOfL1: filteredRow.percentL1,
+      monthlyGrowth: monthlyConsumption.length > 1 ? 
+        ((monthlyConsumption[monthlyConsumption.length - 1] - monthlyConsumption[0]) / monthlyConsumption[0]) * 100 : 0
+    };
+  }, [filteredRow, filteredMonths]);
+
+  // Bar chart data for filtered type
+  const filteredBarChartData = useMemo(() => {
+    return byTypeData.barChart.filter(row => row.name === selectedType);
+  }, [selectedType]);
+
+  // Donut chart data for filtered type
+  const filteredDonutChartData = useMemo(() => {
+    return byTypeData.donutChart.filter(row => row.name === selectedType);
+  }, [selectedType]);
+
   const toggleVisibility = (setter: React.Dispatch<React.SetStateAction<any>>, key: string) => {
     setter((prev: any) => ({ ...prev, [key]: !prev[key] }));
   };
@@ -1207,95 +1281,198 @@ Total System Loss: Overall efficiency
 
       {activeWaterSubSection === 'ByTypeAnalysis' && (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h2 className="text-2xl font-bold text-primary dark:text-white">Consumption by Type</h2>
-                    <p className="text-secondary dark:text-gray-400">Analysis of water consumption based on usage type for Mar 2025.</p>
-                </div>
-                <Button className="bg-primary hover:bg-primary-dark text-white flex items-center gap-2">
-                    <Download size={16} />
-                    Export
-                </Button>
+          {/* Filter by Type Buttons */}
+          <ChartCard title="Filter by Usage Type">
+            <div className="flex flex-wrap gap-3">
+              {uniqueTypes.map(type => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedType(type)}
+                  className={`px-5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2 ${
+                    selectedType === type
+                      ? 'bg-gradient-to-r from-accent to-accent/80 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                  }`}
+                >
+                  <Tags size={14} /> {type}
+                </button>
+              ))}
             </div>
-            
-            <ChartCard title="Consumption by Type" subtitle="Monthly and total consumption for each category.">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
-                            <tr className="text-left text-primary-dark dark:text-gray-300 uppercase">
-                                <th className="p-3 font-semibold">Type</th>
-                                {byTypeData.months.map(month => (
-                                    <th key={month} className="p-3 font-semibold text-right">{month} (m³)</th>
-                                ))}
-                                <th className="p-3 font-semibold text-right">Total (m³)</th>
-                                <th className="p-3 font-semibold text-right">% of L1</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {byTypeData.table.map((row, index) => (
-                                <tr key={row.type} className="border-b border-neutral-border dark:border-gray-700">
-                                    <td className="p-3 font-medium text-primary dark:text-gray-200">{row.type}</td>
-                                    {byTypeData.months.map(month => (
-                                        <td key={month} className="p-3 text-right text-secondary dark:text-gray-400">{(row as any)[month].toLocaleString()}</td>
-                                    ))}
-                                    <td className="p-3 text-right font-bold text-primary dark:text-white">{row.total.toLocaleString()}</td>
-                                    <td className="p-3 text-right text-secondary dark:text-gray-400">{row.percentL1.toFixed(1)}%</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+          </ChartCard>
+
+          {/* Month Range Selector */}
+          <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center">
+              <div className="lg:col-span-2">
+                <MonthRangeSlider
+                  months={byTypeData.months}
+                  value={dateRange}
+                  onChange={setDateRange}
+                />
+              </div>
+              <Button
+                onClick={resetByTypeDateRange}
+                className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white flex items-center justify-center gap-2 h-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <RotateCw size={16} />
+                Reset Range
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-primary dark:text-white">Consumption by Type</h2>
+              <p className="text-secondary dark:text-gray-400">Analysis of water consumption for <span className='font-bold text-accent'>{selectedType}</span> from <span className='font-bold text-accent'>{dateRange.start}</span> to <span className='font-bold text-accent'>{dateRange.end}</span>.</p>
+            </div>
+            <Button className="bg-primary hover:bg-primary-dark text-white flex items-center gap-2">
+              <Download size={16} />
+              Export
+            </Button>
+          </div>
+
+          {/* Detailed Metrics for Selected Type */}
+          {typeDetailedMetrics && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <MetricCard 
+                title="Total Consumption"
+                value={typeDetailedMetrics.totalConsumption.toLocaleString()}
+                unit="m³"
+                icon={Droplets}
+                subtitle={`${selectedType} total for period`}
+                iconColor="text-blue-500"
+              />
+              <MetricCard 
+                title="Monthly Average"
+                value={typeDetailedMetrics.avgMonthlyConsumption.toFixed(0)}
+                unit="m³/month"
+                icon={TrendingUp}
+                subtitle={`Average across ${filteredMonths.length} months`}
+                iconColor="text-green-500"
+              />
+              <MetricCard 
+                title="Peak Month"
+                value={typeDetailedMetrics.maxMonth}
+                unit=""
+                icon={AlertCircle}
+                subtitle={`${typeDetailedMetrics.maxConsumption.toLocaleString()} m³`}
+                iconColor="text-red-500"
+              />
+              <MetricCard 
+                title="% of L1 Supply"
+                value={typeDetailedMetrics.percentOfL1.toFixed(1)}
+                unit="%"
+                icon={CheckCircle}
+                subtitle={`${selectedType} share of total`}
+                iconColor="text-purple-500"
+              />
+            </div>
+          )}
+
+          {/* Monthly Trend Chart for Selected Type */}
+          <ChartCard title={`Monthly Trend for ${selectedType}`} subtitle="Consumption pattern over selected period">
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={typeMonthlyTrendData}>
+                <defs>
+                  <linearGradient id="colorSelectedType" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#00D2B3" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#00D2B3" stopOpacity={0.1}/>
+                  </linearGradient>
+                </defs>
+                <XAxis 
+                  dataKey="name" 
+                  fontSize={12} 
+                  stroke="#9CA3AF"
+                  tick={{ fill: '#6B7280' }}
+                  axisLine={{ stroke: '#E5E7EB', strokeWidth: 1 }}
+                />
+                <YAxis 
+                  fontSize={12} 
+                  tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} 
+                  stroke="#9CA3AF"
+                  tick={{ fill: '#6B7280' }}
+                  axisLine={{ stroke: '#E5E7EB', strokeWidth: 1 }}
+                  tickLine={false}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="Consumption" 
+                  stroke="#00D2B3" 
+                  fill="url(#colorSelectedType)" 
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Consumption by Type" subtitle="Monthly and total consumption for the selected category.">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr className="text-left text-primary-dark dark:text-gray-300 uppercase">
+                  <th className="p-3 font-semibold">Type</th>
+                  {filteredMonths.map(month => (
+                    <th key={month} className="p-3 font-semibold text-right">{month} (m³)</th>
+                  ))}
+                  <th className="p-3 font-semibold text-right">Total (m³)</th>
+                  <th className="p-3 font-semibold text-right">% of L1</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTableData.map((row, index) => (
+                  <tr key={row.type} className="border-b border-neutral-border dark:border-gray-700">
+                    <td className="p-3 font-medium text-primary dark:text-gray-200">{row.type}</td>
+                    {filteredMonths.map(month => (
+                      <td key={month} className="p-3 text-right text-secondary dark:text-gray-400">{(row as any)[month]?.toLocaleString() ?? '-'}</td>
+                    ))}
+                    <td className="p-3 text-right font-bold text-primary dark:text-white">{row.total.toLocaleString()}</td>
+                    <td className="p-3 text-right text-secondary dark:text-gray-400">{row.percentL1.toFixed(1)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ChartCard>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartCard title="Monthly Consumption Breakdown" subtitle="Bar chart showing monthly consumption for selected type">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={typeMonthlyTrendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
+                  <Tooltip cursor={{ fill: 'rgba(0,0,0,0.1)' }} />
+                  <Bar dataKey="Consumption" fill="#00D2B3" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </ChartCard>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                <div className="lg:col-span-3">
-                    <ChartCard title="Monthly Consumption by Type" subtitle="Total consumption for each category.">
-                        <ResponsiveContainer width="100%" height={350}>
-                            <BarChart data={byTypeData.barChart} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                                <XAxis type="number" />
-                                <YAxis type="category" dataKey="name" width={80} />
-                                <Tooltip cursor={{ fill: 'rgba(0,0,0,0.1)' }} />
-                                <Legend />
-                                <Bar dataKey="Total Consumption" barSize={35} radius={[0, 8, 8, 0]}>
-                                    {byTypeData.barChart.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </ChartCard>
-                </div>
-                <div className="lg:col-span-2">
-                    <ChartCard title="Consumption Distribution" subtitle="Percentage of total consumption by type.">
-                         <ResponsiveContainer width="100%" height={350}>
-                            <PieChart>
-                                <Pie
-                                    data={byTypeData.donutChart}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius="60%"
-                                    outerRadius="80%"
-                                    fill="#8884d8"
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                    labelLine={false}
-                                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(1)}%`}
-                                >
-                                    {byTypeData.donutChart.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip formatter={(value: number) => `${value.toFixed(1)}%`} />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </ChartCard>
-                </div>
-            </div>
+            <ChartCard title="Type Distribution" subtitle="Percentage breakdown of selected type">
+              <ResponsiveContainer width="100%" height={350}>
+                <PieChart>
+                  <Pie
+                    data={filteredDonutChartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="60%"
+                    outerRadius="80%"
+                    fill="#8884d8"
+                    paddingAngle={5}
+                    dataKey="value"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(1)}%`}
+                  >
+                    {filteredDonutChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => `${value.toFixed(1)}%`} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
         </div>
       )}
-
 
       {activeWaterSubSection === 'MainDatabase' && (
         <>
