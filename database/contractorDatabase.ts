@@ -2,7 +2,7 @@ import { Contractor } from '../types';
 
 const rawContractorData = `Contractor	Service Provided	Status	Contract Type	Start Date	End Date	Contract (OMR)/Month	Contract Total (OMR)/Year	Note
 KONE Assarain LLC	Lift Maintenance Services	Active	Contract	1/1/2025	12/31/2025	525 OMR	11550 OMR (Excl VAT)	
-Oman Water Treatment Company (OWATCO)	Comprehensive STP Operation and Maintenance	Active	Contract	1/26/2024	1/25/2029	3,103.8 OMR	37,245.4 OMR (Inc VAT)	New contract due to early termination of previous Contract
+Oman Water Treatment Company (OWATCO)	Comprehensive STP Operation and Maintenance	Active	Contract	1/26/2024	1/25/2029	3,103.8 OMR	37,245.4 OMR (Inc VAT)	New contract due to early termination of previous Contract with Celar Company
 Kalhat	Facility Management (FM)	Active	Contract	5/7/2024	5/6/2030	32,200.8 OMR	386,409.718 OMR (Inc VAT)	New contract overlapping with COMO
 Future Cities S.A.O.C (Tadoom)	SUPPLY AND INSTALLATION OF SMART WATER METERS, BILLING FOR WATER CONSUMPTION	Active	Contract	9/24/2024	9/23/2032	2.7 Per Meter Collection	184.3 OMR	New contract replacing OIFC
 Muna Noor International LLC	Pest Control Services	Active	Contract	7/1/2024	6/30/2026	1,400 /Month Inc VAT	16,000 OMR (Inc VAT)	
@@ -18,9 +18,9 @@ Muscat Electronics LLC	Daikin AC Chillers (Sale Center) Maintenance Services	Exp
 Uni Gaz	Gas Refilling for Flame Operation at Muscat Bay Main Entrance	Expired	PO				
 Genetcoo	York AC Chillers (Zone 01) Maintenance Services	Expired	Contract				
 Gulf Expert	BMS AMC FM & Staff Accommodation	Active	Contract	6/3/2025	6/2/2026	2,205.00		
-Diving services	National Marine Services LLC	Active	PO	11/6/2024	11/5/2026	4,757.76		
-Daikin AC at sale center	Muscat Electronics LLC	Active	PO	6/3/2025	6/2/2026	871.82		
-Offsite record storage	Iron mountain ARAMEX	Active	Contract	1/1/2025	12/31/2025	Schedule of rates		
+National Marine Services LLC	Diving services	Active	PO	11/6/2024	11/5/2026	4,757.76		
+Muscat Electronics LLC	Daikin AC at sale center	Active	PO	6/3/2025	6/2/2026	871.82		
+Iron mountain ARAMEX	Offsite record storage	Active	Contract	1/1/2025	12/31/2025	Schedule of rates		
 `;
 
 const parseDate = (dateStr: string): Date | null => {
