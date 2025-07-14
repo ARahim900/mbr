@@ -21,7 +21,17 @@ export default defineConfig(({ mode }) => {
         outDir: 'dist',
         assetsDir: 'assets',
         // Copy static files to dist
-        copyPublicDir: true
+        copyPublicDir: true,
+        // Rollup options for better Netlify compatibility
+        rollupOptions: {
+          output: {
+            manualChunks: undefined,
+          }
+        },
+        // Increase chunk size warning limit
+        chunkSizeWarningLimit: 1600,
+        // Enable source maps for debugging
+        sourcemap: false
       }
     };
 });

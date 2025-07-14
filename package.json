@@ -17,8 +17,14 @@
     "recharts": "^3.0.2"
   },
   "devDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.21.0",
     "@types/node": "^22.14.0",
     "typescript": "~5.7.2",
     "vite": "^6.2.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.21.0",
+    "@rollup/rollup-darwin-x64": "^4.21.0",
+    "@rollup/rollup-win32-x64-msvc": "^4.21.0"
   }
 }
