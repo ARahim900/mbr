@@ -21,7 +21,9 @@ import {
   XAxis, 
   YAxis, 
   Tooltip, 
-  ResponsiveContainer 
+  ResponsiveContainer,
+  LabelList,
+  CartesianGrid
 } from 'recharts';
 import { GlassCard, GradientButton, ResponsiveGrid, ChartGradients, getChartConfig, colors } from '../ui';
 
@@ -51,10 +53,67 @@ const qualityMetrics = [
   { parameter: 'Temperature', value: 23, optimal: 22, unit: '°C', status: 'good' }
 ];
 
+// Custom label component with enhanced styling
+const renderCustomLabel = (props: any) => {
+  const { x, y, value, index } = props;
+  
+  // Only show labels for every other point to avoid crowding
+  if (index % 2 !== 0 && index !== props.data.length - 1) return null;
+  
+  return (
+    <g transform={`translate(${x},${y})`}>
+      {/* Background rectangle with glassmorphism effect */}
+      <rect
+        x={-20}
+        y={-25}
+        width={40}
+        height={20}
+        rx={4}
+        fill="rgba(78, 68, 86, 0.9)"
+        stroke="rgba(0, 210, 179, 0.5)"
+        strokeWidth={1}
+        filter="blur(0.5px)"
+      />
+      {/* Text label */}
+      <text
+        x={0}
+        y={-10}
+        fill="#00D2B3"
+        textAnchor="middle"
+        fontSize={12}
+        fontWeight="600"
+      >
+        {value}
+      </text>
+    </g>
+  );
+};
+
+// Enhanced custom tooltip
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="glass-card p-3 min-w-[150px]">
+        <p className="text-white/80 text-sm font-medium mb-2">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex justify-between items-center space-x-4">
+            <span className="text-white/60 text-xs capitalize">{entry.name}:</span>
+            <span className="text-white font-semibold text-sm">
+              {entry.value} {entry.name === 'flow' ? 'L/min' : 'PSI'}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 const WaterSystemDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showDataLabels, setShowDataLabels] = useState(true);
 
   useEffect(() => {
     // Simulate loading
@@ -151,34 +210,72 @@ const WaterSystemDashboard: React.FC = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
-        {/* Flow Trends Chart */}
+        {/* Enhanced Flow Trends Chart */}
         <GlassCard className="p-4 md:p-6 lg:col-span-2 xl:col-span-1">
-          <h3 className="text-xl font-semibold text-white mb-4">24h Flow Trends</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-white">24h Flow Trends</h3>
+            <button
+              onClick={() => setShowDataLabels(!showDataLabels)}
+              className="text-xs text-white/60 hover:text-white transition-colors px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20"
+            >
+              {showDataLabels ? 'Hide' : 'Show'} Labels
+            </button>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={flowData} {...getChartConfig()}>
+            <AreaChart data={flowData} margin={{ top: 30, right: 10, left: 10, bottom: 0 }}>
               <ChartGradients />
+              {/* Subtle grid for better readability */}
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                stroke="rgba(255,255,255,0.05)" 
+                vertical={false}
+              />
               <XAxis 
                 dataKey="time" 
                 stroke={colors.text.muted}
                 axisLine={false}
                 tickLine={false}
+                tick={{ fontSize: 12 }}
               />
               <YAxis 
                 stroke={colors.text.muted}
                 axisLine={false}
                 tickLine={false}
+                tick={{ fontSize: 12 }}
+                domain={['dataMin - 100', 'dataMax + 100']}
               />
-              <Tooltip {...getChartConfig().tooltip} />
+              <Tooltip content={<CustomTooltip />} />
               <Area 
                 type="monotone" 
                 dataKey="flow" 
                 stroke={colors.accent}
-                strokeWidth={2}
+                strokeWidth={3}
                 fillOpacity={1} 
-                fill="url(#colorGradient)" 
-              />
+                fill="url(#colorGradient)"
+                animationDuration={1000}
+              >
+                {showDataLabels && (
+                  <LabelList 
+                    dataKey="flow" 
+                    position="top" 
+                    content={renderCustomLabel}
+                  />
+                )}
+              </Area>
             </AreaChart>
           </ResponsiveContainer>
+          
+          {/* Chart Legend */}
+          <div className="mt-4 flex items-center justify-center space-x-6 text-xs">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-[#00D2B3]" />
+              <span className="text-white/60">Flow Rate (L/min)</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-[#6C63FF]" />
+              <span className="text-white/60">Pressure (PSI)</span>
+            </div>
+          </div>
         </GlassCard>
 
         {/* Zone Distribution */}
