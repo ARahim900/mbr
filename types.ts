@@ -107,3 +107,38 @@ export interface HvacEntry {
     fixedIssues: string;
     notes: string;
 }
+
+// Firefighting and Alarm System Types
+export interface FirefightingEquipment {
+    id: string;
+    zone: string;
+    building: string;
+    systemType: 'Fire Alarm Panel' | 'Smoke Detector' | 'Fire Suppression' | 'Fire Extinguisher' | 'Emergency Lighting' | 'Fire Pump' | 'Heat Detector' | 'Manual Call Point' | 'Sprinkler Head' | 'Fire Hose Reel';
+    equipment: string;
+    manufacturer: string;
+    model: string;
+    serialNumber?: string;
+    installDate: string;
+    lastMaintenance: string;
+    nextMaintenance: string;
+    status: 'Operational' | 'Needs Attention' | 'Maintenance Due' | 'Expired' | 'Out of Service';
+    batteryLevel: number;
+    signalStrength: 'Strong' | 'Moderate' | 'Weak' | 'N/A';
+    priority: 'Critical' | 'High' | 'Medium' | 'Low';
+    inspector: string;
+    lastInspectionDate: string;
+    complianceStatus: 'Compliant' | 'Non-Compliant' | 'Pending Review';
+    certificationExpiry?: string;
+    notes: string;
+    maintenanceHistory: MaintenanceRecord[];
+}
+
+export interface MaintenanceRecord {
+    date: string;
+    type: 'Routine Inspection' | 'Repair' | 'Replacement' | 'Calibration' | 'Emergency Service';
+    technician: string;
+    description: string;
+    status: 'Completed' | 'In Progress' | 'Scheduled';
+    cost?: number;
+    nextAction?: string;
+}

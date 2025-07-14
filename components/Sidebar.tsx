@@ -12,6 +12,7 @@ import {
   Bell,
   Search,
   User,
+  Shield,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -51,6 +52,7 @@ const navItems = [
     { id: 'Water System', label: 'Water System', icon: <Droplets className="h-6 w-6" /> },
     { id: 'Electricity System', label: 'Electricity System', icon: <Zap className="h-6 w-6" /> },
     { id: 'HVAC System', label: 'HVAC System', icon: <Wind className="h-6 w-6" /> },
+    { id: 'Firefighting & Alarm', label: 'Firefighting & Alarm', icon: <Shield className="h-6 w-6" /> },
     { id: 'Contractor Tracker', label: 'Contractor Tracker', icon: <HardHat className="h-6 w-6" /> },
     { id: 'STP Plant', label: 'STP Plant', icon: <Recycle className="h-6 w-6" /> },
 ];

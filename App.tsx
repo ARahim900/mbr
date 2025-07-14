@@ -5,6 +5,7 @@ import ElectricityModule from './components/modules/ElectricityModule';
 import ContractorTrackerModule from './components/modules/ContractorTrackerModule';
 import StpPlantModule from './components/modules/StpPlantModule';
 import HvacSystemModule from './components/modules/HvacSystemModule';
+import FirefightingAlarmModule from './components/modules/FirefightingAlarmModule';
 
 const App: React.FC = () => {
     const [activeSection, setActiveSection] = useState('Water System');
@@ -21,6 +22,8 @@ const App: React.FC = () => {
                 return <ContractorTrackerModule />;
             case 'STP Plant':
                 return <StpPlantModule />;
+            case 'Firefighting & Alarm':
+                return <FirefightingAlarmModule />;
             default:
                 return <WaterAnalysisModule />;
         }
