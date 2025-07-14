@@ -52,6 +52,55 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+// Enhanced Custom Label with Background for Better Visibility
+const renderEnhancedLabel = (props: any) => {
+  const { x, y, value, fill } = props;
+  if (!value || value === 0) return null;
+  
+  const formattedValue = value.toLocaleString();
+  const labelWidth = formattedValue.length * 6 + 12; // Approximate width calculation
+  const labelHeight = 18;
+  
+  return (
+    <g>
+      {/* Background rectangle with glassmorphism effect */}
+      <rect
+        x={x - labelWidth/2}
+        y={y - labelHeight/2 - 2}
+        width={labelWidth}
+        height={labelHeight}
+        rx={9}
+        ry={9}
+        fill="rgba(255, 255, 255, 0.92)"
+        stroke="rgba(156, 163, 175, 0.4)"
+        strokeWidth={1}
+        filter="url(#label-shadow)"
+      />
+      {/* Text label with better contrast */}
+      <text
+        x={x}
+        y={y + 2}
+        textAnchor="middle"
+        fontSize={10}
+        fontWeight="600"
+        fill="#374151"
+      >
+        {formattedValue}
+      </text>
+    </g>
+  );
+};
+
+// Label component for different chart types
+const CustomLabelList = ({ dataKey, fill, offset = 8 }: any) => (
+  <LabelList 
+    dataKey={dataKey} 
+    position="top" 
+    offset={offset}
+    content={renderEnhancedLabel}
+  />
+);
+
 // Data for "By Type" Analysis (illustrative, based on user image)
 const byTypeData = {
   table: [
@@ -503,26 +552,30 @@ Total System Loss: Overall efficiency
                         ))}
                     </div>
                     <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={monthlyWaterTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                        <AreaChart data={monthlyWaterTrendData} margin={{ top: 35, right: 30, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorL1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[0]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[0]} stopOpacity={0}/></linearGradient>
                                 <linearGradient id="colorL2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[1]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[1]} stopOpacity={0}/></linearGradient>
                                 <linearGradient id="colorL3" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[2]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[2]} stopOpacity={0}/></linearGradient>
+                                {/* Enhanced label shadow filter */}
+                                <filter id="label-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.1)" />
+                                </filter>
                             </defs>
                             <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
                             <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
                             <Tooltip content={<CustomTooltip />} />
                             
                             {consumptionVisibility['L1 - Main Source'] && <Area type="monotone" dataKey="L1 - Main Source" stroke={COLORS.chart[0]} fillOpacity={1} fill="url(#colorL1)" strokeWidth={2}>
-                                <LabelList dataKey="L1 - Main Source" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value > 0 ? value.toLocaleString() : ''} />
+                                <CustomLabelList dataKey="L1 - Main Source" fill={COLORS.chart[0]} offset={12} />
                             </Area>}
 
                             {consumptionVisibility['L2 - Zone Bulk Meters'] && <Area type="monotone" dataKey="L2 - Zone Bulk Meters" stroke={COLORS.chart[1]} fillOpacity={1} fill="url(#colorL2)" strokeWidth={2}>
-                                <LabelList dataKey="L2 - Zone Bulk Meters" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value > 0 ? value.toLocaleString() : ''} />
+                                <CustomLabelList dataKey="L2 - Zone Bulk Meters" fill={COLORS.chart[1]} offset={12} />
                             </Area>}
 
                             {consumptionVisibility['L3 - Building/Villa Meters'] && <Area type="monotone" dataKey="L3 - Building/Villa Meters" stroke={COLORS.chart[2]} fillOpacity={1} fill="url(#colorL3)" strokeWidth={2}>
-                                <LabelList dataKey="L3 - Building/Villa Meters" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value > 0 ? value.toLocaleString() : ''} />
+                                <CustomLabelList dataKey="L3 - Building/Villa Meters" fill={COLORS.chart[2]} offset={12} />
                             </Area>}
                         </AreaChart>
                     </ResponsiveContainer>
@@ -544,26 +597,30 @@ Total System Loss: Overall efficiency
                         ))}
                     </div>
                      <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={lossTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                        <AreaChart data={lossTrendData} margin={{ top: 35, right: 30, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorS1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#991B1B'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#991B1B'} stopOpacity={0}/></linearGradient>
                                 <linearGradient id="colorS2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#DC2626'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#DC2626'} stopOpacity={0}/></linearGradient>
                                 <linearGradient id="colorS3" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#F87171'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#F87171'} stopOpacity={0}/></linearGradient>
+                                {/* Enhanced label shadow filter for loss chart */}
+                                <filter id="label-shadow-loss" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.15)" />
+                                </filter>
                             </defs>
                             <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
                             <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
                             <Tooltip content={<CustomTooltip />} />
                             
                             {lossVisibility['Stage 1 Loss'] && <Area type="monotone" dataKey="Stage 1 Loss" stroke={'#991B1B'} fillOpacity={1} fill="url(#colorS1)" strokeWidth={2}>
-                                <LabelList dataKey="Stage 1 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value !== 0 ? value.toLocaleString() : ''} />
+                                <CustomLabelList dataKey="Stage 1 Loss" fill={'#991B1B'} offset={12} />
                             </Area>}
 
                             {lossVisibility['Stage 2 Loss'] && <Area type="monotone" dataKey="Stage 2 Loss" stroke={'#DC2626'} fillOpacity={1} fill="url(#colorS2)" strokeWidth={2}>
-                                <LabelList dataKey="Stage 2 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value !== 0 ? value.toLocaleString() : ''} />
+                                <CustomLabelList dataKey="Stage 2 Loss" fill={'#DC2626'} offset={12} />
                             </Area>}
                             
                             {lossVisibility['Stage 3 Loss'] && <Area type="monotone" dataKey="Stage 3 Loss" stroke={'#F87171'} fillOpacity={1} fill="url(#colorS3)" strokeWidth={2}>
-                                <LabelList dataKey="Stage 3 Loss" position="top" offset={8} className="text-[10px] fill-gray-600 dark:fill-gray-300 font-semibold" formatter={(value: any) => value !== 0 ? value.toLocaleString() : ''} />
+                                <CustomLabelList dataKey="Stage 3 Loss" fill={'#F87171'} offset={12} />
                             </Area>}
                         </AreaChart>
                     </ResponsiveContainer>
@@ -577,7 +634,7 @@ Total System Loss: Overall efficiency
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ChartCard title="Monthly Water Distribution Trend" subtitle="Consumption at each level of the hierarchy">
                   <ResponsiveContainer width="100%" height={300}>
-                      <AreaChart data={monthlyWaterTrendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                      <AreaChart data={monthlyWaterTrendData} margin={{ top: 35, right: 30, left: 0, bottom: 0 }}>
                           <defs>
                               <linearGradient id="colorA1" x1="0" y1="0" x2="0" y2="1">
                                   <stop offset="5%" stopColor={'#2563EB'} stopOpacity={0.8}/>
@@ -860,7 +917,7 @@ Total System Loss: Overall efficiency
                           'Water Loss': Math.abs((monthAnalysis?.zoneBulkConsumption || 0) - (monthAnalysis?.totalIndividualConsumption || 0))
                         };
                       });
-                    })()} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    })()} margin={{ top: 35, right: 30, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorZoneBulk" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#1D4ED8" stopOpacity={0.8}/>
@@ -874,15 +931,23 @@ Total System Loss: Overall efficiency
                           <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8}/>
                           <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
                         </linearGradient>
+                        {/* Enhanced label shadow filter for zone chart */}
+                        <filter id="label-shadow-zone" x="-50%" y="-50%" width="200%" height="200%">
+                          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.12)" />
+                        </filter>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
+                      <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend />
-                      <Area type="monotone" dataKey="Zone Bulk" stroke="#1D4ED8" fillOpacity={1} fill="url(#colorZoneBulk)" />
-                      <Area type="monotone" dataKey="Individual Total" stroke="#3B82F6" fillOpacity={1} fill="url(#colorIndividual)" />
-                      <Area type="monotone" dataKey="Water Loss" stroke="#EF4444" fillOpacity={1} fill="url(#colorLoss)" />
+                      <Area type="monotone" dataKey="Zone Bulk" stroke="#1D4ED8" fillOpacity={1} fill="url(#colorZoneBulk)" strokeWidth={2}>
+                        <CustomLabelList dataKey="Zone Bulk" fill="#1D4ED8" offset={12} />
+                      </Area>
+                      <Area type="monotone" dataKey="Individual Total" stroke="#3B82F6" fillOpacity={1} fill="url(#colorIndividual)" strokeWidth={2}>
+                        <CustomLabelList dataKey="Individual Total" fill="#3B82F6" offset={12} />
+                      </Area>
+                      <Area type="monotone" dataKey="Water Loss" stroke="#EF4444" fillOpacity={1} fill="url(#colorLoss)" strokeWidth={2}>
+                        <CustomLabelList dataKey="Water Loss" fill="#EF4444" offset={12} />
+                      </Area>
                     </AreaChart>
                   </ResponsiveContainer>
                 </ChartCard>
