@@ -53,37 +53,106 @@ const qualityMetrics = [
   { parameter: 'Temperature', value: 23, optimal: 22, unit: '°C', status: 'good' }
 ];
 
-// Custom label component with enhanced styling
+// Enhanced custom label component with prominent background
 const renderCustomLabel = (props: any) => {
   const { x, y, value, index } = props;
   
   // Only show labels for every other point to avoid crowding
-  if (index % 2 !== 0 && index !== props.data.length - 1) return null;
+  if (index % 2 !== 0 && index !== props.payload.length - 1) return null;
   
   return (
     <g transform={`translate(${x},${y})`}>
-      {/* Background rectangle with glassmorphism effect */}
+      {/* Shadow for depth */}
       <rect
-        x={-20}
-        y={-25}
-        width={40}
+        x={-25}
+        y={-28}
+        width={50}
+        height={24}
+        rx={6}
+        fill="rgba(0, 0, 0, 0.3)"
+        transform="translate(2, 2)"
+      />
+      
+      {/* Main background - more opaque and prominent */}
+      <rect
+        x={-25}
+        y={-28}
+        width={50}
+        height={24}
+        rx={6}
+        fill="#2a2533"
+        stroke="#00D2B3"
+        strokeWidth={1.5}
+        opacity={0.95}
+      />
+      
+      {/* Inner glow effect */}
+      <rect
+        x={-23}
+        y={-26}
+        width={46}
         height={20}
         rx={4}
-        fill="rgba(78, 68, 86, 0.9)"
-        stroke="rgba(0, 210, 179, 0.5)"
-        strokeWidth={1}
-        filter="blur(0.5px)"
+        fill="rgba(0, 210, 179, 0.1)"
+        opacity={0.5}
       />
-      {/* Text label */}
+      
+      {/* Text label with shadow */}
       <text
         x={0}
         y={-10}
         fill="#00D2B3"
         textAnchor="middle"
-        fontSize={12}
-        fontWeight="600"
+        fontSize={13}
+        fontWeight="700"
+        style={{ textShadow: '0 0 4px rgba(0, 210, 179, 0.5)' }}
       >
         {value}
+      </text>
+    </g>
+  );
+};
+
+// Alternative label style - pill shaped
+const renderPillLabel = (props: any) => {
+  const { x, y, value } = props;
+  
+  return (
+    <g transform={`translate(${x},${y - 35})`}>
+      {/* Pill background */}
+      <rect
+        x={-30}
+        y={-12}
+        width={60}
+        height={24}
+        rx={12}
+        fill="rgba(78, 68, 86, 0.98)"
+        stroke="rgba(0, 210, 179, 0.8)"
+        strokeWidth={2}
+      />
+      
+      {/* Value text */}
+      <text
+        x={0}
+        y={4}
+        fill="#00D2B3"
+        textAnchor="middle"
+        fontSize={14}
+        fontWeight="bold"
+      >
+        {value}
+      </text>
+      
+      {/* Unit text */}
+      <text
+        x={0}
+        y={-5}
+        fill="rgba(255, 255, 255, 0.6)"
+        textAnchor="middle"
+        fontSize={10}
+        fontWeight="normal"
+      >
+        L/min
       </text>
     </g>
   );
@@ -93,12 +162,12 @@ const renderCustomLabel = (props: any) => {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="glass-card p-3 min-w-[150px]">
-        <p className="text-white/80 text-sm font-medium mb-2">{label}</p>
+      <div className="backdrop-blur-lg bg-[#2a2533]/95 border border-[#00D2B3]/50 rounded-lg p-4 shadow-2xl">
+        <p className="text-white font-medium mb-3">{label}</p>
         {payload.map((entry: any, index: number) => (
-          <div key={index} className="flex justify-between items-center space-x-4">
-            <span className="text-white/60 text-xs capitalize">{entry.name}:</span>
-            <span className="text-white font-semibold text-sm">
+          <div key={index} className="flex justify-between items-center space-x-6 mb-1">
+            <span className="text-white/70 text-sm capitalize">{entry.name}:</span>
+            <span className="text-[#00D2B3] font-bold">
               {entry.value} {entry.name === 'flow' ? 'L/min' : 'PSI'}
             </span>
           </div>
@@ -114,6 +183,7 @@ const WaterSystemDashboard: React.FC = () => {
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [showDataLabels, setShowDataLabels] = useState(true);
+  const [labelStyle, setLabelStyle] = useState<'box' | 'pill'>('box');
 
   useEffect(() => {
     // Simulate loading
@@ -214,15 +284,23 @@ const WaterSystemDashboard: React.FC = () => {
         <GlassCard className="p-4 md:p-6 lg:col-span-2 xl:col-span-1">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold text-white">24h Flow Trends</h3>
-            <button
-              onClick={() => setShowDataLabels(!showDataLabels)}
-              className="text-xs text-white/60 hover:text-white transition-colors px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20"
-            >
-              {showDataLabels ? 'Hide' : 'Show'} Labels
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setLabelStyle(labelStyle === 'box' ? 'pill' : 'box')}
+                className="text-xs text-white/60 hover:text-white transition-colors px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20"
+              >
+                {labelStyle === 'box' ? 'Pill' : 'Box'} Style
+              </button>
+              <button
+                onClick={() => setShowDataLabels(!showDataLabels)}
+                className="text-xs text-white/60 hover:text-white transition-colors px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20"
+              >
+                {showDataLabels ? 'Hide' : 'Show'} Labels
+              </button>
+            </div>
           </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={flowData} margin={{ top: 30, right: 10, left: 10, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={350}>
+            <AreaChart data={flowData} margin={{ top: 50, right: 10, left: 10, bottom: 10 }}>
               <ChartGradients />
               {/* Subtle grid for better readability */}
               <CartesianGrid 
@@ -235,13 +313,13 @@ const WaterSystemDashboard: React.FC = () => {
                 stroke={colors.text.muted}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.6)' }}
               />
               <YAxis 
                 stroke={colors.text.muted}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.6)' }}
                 domain={['dataMin - 100', 'dataMax + 100']}
               />
               <Tooltip content={<CustomTooltip />} />
@@ -258,10 +336,24 @@ const WaterSystemDashboard: React.FC = () => {
                   <LabelList 
                     dataKey="flow" 
                     position="top" 
-                    content={renderCustomLabel}
+                    content={labelStyle === 'box' ? renderCustomLabel : renderPillLabel}
                   />
                 )}
               </Area>
+              
+              {/* Data points for better visibility */}
+              {showDataLabels && flowData.map((entry, index) => (
+                <circle
+                  key={index}
+                  cx={0}
+                  cy={0}
+                  r={4}
+                  fill="#00D2B3"
+                  stroke="#2a2533"
+                  strokeWidth={2}
+                  className="animate-pulse"
+                />
+              ))}
             </AreaChart>
           </ResponsiveContainer>
           
