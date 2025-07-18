@@ -626,7 +626,7 @@ Total System Loss: Overall efficiency
                         ))}
                     </div>
                     <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={monthlyWaterTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                        <AreaChart data={monthlyWaterTrendData} margin={{ top: 35, right: 30, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorL1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[0]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[0]} stopOpacity={0}/></linearGradient>
                                 <linearGradient id="colorL2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[1]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[1]} stopOpacity={0}/></linearGradient>
@@ -671,11 +671,15 @@ Total System Loss: Overall efficiency
                         ))}
                     </div>
                      <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={lossTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                        <AreaChart data={lossTrendData} margin={{ top: 35, right: 30, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorS1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#991B1B'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#991B1B'} stopOpacity={0}/></linearGradient>
                                 <linearGradient id="colorS2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#DC2626'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#DC2626'} stopOpacity={0}/></linearGradient>
                                 <linearGradient id="colorS3" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#F87171'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#F87171'} stopOpacity={0}/></linearGradient>
+                                {/* Enhanced label shadow filter for loss chart */}
+                                <filter id="label-shadow-loss" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.15)" />
+                                </filter>
                             </defs>
                             <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
                             <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
@@ -704,7 +708,7 @@ Total System Loss: Overall efficiency
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ChartCard title="Monthly Water Distribution Trend" subtitle="Consumption at each level of the hierarchy">
                   <ResponsiveContainer width="100%" height={300}>
-                      <AreaChart data={monthlyWaterTrendData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                      <AreaChart data={monthlyWaterTrendData} margin={{ top: 35, right: 30, left: 0, bottom: 0 }}>
                           <defs>
                               <linearGradient id="colorA1" x1="0" y1="0" x2="0" y2="1">
                                   <stop offset="5%" stopColor={'#2563EB'} stopOpacity={0.8}/>
@@ -987,7 +991,7 @@ Total System Loss: Overall efficiency
                           'Water Loss': Math.abs((monthAnalysis?.zoneBulkConsumption || 0) - (monthAnalysis?.totalIndividualConsumption || 0))
                         };
                       });
-                    })()} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    })()} margin={{ top: 35, right: 30, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorZoneBulk" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#1D4ED8" stopOpacity={0.8}/>
@@ -1001,15 +1005,23 @@ Total System Loss: Overall efficiency
                           <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8}/>
                           <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
                         </linearGradient>
+                        {/* Enhanced label shadow filter for zone chart */}
+                        <filter id="label-shadow-zone" x="-50%" y="-50%" width="200%" height="200%">
+                          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.12)" />
+                        </filter>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
+                      <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend />
-                      <Area type="monotone" dataKey="Zone Bulk" stroke="#1D4ED8" fillOpacity={1} fill="url(#colorZoneBulk)" />
-                      <Area type="monotone" dataKey="Individual Total" stroke="#3B82F6" fillOpacity={1} fill="url(#colorIndividual)" />
-                      <Area type="monotone" dataKey="Water Loss" stroke="#EF4444" fillOpacity={1} fill="url(#colorLoss)" />
+                      <Area type="monotone" dataKey="Zone Bulk" stroke="#1D4ED8" fillOpacity={1} fill="url(#colorZoneBulk)" strokeWidth={2}>
+                        <CustomLabelList dataKey="Zone Bulk" fill="#1D4ED8" offset={12} />
+                      </Area>
+                      <Area type="monotone" dataKey="Individual Total" stroke="#3B82F6" fillOpacity={1} fill="url(#colorIndividual)" strokeWidth={2}>
+                        <CustomLabelList dataKey="Individual Total" fill="#3B82F6" offset={12} />
+                      </Area>
+                      <Area type="monotone" dataKey="Water Loss" stroke="#EF4444" fillOpacity={1} fill="url(#colorLoss)" strokeWidth={2}>
+                        <CustomLabelList dataKey="Water Loss" fill="#EF4444" offset={12} />
+                      </Area>
                     </AreaChart>
                   </ResponsiveContainer>
                 </ChartCard>
