@@ -6,8 +6,8 @@ export function parseWaterConsumptionCSV(csvContent: string): WaterMeter[] {
     header: true,
     dynamicTyping: true,
     skipEmptyLines: true,
-    transformHeader: (header) => header.trim(),
-    transform: (value) => {
+    transformHeader: (header: string) => header.trim(),
+    transform: (value: any) => {
       if (typeof value === 'string') {
         return value.trim();
       }
@@ -26,19 +26,19 @@ export function processWaterMeters(meters: WaterMeter[]): WaterMeter[] {
   // Clean and process the data
   return meters.map(meter => {
     // Ensure numeric values for consumption columns
-    const processedMeter = { ...meter };
+    const processedMeter = { ...meter } as any;
     const monthColumns = [
       'Jan-25', 'Feb-25', 'Mar-25', 'Apr-25', 'May-25',
       'Jun-25', 'Jul-25', 'Aug-25', 'Sep-25', 'Oct-25', 'Nov-25', 'Dec-25'
     ];
 
     monthColumns.forEach(month => {
-      const value = processedMeter[month as keyof WaterMeter];
+      const value = processedMeter[month];
       if (value === '' || value === null || value === undefined) {
-        processedMeter[month as keyof WaterMeter] = 0;
+        processedMeter[month] = 0;
       } else if (typeof value === 'string') {
         const numValue = parseFloat(value.replace(/,/g, ''));
-        processedMeter[month as keyof WaterMeter] = isNaN(numValue) ? 0 : numValue;
+        processedMeter[month] = isNaN(numValue) ? 0 : numValue;
       }
     });
 
@@ -47,7 +47,7 @@ export function processWaterMeters(meters: WaterMeter[]): WaterMeter[] {
       processedMeter.Total = parseFloat(processedMeter.Total.toString().replace(/,/g, '')) || 0;
     }
 
-    return processedMeter;
+    return processedMeter as WaterMeter;
   });
 }
 

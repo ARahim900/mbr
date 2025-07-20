@@ -134,6 +134,10 @@ const waterSubSections = [
 const WaterAnalysisModule: React.FC = () => {
   const [activeWaterSubSection, setActiveWaterSubSection] = useState('Overview');
   
+  // Debug: Check if data is loaded
+  console.log('Water System Data Length:', waterSystemData.length);
+  console.log('Water Months Available:', waterMonthsAvailable);
+  console.log('Sample Water System Data:', waterSystemData.slice(0, 3));
 
   const [selectedWaterMonth, setSelectedWaterMonth] = useState('May-25');
   const [overviewDateRange, setOverviewDateRange] = useState({
@@ -252,11 +256,13 @@ const WaterAnalysisModule: React.FC = () => {
 
   // For date-range analysis on the Overview tab
   const overviewCalculations = useMemo(() => {
-    return calculateAggregatedDataForPeriod(overviewDateRange.start, overviewDateRange.end);
+    const calculations = calculateAggregatedDataForPeriod(overviewDateRange.start, overviewDateRange.end);
+    console.log('Overview Calculations:', calculations);
+    return calculations;
   }, [overviewDateRange]);
 
   const monthlyWaterTrendData = useMemo(() => {
-    return waterMonthsAvailable.map(month => {
+    const data = waterMonthsAvailable.map(month => {
       const { A1_supply, L2_total, L3_total } = calculateWaterLoss(month);
       return {
         name: month,
@@ -265,10 +271,12 @@ const WaterAnalysisModule: React.FC = () => {
         'L3 - Building/Villa Meters': L3_total,
       };
     });
+    console.log('Monthly Water Trend Data:', data);
+    return data;
   }, []);
 
   const lossTrendData = useMemo(() => {
-    return waterMonthsAvailable.map(month => {
+    const data = waterMonthsAvailable.map(month => {
       const { stage1Loss, stage2Loss, stage3Loss, totalLoss } = calculateWaterLoss(month);
       return {
         name: month,
@@ -278,6 +286,8 @@ const WaterAnalysisModule: React.FC = () => {
         'Total Loss': totalLoss,
       };
     });
+    console.log('Loss Trend Data:', data);
+    return data;
   }, []);
 
 
@@ -470,16 +480,16 @@ Total System Loss: Overall efficiency
       
       {activeWaterSubSection === 'Overview' && (
         <>
-          <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6 border border-neutral-border dark:border-gray-700">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div className="md:col-span-1">
+          <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 sm:p-6 mb-6 border border-neutral-border dark:border-gray-700">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 items-center">
+                  <div className="lg:col-span-1">
                       <MonthRangeSlider 
                           months={waterMonthsAvailable} 
                           value={overviewDateRange} 
                           onChange={setOverviewDateRange}
                       />
                   </div>
-                  <div className="md:col-span-1 flex flex-col gap-4">
+                  <div className="lg:col-span-1 flex flex-col gap-3 sm:gap-4">
                       <Button onClick={resetDateRange} className="bg-secondary hover:bg-primary-light text-white flex items-center justify-center gap-2 h-10">
                           <RotateCw size={16} />
                           Reset Range
@@ -504,7 +514,7 @@ Total System Loss: Overall efficiency
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 transition-colors duration-300">
               4-Level Water Distribution Totals for <span className="text-accent">{overviewCalculations.period}</span>
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <MetricCard 
                 title="A1 - Main Source (L1)" 
                 value={overviewCalculations.A1_supply.toLocaleString()} 
@@ -548,7 +558,7 @@ Total System Loss: Overall efficiency
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 transition-colors duration-300">
               Multi-Stage Water Loss Totals for <span className="text-accent">{overviewCalculations.period}</span>
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <MetricCard 
                 title="Stage 1 Loss (A1→A2)" 
                 value={Math.abs(overviewCalculations.stage1Loss).toFixed(0)} 
@@ -590,7 +600,7 @@ Total System Loss: Overall efficiency
              data-aos-duration="800"
              data-aos-delay="600"
            >
-                <ChartCard title="Monthly Consumption Trend" subtitle="L1 Supply vs. L2 & L3 Meter Totals">
+                <ChartCard title="Monthly Consumption Trend" subtitle="L1 Supply vs. L2 & L3 Meter Totals" className="min-h-[400px] sm:min-h-[450px]">
                     <div className="flex flex-wrap gap-2 justify-center mb-4">
                         {Object.keys(consumptionVisibility).map((key, index) => (
                             <button
@@ -602,40 +612,53 @@ Total System Loss: Overall efficiency
                                 style={{ backgroundColor: consumptionVisibility[key as keyof typeof consumptionVisibility] ? COLORS.chart[index] : undefined }}
                             >
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS.chart[index] }}></div>
-                                <span>{key}</span>
+                                <span className="hidden sm:inline">{key}</span>
+                                <span className="sm:hidden">{key.split(' ')[0]}</span>
                             </button>
                         ))}
                     </div>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={monthlyWaterTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                            <defs>
-                                <linearGradient id="colorL1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[0]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[0]} stopOpacity={0}/></linearGradient>
-                                <linearGradient id="colorL2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[1]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[1]} stopOpacity={0}/></linearGradient>
-                                <linearGradient id="colorL3" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[2]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[2]} stopOpacity={0}/></linearGradient>
-                                {/* Enhanced label shadow filter */}
-                                <filter id="label-shadow" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.1)" />
-                                </filter>
-                            </defs>
-                            <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                            <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
-                            <Tooltip content={<CustomTooltip />} />
-                            
-                            {consumptionVisibility['L1 - Main Source'] && <Area type="monotone" dataKey="L1 - Main Source" stroke={COLORS.chart[0]} fillOpacity={1} fill="url(#colorL1)" strokeWidth={2}>
-                                <CustomLabelList dataKey="L1 - Main Source" fill={COLORS.chart[0]} offset={12} />
-                            </Area>}
+                    <div className="w-full h-[300px] sm:h-[350px]">
+                        {monthlyWaterTrendData.length === 0 ? (
+                          <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div className="text-center">
+                              <p className="text-gray-500 dark:text-gray-400 mb-2">No chart data available</p>
+                              <p className="text-sm text-gray-400 dark:text-gray-500">Data length: {monthlyWaterTrendData.length}</p>
+                              <p className="text-sm text-gray-400 dark:text-gray-500">Months available: {waterMonthsAvailable.length}</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <ResponsiveContainer width="100%" height="100%">
+                              <AreaChart data={monthlyWaterTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                                  <defs>
+                                      <linearGradient id="colorL1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[0]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[0]} stopOpacity={0}/></linearGradient>
+                                      <linearGradient id="colorL2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[1]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[1]} stopOpacity={0}/></linearGradient>
+                                      <linearGradient id="colorL3" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.chart[2]} stopOpacity={0.8}/><stop offset="95%" stopColor={COLORS.chart[2]} stopOpacity={0}/></linearGradient>
+                                      {/* Enhanced label shadow filter */}
+                                      <filter id="label-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.1)" />
+                                      </filter>
+                                  </defs>
+                                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                                  <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
+                                  <Tooltip content={<CustomTooltip />} />
+                                  
+                                  {consumptionVisibility['L1 - Main Source'] && <Area type="monotone" dataKey="L1 - Main Source" stroke={COLORS.chart[0]} fillOpacity={1} fill="url(#colorL1)" strokeWidth={2}>
+                                      <CustomLabelList dataKey="L1 - Main Source" fill={COLORS.chart[0]} offset={12} />
+                                  </Area>}
 
-                            {consumptionVisibility['L2 - Zone Bulk Meters'] && <Area type="monotone" dataKey="L2 - Zone Bulk Meters" stroke={COLORS.chart[1]} fillOpacity={1} fill="url(#colorL2)" strokeWidth={2}>
-                                <CustomLabelList dataKey="L2 - Zone Bulk Meters" fill={COLORS.chart[1]} offset={12} />
-                            </Area>}
+                                  {consumptionVisibility['L2 - Zone Bulk Meters'] && <Area type="monotone" dataKey="L2 - Zone Bulk Meters" stroke={COLORS.chart[1]} fillOpacity={1} fill="url(#colorL2)" strokeWidth={2}>
+                                      <CustomLabelList dataKey="L2 - Zone Bulk Meters" fill={COLORS.chart[1]} offset={12} />
+                                  </Area>}
 
-                            {consumptionVisibility['L3 - Building/Villa Meters'] && <Area type="monotone" dataKey="L3 - Building/Villa Meters" stroke={COLORS.chart[2]} fillOpacity={1} fill="url(#colorL3)" strokeWidth={2}>
-                                <CustomLabelList dataKey="L3 - Building/Villa Meters" fill={COLORS.chart[2]} offset={12} />
-                            </Area>}
-                        </AreaChart>
-                    </ResponsiveContainer>
+                                  {consumptionVisibility['L3 - Building/Villa Meters'] && <Area type="monotone" dataKey="L3 - Building/Villa Meters" stroke={COLORS.chart[2]} fillOpacity={1} fill="url(#colorL3)" strokeWidth={2}>
+                                      <CustomLabelList dataKey="L3 - Building/Villa Meters" fill={COLORS.chart[2]} offset={12} />
+                                  </Area>}
+                              </AreaChart>
+                          </ResponsiveContainer>
+                        )}
+                    </div>
                 </ChartCard>
-                <ChartCard title="Monthly Water Loss Trend" subtitle="Comparing loss at different stages of distribution">
+                <ChartCard title="Monthly Water Loss Trend" subtitle="Comparing loss at different stages of distribution" className="min-h-[400px] sm:min-h-[450px]">
                     <div className="flex flex-wrap gap-2 justify-center mb-4">
                         {Object.keys(lossVisibility).map((key, index) => (
                             <button
@@ -647,34 +670,47 @@ Total System Loss: Overall efficiency
                                 style={{ backgroundColor: lossVisibility[key as keyof typeof lossVisibility] ? ['#991B1B', '#DC2626', '#F87171'][index] : undefined }}
                             >
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: ['#991B1B', '#DC2626', '#F87171'][index] }}></div>
-                                <span>{key}</span>
+                                <span className="hidden sm:inline">{key}</span>
+                                <span className="sm:hidden">{key.split(' ')[0]}</span>
                             </button>
                         ))}
                     </div>
-                     <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={lossTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                            <defs>
-                                <linearGradient id="colorS1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#991B1B'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#991B1B'} stopOpacity={0}/></linearGradient>
-                                <linearGradient id="colorS2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#DC2626'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#DC2626'} stopOpacity={0}/></linearGradient>
-                                <linearGradient id="colorS3" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#F87171'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#F87171'} stopOpacity={0}/></linearGradient>
-                            </defs>
-                            <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                            <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
-                            <Tooltip content={<CustomTooltip />} />
-                            
-                            {lossVisibility['Stage 1 Loss'] && <Area type="monotone" dataKey="Stage 1 Loss" stroke={'#991B1B'} fillOpacity={1} fill="url(#colorS1)" strokeWidth={2}>
-                                <CustomLabelList dataKey="Stage 1 Loss" fill={'#991B1B'} offset={12} />
-                            </Area>}
+                    <div className="w-full h-[300px] sm:h-[350px]">
+                        {lossTrendData.length === 0 ? (
+                          <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div className="text-center">
+                              <p className="text-gray-500 dark:text-gray-400 mb-2">No loss trend data available</p>
+                              <p className="text-sm text-gray-400 dark:text-gray-500">Data length: {lossTrendData.length}</p>
+                              <p className="text-sm text-gray-400 dark:text-gray-500">Months available: {waterMonthsAvailable.length}</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <ResponsiveContainer width="100%" height="100%">
+                              <AreaChart data={lossTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                                  <defs>
+                                      <linearGradient id="colorS1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#991B1B'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#991B1B'} stopOpacity={0}/></linearGradient>
+                                      <linearGradient id="colorS2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#DC2626'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#DC2626'} stopOpacity={0}/></linearGradient>
+                                      <linearGradient id="colorS3" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={'#F87171'} stopOpacity={0.8}/><stop offset="95%" stopColor={'#F87171'} stopOpacity={0}/></linearGradient>
+                                  </defs>
+                                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                                  <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
+                                  <Tooltip content={<CustomTooltip />} />
+                                  
+                                  {lossVisibility['Stage 1 Loss'] && <Area type="monotone" dataKey="Stage 1 Loss" stroke={'#991B1B'} fillOpacity={1} fill="url(#colorS1)" strokeWidth={2}>
+                                      <CustomLabelList dataKey="Stage 1 Loss" fill={'#991B1B'} offset={12} />
+                                  </Area>}
 
-                            {lossVisibility['Stage 2 Loss'] && <Area type="monotone" dataKey="Stage 2 Loss" stroke={'#DC2626'} fillOpacity={1} fill="url(#colorS2)" strokeWidth={2}>
-                                <CustomLabelList dataKey="Stage 2 Loss" fill={'#DC2626'} offset={12} />
-                            </Area>}
-                            
-                            {lossVisibility['Stage 3 Loss'] && <Area type="monotone" dataKey="Stage 3 Loss" stroke={'#F87171'} fillOpacity={1} fill="url(#colorS3)" strokeWidth={2}>
-                                <CustomLabelList dataKey="Stage 3 Loss" fill={'#F87171'} offset={12} />
-                            </Area>}
-                        </AreaChart>
-                    </ResponsiveContainer>
+                                  {lossVisibility['Stage 2 Loss'] && <Area type="monotone" dataKey="Stage 2 Loss" stroke={'#DC2626'} fillOpacity={1} fill="url(#colorS2)" strokeWidth={2}>
+                                      <CustomLabelList dataKey="Stage 2 Loss" fill={'#DC2626'} offset={12} />
+                                  </Area>}
+                                  
+                                  {lossVisibility['Stage 3 Loss'] && <Area type="monotone" dataKey="Stage 3 Loss" stroke={'#F87171'} fillOpacity={1} fill="url(#colorS3)" strokeWidth={2}>
+                                      <CustomLabelList dataKey="Stage 3 Loss" fill={'#F87171'} offset={12} />
+                                  </Area>}
+                              </AreaChart>
+                          </ResponsiveContainer>
+                        )}
+                    </div>
                 </ChartCard>
             </div>
         </>

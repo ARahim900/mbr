@@ -9,12 +9,11 @@ import {
   Calendar,
   Filter,
   RefreshCw,
-  FileDatabase,
+  Database,
   Upload
 } from 'lucide-react';
 import { waterDataService } from '../data/waterDataService';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { useResponsive } from '../../../hooks/useResponsive';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 import WaterMeterCard from '../../../components/mobile/WaterMeterCard';
 
 const WaterSystemModule = () => {
@@ -26,7 +25,7 @@ const WaterSystemModule = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   // Use responsive hook
-  const { isMobile } = useResponsive();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     loadZoneData();
@@ -76,7 +75,7 @@ const WaterSystemModule = () => {
     { id: 'water-loss', label: 'Water Loss Analysis', icon: TrendingUp },
     { id: 'zone-analysis', label: 'Zone Analysis', icon: MapPin },
     { id: 'consumption-type', label: 'Consumption by Type', icon: Droplets },
-    { id: 'main-database', label: 'Main Database', icon: FileDatabase },
+    { id: 'main-database', label: 'Main Database', icon: Database },
   ];
 
   const months = [

@@ -9,6 +9,7 @@ interface WaterMeterCardProps {
   consumption: number;
   percentage: number;
   status: string;
+  zoneBulkTotal?: number;
 }
 
 const WaterMeterCard: React.FC<WaterMeterCardProps> = ({
