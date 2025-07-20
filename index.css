@@ -153,6 +153,10 @@ html {
 /* Ensure navigation is always visible */
 .navigation-container {
   @apply relative z-50;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 60px !important;
 }
 
 /* Fix for mobile navigation */
@@ -162,4 +166,24 @@ html {
 
 .mobile-nav-menu {
   @apply fixed top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-gray-800 z-50 transition-transform duration-300 ease-in-out;
+}
+
+/* Debug styles for navigation */
+.navigation-debug {
+  border: 2px solid red !important;
+  background-color: rgba(255, 0, 0, 0.1) !important;
+}
+
+/* Force navigation visibility */
+.navigation-container * {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure buttons are clickable */
+.navigation-container button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  user-select: none !important;
 }
