@@ -282,6 +282,17 @@ div[style*="width: 100%"][style*="height: 300px"] {
   visibility: visible !important;
 }
 
+/* Sidebar hover color override */
+.sidebar-nav-item:hover {
+  background-color: #A2D0C8 !important;
+  color: white !important;
+}
+
+.sidebar-toggle-button:hover {
+  background-color: #A2D0C8 !important;
+  color: white !important;
+}
+
 /* Force chart visibility in all states */
 .aos-animate .recharts-responsive-container,
 .aos-init .recharts-responsive-container,

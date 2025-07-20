@@ -18,6 +18,11 @@ export default {
           DEFAULT: '#00D2B3',
           dark: '#00B899',
           light: '#00E6C7'
+        },
+        mint: {
+          DEFAULT: '#A2D0C8',
+          light: '#B8DCD5',
+          dark: '#8CC4BA'
         }
       },
       backdropBlur: {
