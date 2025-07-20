@@ -8,6 +8,7 @@ import HvacSystemModule from './components/modules/HvacSystemModule';
 import ContractorTrackerModule from './components/modules/ContractorTrackerModule';
 import StpPlantModule from './components/modules/StpPlantModule';
 import Layout from './components/Layout';
+import FirefightingAlarmModule from './components/modules/FirefightingAlarmModule';
 import useAOS from './hooks/useAOS';
 
 export default function App() {
@@ -26,6 +27,8 @@ export default function App() {
         return <ElectricityModule />;
       case 'HVAC System':
         return <HvacSystemModule />;
+      case 'Firefighting & Alarm':
+        return <FirefightingAlarmModule />;
       case 'Contractor Tracker':
         return <ContractorTrackerModule />;
       case 'STP Plant':

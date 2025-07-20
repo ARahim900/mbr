@@ -25,9 +25,6 @@ function normalizeZoneName(zone: string): string {
   return zone;
 }
 
-// Sample data structure - will be replaced by CSV
-const sampleData: WaterMeter[] = [];
-
 export class WaterDataService {
   private waterMeters: WaterMeter[] = [];
   private isDataLoaded: boolean = false;

@@ -11,14 +11,16 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.50.4",
+    "@types/papaparse": "^5.3.16",
     "aos": "^3.0.0-beta.6",
+    "framer-motion": "^11.0.0",
     "luc": "^0.3.1",
     "lucide-react": "^0.417.0",
+    "papaparse": "^5.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "recharts": "^3.0.2",
-    "framer-motion": "^11.0.0",
-    "react-intersection-observer": "^9.8.0"
+    "react-intersection-observer": "^9.8.0",
+    "recharts": "^3.0.2"
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",
