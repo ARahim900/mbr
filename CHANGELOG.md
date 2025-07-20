@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Latest] - 2025-01-XX
 
+### 🎨 UI/UX Improvements
+- **Sidebar Hover Color Enhancement**: Updated sidebar navigation hover colors for better visibility
+  - Changed hover color from white overlay (`hover:bg-white/10`) to minty cyan-blue (`#A2D0C8`)
+  - Applied new hover color to both navigation items and desktop toggle button
+  - Improved contrast and visibility for selected items in sidebar
+  - Color specifications: HEX: #A2D0C8, RGB: 162, 208, 200, CMYK: 22, 0, 4, 18
+
 ### 🗑️ Removed
 - **Dashboard Section**: Completely removed Dashboard component and navigation
   - Deleted `components/Dashboard.tsx` file
@@ -23,6 +30,7 @@ All notable changes to this project will be documented in this file.
 - **TypeScript Compliance**: All TypeScript compilation errors resolved
 
 ### 📝 Technical Details
+- Updated `components/Sidebar.tsx` with new hover color styling
 - Removed Dashboard component and all related imports
 - Updated `App.tsx` to start with 'Water System' as default section
 - Cleaned up `components/Sidebar.tsx` navigation items

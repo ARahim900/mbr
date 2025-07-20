@@ -33,7 +33,7 @@ const NavItem: React.FC<NavItemProps> = ({ id, icon, label, active, isOpen, onCl
         className={`w-full flex items-center p-3 my-1 rounded-lg transition-all duration-300 transform hover:scale-105 ${
           active 
           ? 'bg-accent text-white shadow-lg' 
-          : 'text-gray-300 hover:bg-white/10 hover:text-white'
+          : 'text-gray-300 hover:bg-[#A2D0C8] hover:text-white'
       }`}
       title={label}
       >
@@ -95,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, set
           {/* Desktop toggle button */}
           <button 
             onClick={() => setIsOpen(!isOpen)} 
-            className="hidden lg:flex p-1.5 rounded-full hover:bg-white/10 absolute -right-4 top-8 bg-[#4E4456] border-2 border-[#5A5563] text-gray-300 hover:text-white transition-all duration-300 shadow-lg"
+            className="hidden lg:flex p-1.5 rounded-full hover:bg-[#A2D0C8] absolute -right-4 top-8 bg-[#4E4456] border-2 border-[#5A5563] text-gray-300 hover:text-white transition-all duration-300 shadow-lg"
           >
             {isOpen ? <ChevronsLeft className="h-5 w-5" /> : <ChevronsRight className="h-5 w-5" />}
           </button>
