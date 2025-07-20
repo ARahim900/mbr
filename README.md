@@ -2,16 +2,16 @@
 
 A comprehensive web application for managing facility operations including Water Systems, Electricity Systems, HVAC Systems, Contractor Tracking, and STP Plant management.
 
-> **⚠️ IMPORTANT**: This application has reached its final design state. Please refer to [DESIGN_GUIDELINES_AND_STANDARDS.md](./DESIGN_GUIDELINES_AND_STANDARDS.md) before making any changes.
+⚠️ **IMPORTANT**: This application has reached its final design state. Please refer to DESIGN_GUIDELINES_AND_STANDARDS.md before making any changes.
 
 ## 🎨 Design Philosophy
 
 This application features a modern SaaS design with:
-- **Glassmorphism effects** throughout the UI
-- **Gradient-based visualizations** with no grid lines
-- **Mobile-first responsive design** that works perfectly on all devices
-- **Smooth animations and transitions** for enhanced user experience
-- **Dark purple themed interface** (#4E4456) with teal accents
+- Glassmorphism effects throughout the UI
+- Gradient-based visualizations with no grid lines
+- Mobile-first responsive design that works perfectly on all devices
+- Smooth animations and transitions for enhanced user experience
+- Dark purple themed interface (#4E4456) with teal accents
 
 ## 🚀 Features
 
@@ -37,6 +37,7 @@ This application features a modern SaaS design with:
 - **Styling**: Tailwind CSS (via CDN) with custom glassmorphism effects
 - **Icons**: Lucide React for consistent iconography
 - **Charts**: Recharts for data visualization
+- **Animations**: AOS (Animate On Scroll) v3.0.0-beta.6
 - **State Management**: React hooks and context
 - **Deployment**: Netlify-ready configuration
 
@@ -48,28 +49,28 @@ This application features a modern SaaS design with:
 
 ## 🛠️ Installation
 
-1. **Clone the repository**:
+1. Clone the repository:
 ```bash
 git clone https://github.com/ARahim900/mbr.git
 cd mbr
 ```
 
-2. **Install dependencies**:
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. **Set up environment variables**:
+3. Set up environment variables:
 ```bash
 cp .env.example .env
 ```
 
-4. **Add your Gemini API key** to the `.env` file:
+4. Add your Gemini API key to the .env file:
 ```
 GEMINI_API_KEY=your_actual_api_key_here
 ```
 
-5. **Start the development server**:
+5. Start the development server:
 ```bash
 npm run dev
 ```
@@ -91,23 +92,23 @@ npm install
 npm run dev
 ```
 
-> 📚 For detailed instructions and troubleshooting, see [PULL_GUIDE.md](./PULL_GUIDE.md)
+📚 For detailed instructions and troubleshooting, see PULL_GUIDE.md
 
 ## 🌐 Deployment
 
 ### Netlify Deployment (Recommended)
 
-1. **Via GitHub Integration**:
-   - Log in to [Netlify](https://app.netlify.com)
-   - Click "Add new site" → "Import an existing project"
-   - Choose "Deploy with GitHub" and select `ARahim900/mbr`
-   - Configure build settings:
-     - Build command: `npm run build`
-     - Publish directory: `dist`
-   - Add environment variables in Site settings
-   - Deploy!
+#### Via GitHub Integration:
+1. Log in to Netlify
+2. Click "Add new site" → "Import an existing project"
+3. Choose "Deploy with GitHub" and select ARahim900/mbr
+4. Configure build settings:
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+5. Add environment variables in Site settings
+6. Deploy!
 
-2. **Via Netlify CLI**:
+#### Via Netlify CLI:
 ```bash
 # Install Netlify CLI
 npm install -g netlify-cli
@@ -163,12 +164,12 @@ The application is optimized for:
 Key design elements that must be preserved:
 - **Primary Color**: #4E4456 (Dark Purple)
 - **Accent Color**: #00D2B3 (Teal)
-- **Glassmorphism**: `backdrop-blur-md bg-white/10`
+- **Glassmorphism**: backdrop-blur-md bg-white/10
 - **Shadows**: Multi-level shadow system for depth
 - **Animations**: 300ms transitions with ease-in-out
 - **Charts**: Gradient fills, no grid lines, custom tooltips
 
-> For detailed design specifications, see [DESIGN_GUIDELINES_AND_STANDARDS.md](./DESIGN_GUIDELINES_AND_STANDARDS.md)
+*For detailed design specifications, see DESIGN_GUIDELINES_AND_STANDARDS.md*
 
 ## 🔒 Environment Variables
 
@@ -177,23 +178,23 @@ Required environment variables for deployment:
 
 ## 📚 Documentation
 
-- [Design Guidelines](./DESIGN_GUIDELINES_AND_STANDARDS.md) - **MUST READ before making changes**
-- [Pull Guide](./PULL_GUIDE.md) - Instructions for pulling latest changes
-- [Modernization Summary](./MODERNIZATION_SUMMARY.md) - Overview of design improvements
-- [Mobile Transformation Guide](./MOBILE_TRANSFORMATION_GUIDE.md) - Mobile-specific features
-- [UI Navigation Enhancement](./UI_NAVIGATION_ENHANCEMENT.md) - Navigation system details
+- [Design Guidelines](DESIGN_GUIDELINES_AND_STANDARDS.md) - MUST READ before making changes
+- [Pull Guide](PULL_GUIDE.md) - Instructions for pulling latest changes
+- [Modernization Summary](docs/MODERNIZATION_SUMMARY.md) - Overview of design improvements
+- [Mobile Transformation Guide](docs/MOBILE_TRANSFORMATION_GUIDE.md) - Mobile-specific features
+- [UI Navigation Enhancement](docs/UI_NAVIGATION_ENHANCEMENT.md) - Navigation system details
 
 ## ⚠️ Important Notes
 
-1. **Design Freeze**: The current design is finalized. Any changes must follow the guidelines in [DESIGN_GUIDELINES_AND_STANDARDS.md](./DESIGN_GUIDELINES_AND_STANDARDS.md)
-2. **Mobile First**: Always test on mobile devices first
-3. **Performance**: Keep bundle size minimal, use lazy loading where appropriate
-4. **Accessibility**: Maintain WCAG compliance for all interactive elements
+- **Design Freeze**: The current design is finalized. Any changes must follow the guidelines in DESIGN_GUIDELINES_AND_STANDARDS.md
+- **Mobile First**: Always test on mobile devices first
+- **Performance**: Keep bundle size minimal, use lazy loading where appropriate
+- **Accessibility**: Maintain WCAG compliance for all interactive elements
 
 ## 🤝 Contributing
 
 Before contributing:
-1. Read the [Design Guidelines](./DESIGN_GUIDELINES_AND_STANDARDS.md)
+1. Read the [Design Guidelines](DESIGN_GUIDELINES_AND_STANDARDS.md)
 2. Pull latest changes using the provided scripts
 3. Test on all device sizes
 4. Ensure no visual regressions
@@ -205,4 +206,4 @@ This project is private and proprietary. All rights reserved.
 
 ---
 
-**Built with ❤️ for Muscat Bay**
+Built with ❤️ for Muscat Bay
