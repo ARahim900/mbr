@@ -1,20 +1,12 @@
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface ConsumptionChartProps {
   data: any[];
 }
 
-const zoneColors: { [key: string]: string } = {
-    "Zone_05": "#00D2B3",
-    "Zone_03_(A)": "#3B82F6",
-    "Zone_03_(B)": "#8B5CF6",
-    "Zone_08": "#F59E0B",
-    "Zone_01_(FM)": "#EF4444",
-    "Zone_SC": "#10B981",
-    "Zone_VS": "#6366F1",
-};
+
 
 // Modern gradient colors
 const zoneGradients: { [key: string]: { start: string; end: string } } = {

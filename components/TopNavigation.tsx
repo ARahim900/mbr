@@ -31,12 +31,12 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
   };
 
   return (
-    <nav>
+    <nav className="navigation-container">
       {/* Mobile Navigation */}
       <div className="lg:hidden">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-3 rounded-md text-primary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="p-3 rounded-md text-white hover:bg-white/20 transition-colors"
           aria-label="Open navigation menu"
         >
           <Menu size={28} />
@@ -44,14 +44,14 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
         
         {isOpen && (
           <div
-            className="fixed inset-0 bg-black/40 z-40"
+            className="mobile-nav-overlay"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           ></div>
         )}
 
         <div
-          className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-gray-800 z-50 transition-transform duration-300 ease-in-out ${
+          className={`mobile-nav-menu ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
@@ -75,8 +75,8 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
                     onClick={() => handleNavClick(item.id)}
                     className={`w-full flex items-center gap-4 p-4 rounded-lg text-lg transition-colors duration-200 ${
                       isActive
-                        ? 'bg-accent text-white shadow'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'nav-item-active'
+                        : 'nav-item-inactive'
                     }`}
                   >
                     <Icon className="h-6 w-6" />
@@ -100,8 +100,8 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
                 onClick={() => handleNavClick(item.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold transition-all duration-200 ${
                     isActive
-                    ? 'bg-accent text-white shadow-md'
-                    : 'text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-white'
+                    ? 'nav-item-active'
+                    : 'nav-item-inactive'
                 }`}
               >
                 <Icon className="h-5 w-5" />

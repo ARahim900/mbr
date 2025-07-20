@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Menu, X } from 'lucide-react';
 
 interface TopHeaderProps {
@@ -7,7 +7,7 @@ interface TopHeaderProps {
 }
 
 const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle, isMenuOpen }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
     <header className="md:hidden bg-gradient-to-r from-header-primary to-header-secondary shadow-md sticky top-0 z-40">

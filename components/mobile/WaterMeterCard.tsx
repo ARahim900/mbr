@@ -1,6 +1,6 @@
 // Mobile-responsive card component specifically for Water System
 import React from 'react';
-import { Building2, Droplets } from 'lucide-react';
+import { Droplets } from 'lucide-react';
 
 interface WaterMeterCardProps {
   meterLabel: string;
@@ -9,7 +9,6 @@ interface WaterMeterCardProps {
   consumption: number;
   percentage: number;
   status: string;
-  zoneBulkTotal: number;
 }
 
 const WaterMeterCard: React.FC<WaterMeterCardProps> = ({
@@ -18,8 +17,7 @@ const WaterMeterCard: React.FC<WaterMeterCardProps> = ({
   type,
   consumption,
   percentage,
-  status,
-  zoneBulkTotal
+  status
 }) => {
   const getTypeColor = (type: string) => {
     switch (type) {

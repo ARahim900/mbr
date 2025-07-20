@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
-import { Zap, Database, LayoutDashboard, Calendar, TrendingUp, Power, FileDown, RotateCw, Wallet, Tag } from 'lucide-react';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Zap, Database, LayoutDashboard, TrendingUp, Power, FileDown, RotateCw, Wallet, Tag } from 'lucide-react';
 
 import { 
     electricityData, 
@@ -315,7 +315,7 @@ const ElectricityModule: React.FC = () => {
                     />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0, 0, 0, 0.02)' }} />
                     <Bar dataKey="Consumption (kWh)" barSize={20} radius={[0, 8, 8, 0]}>
-                      {consumptionByTypeChartData.map((entry, index) => (
+                      {consumptionByTypeChartData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={`url(#gradient-${index % COLORS.length})`} />
                       ))}
                     </Bar>

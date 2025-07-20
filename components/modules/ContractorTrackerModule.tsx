@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { contractorData, getContractStats } from '../../database/contractorDatabase';
 import { Contractor } from '../../types';
 import MetricCard from '../ui/MetricCard';
-import { FileText, ShieldCheck, ShieldX, Coins, Search, ArrowUpDown, Filter, XCircle, Edit, Save, X } from 'lucide-react';
+import { FileText, ShieldCheck, ShieldX, Coins, Search, ArrowUpDown, XCircle, Edit, Save, X } from 'lucide-react';
 import Button from '../ui/Button';
 
 const ContractorTrackerModule: React.FC = () => {
@@ -12,7 +12,7 @@ const ContractorTrackerModule: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: keyof Contractor, direction: 'ascending' | 'descending' } | null>({ key: 'endDate', direction: 'ascending' });
   const [currentPage, setCurrentPage] = useState(1);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Contractor>>({});
   const itemsPerPage = 10;
 
@@ -116,7 +116,7 @@ const ContractorTrackerModule: React.FC = () => {
             ...editForm,
             startDate: editForm.startDate ? new Date(editForm.startDate as any) : null,
             endDate: editForm.endDate ? new Date(editForm.endDate as any) : null,
-            status: editForm.endDate && new Date(editForm.endDate as any) < new Date() ? 'Expired' : 'Active'
+            status: (editForm.endDate && new Date(editForm.endDate as any) < new Date() ? 'Expired' : 'Active') as 'Active' | 'Expired'
           };
           return updatedContract;
         }
@@ -197,7 +197,7 @@ const ContractorTrackerModule: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {paginatedContracts.map((c, index) => (
+            {paginatedContracts.map((c) => (
               <tr key={c.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30">
                 {editingId === c.id ? (
                   <>

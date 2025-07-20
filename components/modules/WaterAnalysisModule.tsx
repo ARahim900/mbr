@@ -6,15 +6,11 @@ import {
 import { 
   Droplets, CalendarDays, Building, Building2, Filter, CheckCircle, AlertCircle, 
   TrendingUp, Users2, Sparkles, X, LayoutDashboard, BarChart2, Database, Home,
-  Tags, Download, RotateCw, Zap, HardHat, Recycle
+  Tags, Download, RotateCw
 } from 'lucide-react';
 import { 
   waterSystemData, 
   waterMonthsAvailable, 
-  getA1Supply, 
-  getA2Total, 
-  getA3Total,
-  getA4Total, 
   calculateWaterLoss,
   getZoneAnalysis,
   getAvailableZones,
@@ -54,7 +50,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 // Enhanced Custom Label with Background for Better Visibility
 const renderEnhancedLabel = (props: any) => {
-  const { x, y, value, fill } = props;
+  const { x, y, value } = props;
   if (!value || value === 0) return null;
   
   const formattedValue = value.toLocaleString();
@@ -92,7 +88,7 @@ const renderEnhancedLabel = (props: any) => {
 };
 
 // Label component for different chart types
-const CustomLabelList = ({ dataKey, fill, offset = 8 }: any) => (
+const CustomLabelList = ({ dataKey, offset = 8 }: any) => (
   <LabelList 
     dataKey={dataKey} 
     position="top" 
@@ -134,7 +130,7 @@ const waterSubSections = [
 
 const ModuleNavigation = ({ sections, activeSection, onSectionChange }: { sections: any[], activeSection: string, onSectionChange: (id: string) => void }) => (
   <div 
-    className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-2 mb-6 border border-neutral-border dark:border-gray-700"
+    className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-2 mb-6 border border-neutral-border dark:border-gray-700 navigation-container"
     data-aos="fade-down"
     data-aos-duration="600"
   >
@@ -145,8 +141,8 @@ const ModuleNavigation = ({ sections, activeSection, onSectionChange }: { sectio
           onClick={() => onSectionChange(section.id)}
           className={`flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent ${
             activeSection === section.id
-              ? 'bg-accent text-white shadow-md'
-              : 'text-secondary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+              ? 'nav-item-active'
+              : 'nav-item-inactive'
           }`}
           data-aos="zoom-in"
           data-aos-delay={index * 100}
@@ -258,9 +254,7 @@ const WaterAnalysisModule: React.FC = () => {
   }, [filteredRow, filteredMonths]);
 
   // Bar chart data for filtered type
-  const filteredBarChartData = useMemo(() => {
-    return byTypeData.barChart.filter(row => row.name === selectedType);
-  }, [selectedType]);
+
 
   // Donut chart data for filtered type
   const filteredDonutChartData = useMemo(() => {
@@ -310,24 +304,7 @@ const WaterAnalysisModule: React.FC = () => {
     });
   }, []);
 
-  const zoneConsumptionData = useMemo(() => {
-    const monthData = selectedWaterMonth;
-    const zones: Record<string, { zone: string; consumption: number; type: string; }> = {};
-    
-    const L2_meters = waterSystemData.filter(item => item.label === 'L2');
-    L2_meters.forEach(meter => {
-      const zone = meter.zone;
-      if (!zones[zone]) {
-        zones[zone] = { zone, consumption: 0, type: 'Zone Bulk' };
-      }
-      zones[zone].consumption += meter.consumption[monthData] || 0;
-    });
 
-    return Object.values(zones).map(zone => ({
-      ...zone,
-      consumption: parseFloat(zone.consumption.toFixed(1))
-    })).sort((a, b) => b.consumption - a.consumption);
-  }, [selectedWaterMonth]);
 
   // Optimized zone analysis data calculation with loading state
   const zoneAnalysisData = useMemo(() => {
@@ -917,11 +894,15 @@ Total System Loss: Overall efficiency
               <div className="mb-6 text-center">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
                   {zoneAnalysisData.zone?.name || 'Zone'} Analysis for {
-                    useRangeSelector ? zoneAnalysisData.dateRange : selectedWaterMonth
+                    useRangeSelector ? `${zoneAnalysisDateRange.start} to ${zoneAnalysisDateRange.end}` : selectedWaterMonth
                   }
                   {useRangeSelector && (
                     <span className="text-sm font-normal text-gray-600 dark:text-gray-400 block mt-1">
-                      ({zoneAnalysisData.monthsCount} months aggregated)
+                      ({(() => {
+                        const startIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.start);
+                        const endIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.end);
+                        return endIndex - startIndex + 1;
+                      })()} months aggregated)
                     </span>
                   )}
                 </h2>
@@ -1093,7 +1074,11 @@ Total System Loss: Overall efficiency
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         {useRangeSelector ? 
-                          `Aggregated consumption data for ${zoneAnalysisData.monthsCount} months` :
+                          `Aggregated consumption data for ${(() => {
+                            const startIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.start);
+                            const endIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.end);
+                            return endIndex - startIndex + 1;
+                          })()} months` :
                           `All individual meters in this ${zoneAnalysisData.isDirectConnection ? 'connection group' : 'zone'} with monthly consumption data`
                         }
                       </p>
@@ -1139,7 +1124,12 @@ Total System Loss: Overall efficiency
                                 {zoneAnalysisData.zoneBulkConsumption.toLocaleString()}
                               </td>
                               <td className="p-4 text-right font-semibold text-blue-800 dark:text-blue-200">
-                                {(zoneAnalysisData.zoneBulkConsumption / zoneAnalysisData.monthsCount).toFixed(0).toLocaleString()}
+                                {(() => {
+                                  const startIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.start);
+                                  const endIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.end);
+                                  const monthsCount = endIndex - startIndex + 1;
+                                  return (zoneAnalysisData.zoneBulkConsumption / monthsCount).toFixed(0).toLocaleString();
+                                })()}
                               </td>
                             </>
                           ) : (
@@ -1216,9 +1206,9 @@ Total System Loss: Overall efficiency
                           .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                           .map((meter: any) => {
                             const currentMonthConsumption = meter.consumption[selectedWaterMonth] || 0;
-                            const percentage = zoneAnalysisData.isDirectConnection ? 
-                              (zoneAnalysisData.totalIndividualConsumption > 0 ? (currentMonthConsumption / zoneAnalysisData.totalIndividualConsumption) * 100 : 0) :
-                              (zoneAnalysisData.zoneBulkConsumption > 0 ? (currentMonthConsumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0);
+                            // const percentage = zoneAnalysisData.isDirectConnection ? 
+                            //   (zoneAnalysisData.totalIndividualConsumption > 0 ? (currentMonthConsumption / zoneAnalysisData.totalIndividualConsumption) * 100 : 0) :
+                            //   (zoneAnalysisData.zoneBulkConsumption > 0 ? (currentMonthConsumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0);
                             
                             return (
                               <tr key={meter.account} className={`border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 ${
@@ -1238,7 +1228,12 @@ Total System Loss: Overall efficiency
                                       {meter.totalConsumption?.toLocaleString() || '0'}
                                     </td>
                                     <td className="p-4 text-right text-gray-800 dark:text-gray-200">
-                                      {(meter.totalConsumption / zoneAnalysisData.monthsCount).toFixed(0).toLocaleString()}
+                                      {(() => {
+                                        const startIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.start);
+                                        const endIndex = waterMonthsAvailable.indexOf(zoneAnalysisDateRange.end);
+                                        const monthsCount = endIndex - startIndex + 1;
+                                        return (meter.totalConsumption / monthsCount).toFixed(0).toLocaleString();
+                                      })()}
                                     </td>
                                   </>
                                 ) : (
@@ -1500,7 +1495,7 @@ Total System Loss: Overall efficiency
                 </tr>
               </thead>
               <tbody>
-                {filteredTableData.map((row, index) => (
+                {filteredTableData.map((row) => (
                   <tr key={row.type} className="border-b border-neutral-border dark:border-gray-700">
                     <td className="p-3 font-medium text-primary dark:text-gray-200">{row.type}</td>
                     {filteredMonths.map(month => (

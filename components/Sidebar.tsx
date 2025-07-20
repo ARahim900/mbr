@@ -7,11 +7,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Wind,
-  Menu,
-  X,
-  Bell,
-  Search,
-  User,
   Shield,
 } from 'lucide-react';
 

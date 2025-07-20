@@ -9,7 +9,7 @@ interface PullToRefreshProps {
 const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children }) => {
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [startY, setStartY] = useState(0);
+
   const containerRef = useRef<HTMLDivElement>(null);
   
   const threshold = 80; // Pull distance required to trigger refresh
@@ -23,7 +23,6 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children }) =>
     const handleTouchStart = (e: TouchEvent) => {
       if (container.scrollTop === 0) {
         touchStartY = e.touches[0].clientY;
-        setStartY(touchStartY);
       }
     };
     

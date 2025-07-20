@@ -10,7 +10,7 @@ const MonthRangeSlider: React.FC<MonthRangeSliderProps> = ({ months, value, onCh
   const [isDragging, setIsDragging] = useState<'start' | 'end' | null>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
   
-  const min = 0;
+  // const min = 0;
   const max = months.length > 1 ? months.length - 1 : 0;
   
   const startIndex = useMemo(() => {

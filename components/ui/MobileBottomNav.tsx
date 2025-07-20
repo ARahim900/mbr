@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, BarChart2, Database, Tags } from 'lucide-react';
+
 
 interface MobileBottomNavProps {
   sections: any[];

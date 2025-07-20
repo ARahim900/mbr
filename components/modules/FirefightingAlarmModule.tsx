@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { 
   Shield, Search, Filter, AlertTriangle, CheckCircle, Clock, 
-  FileText, Calendar, Building, Zap, Bell, Eye, Settings,
-  MapPin, Battery, Wifi, Signal, AlertCircle, Flame
+  Calendar,
+  MapPin, Battery, Signal
 } from 'lucide-react';
 import MetricCard from '../ui/MetricCard';
 import ChartCard from '../ui/ChartCard';

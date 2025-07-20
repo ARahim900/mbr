@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, LabelList } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Recycle, Droplets, Truck, Banknote, Sprout, TrendingUp, DollarSign, RotateCw } from 'lucide-react';
 
 import { getStpData, calculateMonthlyStpData } from '../../database/stpDatabase';
