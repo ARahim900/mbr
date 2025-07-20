@@ -133,9 +133,13 @@ const waterSubSections = [
 ];
 
 const ModuleNavigation = ({ sections, activeSection, onSectionChange }: { sections: any[], activeSection: string, onSectionChange: (id: string) => void }) => (
-  <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-2 mb-6 border border-neutral-border dark:border-gray-700">
+  <div 
+    className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-2 mb-6 border border-neutral-border dark:border-gray-700"
+    data-aos="fade-down"
+    data-aos-duration="600"
+  >
     <nav className="flex flex-wrap items-center justify-center gap-2">
-      {sections.map((section) => (
+      {sections.map((section, index) => (
         <button
           key={section.id}
           onClick={() => onSectionChange(section.id)}
@@ -144,6 +148,9 @@ const ModuleNavigation = ({ sections, activeSection, onSectionChange }: { sectio
               ? 'bg-accent text-white shadow-md'
               : 'text-secondary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
           }`}
+          data-aos="zoom-in"
+          data-aos-delay={index * 100}
+          data-aos-duration="400"
         >
           <section.icon className="w-5 h-5 mr-2" />
           <span className="hidden sm:inline">{section.name}</span>
@@ -495,7 +502,13 @@ Total System Loss: Overall efficiency
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
-      <h2 className="text-3xl font-bold text-primary dark:text-white">Water System Analysis</h2>
+      <h2 
+        className="text-3xl font-bold text-primary dark:text-white"
+        data-aos="fade-down"
+        data-aos-duration="800"
+      >
+        Water System Analysis
+      </h2>
       <ModuleNavigation 
         sections={waterSubSections}
         activeSection={activeWaterSubSection}
@@ -529,7 +542,12 @@ Total System Loss: Overall efficiency
                   </div>
               </div>
           </div>
-          <div className="mb-4">
+          <div 
+            className="mb-4"
+            data-aos="fade-up"
+            data-aos-duration="600"
+            data-aos-delay="200"
+          >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 transition-colors duration-300">
               4-Level Water Distribution Totals for <span className="text-accent">{overviewCalculations.period}</span>
             </h2>
@@ -568,7 +586,12 @@ Total System Loss: Overall efficiency
               />
             </div>
           </div>
-          <div className="mb-6">
+          <div 
+            className="mb-6"
+            data-aos="fade-up"
+            data-aos-duration="600"
+            data-aos-delay="400"
+          >
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 transition-colors duration-300">
               Multi-Stage Water Loss Totals for <span className="text-accent">{overviewCalculations.period}</span>
             </h2>
@@ -608,7 +631,12 @@ Total System Loss: Overall efficiency
             </div>
           </div>
 
-           <div className="grid grid-cols-1 gap-6 mb-6">
+           <div 
+             className="grid grid-cols-1 gap-6 mb-6"
+             data-aos="fade-up"
+             data-aos-duration="800"
+             data-aos-delay="600"
+           >
                 <ChartCard title="Monthly Consumption Trend" subtitle="L1 Supply vs. L2 & L3 Meter Totals">
                     <div className="flex flex-wrap gap-2 justify-center mb-4">
                         {Object.keys(consumptionVisibility).map((key, index) => (

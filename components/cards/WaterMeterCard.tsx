@@ -70,6 +70,7 @@ const WaterMeterCard: React.FC<WaterMeterCardProps> = ({
     fields.push({
       label: 'Zone Share',
       value: `${meterData.percentage.toFixed(1)}%`,
+      highlight: false,
       color: 'text-gray-600 dark:text-gray-400'
     });
   }

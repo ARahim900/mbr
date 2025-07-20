@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from './components/Layout';
 import WaterAnalysisModule from './components/modules/WaterAnalysisModule';
 import ElectricityModule from './components/modules/ElectricityModule';
@@ -6,9 +6,32 @@ import ContractorTrackerModule from './components/modules/ContractorTrackerModul
 import StpPlantModule from './components/modules/StpPlantModule';
 import HvacSystemModule from './components/modules/HvacSystemModule';
 import FirefightingAlarmModule from './components/modules/FirefightingAlarmModule';
+import { useAOS } from './hooks/useAOS';
 
 const App: React.FC = () => {
     const [activeSection, setActiveSection] = useState('Water System');
+
+    // Initialize AOS with custom options
+    useAOS({
+        offset: 100,
+        delay: 100,
+        duration: 800,
+        easing: 'ease-in-out-cubic',
+        once: true,
+        mirror: false,
+    });
+
+    // Additional effect to ensure AOS is properly initialized
+    useEffect(() => {
+        // Small delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+            if (typeof window !== 'undefined' && window.AOS) {
+                window.AOS.refresh();
+            }
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     const renderContent = () => {
         switch (activeSection) {
