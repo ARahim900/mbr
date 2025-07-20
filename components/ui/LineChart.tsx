@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   LineChart as RechartsLineChart,
   Line,
@@ -42,7 +42,7 @@ export default function LineChart({
       <ResponsiveContainer width="100%" height="100%">
         <Chart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <defs>
-            {lines.map((line, index) => (
+            {lines.map((line) => (
               <linearGradient key={line.key} id={`gradient-${line.key}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={line.color} stopOpacity={0.8}/>
                 <stop offset="95%" stopColor={line.color} stopOpacity={0.2}/>

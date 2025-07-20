@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import Sidebar from './components/Sidebar';
-import TopHeader from './components/TopHeader';
-import Dashboard from './components/Dashboard';
+import { useState } from 'react';
 import WaterAnalysisModule from './components/modules/WaterAnalysisModule';
 import ElectricityModule from './components/modules/ElectricityModule';
 import HvacSystemModule from './components/modules/HvacSystemModule';
@@ -12,15 +9,13 @@ import FirefightingAlarmModule from './components/modules/FirefightingAlarmModul
 import useAOS from './hooks/useAOS';
 
 export default function App() {
-  const [activeSection, setActiveSection] = useState('Dashboard');
+  const [activeSection, setActiveSection] = useState('Water System');
   
   // Initialize AOS animations
   useAOS();
 
   const renderModule = () => {
     switch (activeSection) {
-      case 'Dashboard':
-        return <Dashboard />;
       case 'Water System':
         return <WaterAnalysisModule />;
       case 'Electricity System':
@@ -34,7 +29,7 @@ export default function App() {
       case 'STP Plant':
         return <StpPlantModule />;
       default:
-        return <Dashboard />;
+        return <WaterAnalysisModule />;
     }
   };
 
