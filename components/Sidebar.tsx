@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  LayoutDashboard,
   Droplets,
   Zap,
   HardHat,
@@ -13,8 +14,8 @@ import {
 interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  activeSection: string;
-  setActiveSection: (section: string) => void;
+  activeModule: string;
+  setActiveModule: (module: string) => void;
 }
 
 interface NavItemProps {
@@ -44,15 +45,16 @@ const NavItem: React.FC<NavItemProps> = ({ id, icon, label, active, isOpen, onCl
 );
 
 const navItems = [
-    { id: 'Water System', label: 'Water System', icon: <Droplets className="h-6 w-6" /> },
-    { id: 'Electricity System', label: 'Electricity System', icon: <Zap className="h-6 w-6" /> },
-    { id: 'HVAC System', label: 'HVAC System', icon: <Wind className="h-6 w-6" /> },
-    { id: 'Firefighting & Alarm', label: 'Firefighting & Alarm', icon: <Shield className="h-6 w-6" /> },
-    { id: 'Contractor Tracker', label: 'Contractor Tracker', icon: <HardHat className="h-6 w-6" /> },
-    { id: 'STP Plant', label: 'STP Plant', icon: <Recycle className="h-6 w-6" /> },
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-6 w-6" /> },
+    { id: 'water', label: 'Water System', icon: <Droplets className="h-6 w-6" /> },
+    { id: 'electricity', label: 'Electricity System', icon: <Zap className="h-6 w-6" /> },
+    { id: 'hvac', label: 'HVAC System', icon: <Wind className="h-6 w-6" /> },
+    { id: 'firefighting', label: 'Firefighting & Alarm', icon: <Shield className="h-6 w-6" /> },
+    { id: 'contractor', label: 'Contractor Tracker', icon: <HardHat className="h-6 w-6" /> },
+    { id: 'stp', label: 'STP Plant', icon: <Recycle className="h-6 w-6" /> },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, setActiveSection }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeModule, setActiveModule }) => {
   return (
     <>
       {/* Mobile overlay */}
@@ -111,9 +113,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, set
                 icon={item.icon}
                 label={item.label}
                 isOpen={isOpen}
-                active={activeSection === item.id}
+                active={activeModule === item.id}
                 onClick={(id) => {
-                  setActiveSection(id);
+                  setActiveModule(id);
                   // Auto-close sidebar on mobile after selection
                   if (window.innerWidth < 1024) {
                     setIsOpen(false);
