@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .accent { background-color: #00D2B3; }
+        .primary { color: #4E4456; }
+        .secondary { color: #6B7280; }
+        .navigation-debug {
+            border: 2px solid red !important;
+            background-color: rgba(255, 0, 0, 0.1) !important;
+        }
+        .navigation-container {
+            position: relative !important;
+            z-index: 50 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-height: 60px !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-primary mb-6">Navigation Test</h1>
+        
+        <div class="bg-white shadow-md rounded-lg p-2 mb-6 border border-gray-200 navigation-container navigation-debug">
+            <nav class="flex flex-wrap items-center justify-center gap-2" style="min-height: 40px;">
+                <button class="flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-accent text-white shadow-md" style="min-width: 120px; min-height: 40px;">
+                    <span>Overview</span>
+                </button>
+                <button class="flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-secondary hover:bg-gray-100" style="min-width: 120px; min-height: 40px;">
+                    <span>Water Loss</span>
+                </button>
+                <button class="flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-secondary hover:bg-gray-100" style="min-width: 120px; min-height: 40px;">
+                    <span>Zone Analysis</span>
+                </button>
+                <button class="flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-secondary hover:bg-gray-100" style="min-width: 120px; min-height: 40px;">
+                    <span>By Type</span>
+                </button>
+                <button class="flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-secondary hover:bg-gray-100" style="min-width: 120px; min-height: 40px;">
+                    <span>Database</span>
+                </button>
+            </nav>
+        </div>
+        
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Test Content</h2>
+            <p>This is test content to verify the navigation is working correctly.</p>
+        </div>
+    </div>
+</body>
+</html> 

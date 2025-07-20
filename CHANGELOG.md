@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ensured navigation components are always visible and properly styled
   - Added custom CSS classes for navigation states (active/inactive)
   - Fixed mobile navigation overlay and menu positioning
+  - **CRITICAL FIX**: Replaced duplicate inline ModuleNavigation with proper component from ui folder
+  - Fixed responsive navigation that was hidden on desktop due to `hidden lg:block` class
+  - Navigation now properly shows on both desktop and mobile with correct styling
 
 - **Critical Chart and Graph Display Issues**
   - Fixed TypeScript compilation errors that were preventing charts from rendering
@@ -55,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `postcss.config.js` - Created PostCSS configuration for Tailwind
 - `index.css` - Added Tailwind directives and navigation-specific styles
 - `components/TopNavigation.tsx` - Fixed styling and visibility issues
-- `components/modules/WaterAnalysisModule.tsx` - Fixed ModuleNavigation styling
+- `components/modules/WaterAnalysisModule.tsx` - Replaced duplicate ModuleNavigation with proper import
 - `components/ui/PullToRefresh.tsx` - Fixed unused variable warnings
 - `components/ConsumptionChart.tsx` - Removed unused imports and variables
 - `components/modules/WaterAnalysisModule.tsx` - Fixed data structure issues and unused variables
