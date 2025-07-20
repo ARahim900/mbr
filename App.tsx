@@ -8,6 +8,7 @@ import HVACSystem from './components/modules/HVACSystem';
 import ContractorTracker from './components/modules/ContractorTracker';
 import STPPlant from './components/modules/STPPlant';
 import Layout from './components/Layout';
+import FirefightingTracker from './src/components/firefighting/FirefightingTracker';
 import useAOS from './hooks/useAOS';
 
 export default function App() {
@@ -27,6 +28,8 @@ export default function App() {
         return <Electricity />;
       case 'hvac':
         return <HVACSystem />;
+      case 'firefighting':
+        return <FirefightingTracker />;
       case 'contractor':
         return <ContractorTracker />;
       case 'stp':
