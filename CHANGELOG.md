@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0] - 2025-07-20
+
+### Added
+- **New Firefighting & Alarm System Module**
+  - Fire alarm monitoring and status tracking
+  - Equipment management (fire extinguishers, sprinkler systems)
+  - Maintenance scheduling and tracking
+  - Safety reports and fire drill documentation
+  - Real-time alarm status dashboard
+  - Comprehensive fire safety equipment overview
+
+### Updated
+- App.tsx to include firefighting module routing
+- Sidebar navigation to include Firefighting & Alarm option with Shield icon
+- Module navigation system to support new module
+
 ## [Rollback] - 2025-07-20
 
 ### Reverted to July 18, 2025 State
