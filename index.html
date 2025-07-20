@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Muscat Bay Water Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- AOS CSS for smooth animations -->
@@ -106,6 +109,17 @@
         .container {
           padding: 0;
         }
+        
+        /* Fix chart container heights on mobile */
+        .recharts-responsive-container {
+          min-height: 250px !important;
+        }
+        
+        /* Ensure charts are visible on mobile */
+        .recharts-wrapper {
+          position: relative !important;
+          cursor: default !important;
+        }
       }
       
       /* Pull to refresh indicator */
@@ -147,22 +161,28 @@
       [data-aos-duration="1000"] {
         transition-duration: 1000ms;
       }
+      
+      /* Fix for Recharts on mobile */
+      @media (max-width: 768px) {
+        .recharts-surface {
+          overflow: visible !important;
+        }
+        
+        .recharts-layer {
+          overflow: visible !important;
+        }
+        
+        /* Fix text labels on mobile */
+        .recharts-text {
+          font-size: 10px !important;
+        }
+        
+        /* Ensure chart containers have proper dimensions */
+        div[style*="width: 100%"][style*="height: 100%"] {
+          min-height: 300px !important;
+        }
+      }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
-    "react": "https://esm.sh/react@^19.1.0",
-    "react/": "https://esm.sh/react@^19.1.0/",
-    "recharts": "https://esm.sh/recharts@^3.0.2",
-    "lucide-react": "https://esm.sh/lucide-react@^0.417.0",
-    "luc": "https://esm.sh/luc@^0.3.1",
-    "aos": "https://esm.sh/aos@^3.0.0-beta.6",
-    "framer-motion": "https://esm.sh/framer-motion@^11.0.0",
-    "react-intersection-observer": "https://esm.sh/react-intersection-observer@^9.8.0"
-  }
-}
-</script>
 <link rel="stylesheet" href="/index.css">
 </head>
   <body class="bg-background-primary dark:bg-gray-900">
