@@ -356,47 +356,79 @@ Al Adrak Camp,4300348,Direct Connection,Retail,Main Bulk (NAMA),DC,1038,702,1161
 `.trim();
 
 export const parseWaterSystemData = (rawData: string): WaterDataEntry[] => {
-  const lines = rawData.split('\n');
-  const headers = lines[0].split(',').map(h => h.trim());
-  const dataLines = lines.slice(1);
-  const monthColumns = headers.slice(6);
+  try {
+    if (!rawData || rawData.trim() === '') {
+      console.error('No raw data provided to parseWaterSystemData');
+      return [];
+    }
 
-  return dataLines.map((line, index) => {
-    const values = line.split(',').map(v => v.trim());
-    const entry: WaterDataEntry = {
-      id: index + 1,
-      meterLabel: values[0] || 'N/A',
-      acctNo: values[1] || 'N/A',
-      zone: values[2] || 'N/A',
-      type: values[3] || 'N/A',
-      parentMeter: values[4] || 'N/A',
-      label: values[5] || 'N/A',
-      consumption: {},
-      totalConsumption: 0,
-    };
+    const lines = rawData.split('\n').filter(line => line.trim() !== '');
+    if (lines.length < 2) {
+      console.error('Insufficient data lines in raw data');
+      return [];
+    }
 
-    let totalConsumption = 0;
-    monthColumns.forEach((month, i) => {
-      const consumptionValue = parseFloat(values[6 + i]) || 0;
-      entry.consumption[month] = consumptionValue;
-      totalConsumption += consumptionValue;
+    const headers = lines[0].split(',').map(h => h.trim());
+    const dataLines = lines.slice(1);
+    const monthColumns = headers.slice(6);
+
+    console.log('Parsing water data - Headers:', headers);
+    console.log('Month columns:', monthColumns);
+    console.log('Data lines count:', dataLines.length);
+
+    return dataLines.map((line, index) => {
+      const values = line.split(',').map(v => v.trim());
+      const entry: WaterDataEntry = {
+        id: index + 1,
+        meterLabel: values[0] || 'N/A',
+        acctNo: values[1] || 'N/A',
+        zone: values[2] || 'N/A',
+        type: values[3] || 'N/A',
+        parentMeter: values[4] || 'N/A',
+        label: values[5] || 'N/A',
+        consumption: {},
+        totalConsumption: 0,
+      };
+
+      let totalConsumption = 0;
+      monthColumns.forEach((month, i) => {
+        const consumptionValue = parseFloat(values[6 + i]) || 0;
+        entry.consumption[month] = consumptionValue;
+        totalConsumption += consumptionValue;
+      });
+      
+      entry.totalConsumption = parseFloat(totalConsumption.toFixed(2));
+      return entry;
     });
-    
-    entry.totalConsumption = parseFloat(totalConsumption.toFixed(2));
-    return entry;
-  });
+  } catch (error) {
+    console.error('Error parsing water system data:', error);
+    return [];
+  }
 };
 
 // Export parsed data
 export const waterSystemData = parseWaterSystemData(waterRawDataString);
-export const waterMonthsAvailable = Object.keys(waterSystemData[0]?.consumption || {});
+export const waterMonthsAvailable = waterSystemData.length > 0 ? Object.keys(waterSystemData[0].consumption || {}) : ['Jan-25', 'Feb-25', 'Mar-25', 'Apr-25', 'May-25'];
+
+// Debug logging
+console.log('Water System Data loaded:', waterSystemData.length, 'entries');
+console.log('Months available:', waterMonthsAvailable);
+if (waterSystemData.length > 0) {
+  console.log('Sample entry:', waterSystemData[0]);
+}
 
 // 4-Level Water System Hierarchy Helper Functions
 
 // A1: Main Source (L1)
 export const getA1Supply = (month: string) => {
-  const mainBulkMeter = waterSystemData.find(item => item.label === 'L1');
-  return mainBulkMeter ? mainBulkMeter.consumption[month] || 0 : 0;
+  try {
+    if (!waterSystemData || waterSystemData.length === 0) return 0;
+    const mainBulkMeter = waterSystemData.find(item => item.label === 'L1');
+    return mainBulkMeter ? mainBulkMeter.consumption[month] || 0 : 0;
+  } catch (error) {
+    console.error('Error getting A1 supply:', error);
+    return 0;
+  }
 };
 
 // A2: Zone Distribution (L2 + DC at main level)
@@ -488,59 +520,74 @@ export const calculateWaterLoss = (month: string) => {
 
 // Calculate aggregated data over a period of months
 export const calculateAggregatedDataForPeriod = (startMonth: string, endMonth: string) => {
-  const startIndex = waterMonthsAvailable.indexOf(startMonth);
-  const endIndex = waterMonthsAvailable.indexOf(endMonth);
-
   const defaultReturn = {
     A1_supply: 0, A2_total: 0, A3_total: 0, A4_total: 0,
     L2_total: 0, L3_total: 0, L4_total: 0, DC_total: 0,
     stage1Loss: 0, stage2Loss: 0, stage3Loss: 0, totalLoss: 0,
     stage1LossPercent: 0, stage2LossPercent: 0, stage3LossPercent: 0,
     totalLossPercent: 0, systemEfficiency: 0,
-    period: ''
-  };
-
-  if (startIndex === -1 || endIndex === -1 || startIndex > endIndex) {
-    return defaultReturn;
-  }
-
-  const selectedMonths = waterMonthsAvailable.slice(startIndex, endIndex + 1);
-  
-  const totals = {
-      A1_supply: 0, A2_total: 0, A3_total: 0, A4_total: 0,
-      L2_total: 0, L3_total: 0, L4_total: 0, DC_total: 0
-  };
-
-  selectedMonths.forEach(month => {
-      const monthData = calculateWaterLoss(month);
-      totals.A1_supply += monthData.A1_supply;
-      totals.A2_total += monthData.A2_total;
-      totals.A3_total += monthData.A3_total;
-      totals.A4_total += monthData.A4_total;
-      totals.L2_total += monthData.L2_total;
-      totals.L3_total += monthData.L3_total;
-      totals.L4_total += monthData.L4_total;
-      totals.DC_total += monthData.DC_total;
-  });
-
-  const stage1Loss = totals.A1_supply - totals.A2_total;
-  const stage2Loss = totals.L2_total - totals.L3_total;
-  const stage3Loss = totals.A3_total - totals.A4_total;
-  const totalLoss = totals.A1_supply - totals.A4_total;
-  
-  return {
-    ...totals,
-    stage1Loss,
-    stage2Loss,
-    stage3Loss,
-    totalLoss,
-    stage1LossPercent: totals.A1_supply > 0 ? (stage1Loss / totals.A1_supply) * 100 : 0,
-    stage2LossPercent: totals.L2_total > 0 ? (stage2Loss / totals.L2_total) * 100 : 0,
-    stage3LossPercent: totals.A3_total > 0 ? (stage3Loss / totals.A3_total) * 100 : 0,
-    totalLossPercent: totals.A1_supply > 0 ? (totalLoss / totals.A1_supply) * 100 : 0,
-    systemEfficiency: totals.A1_supply > 0 ? (totals.A4_total / totals.A1_supply) * 100 : 0,
     period: startMonth === endMonth ? startMonth : `${startMonth} to ${endMonth}`
   };
+
+  try {
+    if (!waterMonthsAvailable || waterMonthsAvailable.length === 0) {
+      console.warn('No months available for aggregated calculation');
+      return defaultReturn;
+    }
+
+    const startIndex = waterMonthsAvailable.indexOf(startMonth);
+    const endIndex = waterMonthsAvailable.indexOf(endMonth);
+
+    if (startIndex === -1 || endIndex === -1 || startIndex > endIndex) {
+      console.warn('Invalid month range for aggregated calculation');
+      return defaultReturn;
+    }
+
+    const selectedMonths = waterMonthsAvailable.slice(startIndex, endIndex + 1);
+    
+    const totals = {
+        A1_supply: 0, A2_total: 0, A3_total: 0, A4_total: 0,
+        L2_total: 0, L3_total: 0, L4_total: 0, DC_total: 0
+    };
+
+    selectedMonths.forEach(month => {
+        try {
+          const monthData = calculateWaterLoss(month);
+          totals.A1_supply += monthData.A1_supply || 0;
+          totals.A2_total += monthData.A2_total || 0;
+          totals.A3_total += monthData.A3_total || 0;
+          totals.A4_total += monthData.A4_total || 0;
+          totals.L2_total += monthData.L2_total || 0;
+          totals.L3_total += monthData.L3_total || 0;
+          totals.L4_total += monthData.L4_total || 0;
+          totals.DC_total += monthData.DC_total || 0;
+        } catch (error) {
+          console.error(`Error calculating data for month ${month}:`, error);
+        }
+    });
+
+    const stage1Loss = totals.A1_supply - totals.A2_total;
+    const stage2Loss = totals.L2_total - totals.L3_total;
+    const stage3Loss = totals.A3_total - totals.A4_total;
+    const totalLoss = totals.A1_supply - totals.A4_total;
+    
+    return {
+      ...totals,
+      stage1Loss,
+      stage2Loss,
+      stage3Loss,
+      totalLoss,
+      stage1LossPercent: totals.A1_supply > 0 ? (stage1Loss / totals.A1_supply) * 100 : 0,
+      stage2LossPercent: totals.L2_total > 0 ? (stage2Loss / totals.L2_total) * 100 : 0,
+      stage3LossPercent: totals.A3_total > 0 ? (stage3Loss / totals.A3_total) * 100 : 0,
+      totalLossPercent: totals.A1_supply > 0 ? (totalLoss / totals.A1_supply) * 100 : 0,
+      systemEfficiency: totals.A1_supply > 0 ? (totals.A4_total / totals.A1_supply) * 100 : 0,
+      period: startMonth === endMonth ? startMonth : `${startMonth} to ${endMonth}`
+    };
+  } catch (error) {
+    console.error('Error in calculateAggregatedDataForPeriod:', error);
+    return defaultReturn;
+  }
 };
 
 

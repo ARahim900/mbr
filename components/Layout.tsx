@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileBottomNav from './ui/MobileBottomNav';
 import { Bell, Search, Menu, User, Settings, Droplets, Zap, Wind, Shield, HardHat, Recycle } from 'lucide-react';
@@ -6,13 +7,61 @@ import { useIsMobile } from '../hooks/useIsMobile';
 
 interface LayoutProps {
   children: React.ReactNode;
-  activeSection: string;
-  setActiveSection: (section: string) => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, activeSection, setActiveSection }) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isMobile = useIsMobile(1024); // Use 1024px breakpoint for mobile detection
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Get active section from current route
+  const getActiveSection = () => {
+    const path = location.pathname;
+    switch (path) {
+      case '/water':
+        return 'Water System';
+      case '/electricity':
+        return 'Electricity System';
+      case '/hvac':
+        return 'HVAC System';
+      case '/firefighting':
+        return 'Firefighting & Alarm';
+      case '/contractor':
+        return 'Contractor Tracker';
+      case '/stp':
+        return 'STP Plant';
+      default:
+        return 'Water System';
+    }
+  };
+
+  const activeSection = getActiveSection();
+
+  const setActiveSection = (section: string) => {
+    switch (section) {
+      case 'Water System':
+        navigate('/water');
+        break;
+      case 'Electricity System':
+        navigate('/electricity');
+        break;
+      case 'HVAC System':
+        navigate('/hvac');
+        break;
+      case 'Firefighting & Alarm':
+        navigate('/firefighting');
+        break;
+      case 'Contractor Tracker':
+        navigate('/contractor');
+        break;
+      case 'STP Plant':
+        navigate('/stp');
+        break;
+      default:
+        navigate('/water');
+    }
+  };
 
   // Navigation items for mobile bottom nav
   const mobileNavItems = [
