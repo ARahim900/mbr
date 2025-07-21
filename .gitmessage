@@ -1,0 +1,32 @@
+# Commit Message Template for MBR Project
+# 
+# Format: <type>: <subject>
+# 
+# Types:
+# - feat:     New feature
+# - fix:      Bug fix
+# - docs:     Documentation changes
+# - style:    Formatting, missing semi-colons, etc (no code change)
+# - refactor: Code change that neither fixes a bug nor adds a feature
+# - perf:     Performance improvements
+# - test:     Adding missing tests
+# - chore:    Changes to build process or auxiliary tools
+# 
+# Subject: 
+# - Use imperative mood ("Add feature" not "Added feature")
+# - Limit to 50 characters
+# - Don't end with a period
+# 
+# Body (optional):
+# - Wrap at 72 characters
+# - Explain what and why, not how
+# - Reference issues and PRs
+# 
+# Example:
+# feat: Add water consumption analytics dashboard
+# 
+# - Implemented real-time data visualization
+# - Added zone-based filtering
+# - Integrated with existing API endpoints
+# 
+# Closes #123
