@@ -7,7 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "verify": "node scripts/verify-commit.js",
+    "setup-hooks": "bash scripts/setup-hooks.sh",
+    "setup-hooks:windows": "node scripts/setup-hooks-windows.js",
+    "rollback": "node scripts/rollback-helper.js",
+    "commit-helper": "git add . && git commit",
+    "lint:check": "node scripts/verify-commit.js",
+    "postinstall": "npm run setup-hooks || npm run setup-hooks:windows"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.50.4",
