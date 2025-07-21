@@ -8,16 +8,14 @@
 - ✅ Added custom sign-in page at `/sign-in`
 - ✅ Added custom sign-up page at `/sign-up`
 - ✅ Created environment variable template
-- ✅ Added your API keys in `SETUP_KEYS.md`
+- ✅ Added setup instructions in `SETUP_KEYS.md`
 
-### 2. **Your API Keys Are Ready**
-Your Clerk API keys are saved in `SETUP_KEYS.md`. These are:
-- Publishable Key: `pk_test_ZmFjdHVhbC1ib2FyLTkwLmNsZXJrLmFjY291bnRzLmRldiQ`
-- Secret Key: `sk_test_ZMjZKQsSeJbT5kAnTj8wyB1TJ0QsFG6zTc5k15J3ek`
+### 2. **API Keys Setup Required**
+You need to get your Clerk API keys from https://dashboard.clerk.com and add them to your `.env.local` file.
 
 ### 3. **Security Measures**
 - ✅ `.env.local` is already in `.gitignore` (your keys won't be committed)
-- ✅ Created setup instructions with your actual keys
+- ✅ Created setup instructions without exposing actual keys
 - ✅ All authentication pages use Clerk's secure components
 
 ## What You Need to Do:
@@ -32,9 +30,11 @@ git pull origin main
 
 ### 2. **Set Up Your Environment**
 ```bash
-# Copy the API keys from SETUP_KEYS.md to .env.local
-cp SETUP_KEYS.md .env.local
-# Then edit .env.local to have the correct format
+# Create .env.local file
+cp .env.local.example .env.local
+
+# Add your Clerk API keys to .env.local
+# Get them from https://dashboard.clerk.com
 
 # Install dependencies
 npm install @clerk/nextjs
@@ -42,7 +42,7 @@ npm install @clerk/nextjs
 
 ### 3. **Delete Sensitive Files**
 ```bash
-# After copying your keys, delete the setup file
+# After setup, delete these files
 rm SETUP_KEYS.md
 rm AUTHENTICATION_COMPLETE.md
 ```
@@ -65,7 +65,7 @@ I searched your repository and **did not find any existing login/signup pages** 
 
 ## ⚠️ IMPORTANT REMINDERS:
 
-1. **Delete `SETUP_KEYS.md`** after copying your API keys
+1. **Get your API keys** from Clerk Dashboard
 2. **Never commit `.env.local`** to your repository  
 3. **Your app won't work** without the API keys in `.env.local`
 
