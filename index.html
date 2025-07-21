@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#4E4456" />
     <title>Muscat Bay - Resource Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@3.0.0-beta.6/dist/aos.css" rel="stylesheet">
@@ -20,6 +24,81 @@
       .teal-gradient {
         background: linear-gradient(135deg, #00D2B3 0%, #00B899 100%);
       }
+      
+      /* Mobile-first responsive design */
+      :root {
+        --mobile-header-height: 64px;
+        --mobile-bottom-nav-height: 80px;
+        --mobile-content-padding: 16px;
+      }
+      
+      /* Mobile-specific styles */
+      @media (max-width: 768px) {
+        body {
+          -webkit-tap-highlight-color: transparent;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+        
+        /* Prevent horizontal scrolling */
+        html, body {
+          overflow-x: hidden;
+          width: 100%;
+        }
+        
+        /* Mobile header adjustments */
+        .mobile-header {
+          height: var(--mobile-header-height);
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 50;
+        }
+        
+        /* Mobile content area */
+        .mobile-content {
+          padding-top: var(--mobile-header-height);
+          padding-bottom: var(--mobile-bottom-nav-height);
+          min-height: calc(100vh - var(--mobile-header-height) - var(--mobile-bottom-nav-height));
+        }
+        
+        /* Mobile bottom navigation */
+        .mobile-bottom-nav {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: var(--mobile-bottom-nav-height);
+          z-index: 50;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Touch-friendly buttons */
+        .mobile-touch-target {
+          min-height: 44px;
+          min-width: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        /* Mobile card styles */
+        .mobile-card {
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+        }
+        
+        .mobile-card:active {
+          transform: scale(0.98);
+        }
+      }
+      
       /* Fix for Recharts rendering */
       .recharts-surface {
         overflow: visible !important;
@@ -28,13 +107,33 @@
         position: relative !important;
         height: 100% !important;
       }
-      /* Mobile chart fixes */
+      
+      /* Enhanced mobile chart fixes */
       @media (max-width: 768px) {
         .recharts-wrapper {
           width: 100% !important;
+          min-height: 250px !important;
         }
         .recharts-surface {
           width: 100% !important;
+          height: 100% !important;
+        }
+        .recharts-cartesian-axis-tick-value {
+          font-size: 10px !important;
+        }
+        .recharts-legend-wrapper {
+          font-size: 12px !important;
+        }
+        .recharts-tooltip-wrapper {
+          font-size: 12px !important;
+        }
+      }
+      
+      /* Dark mode support for mobile */
+      @media (prefers-color-scheme: dark) {
+        .mobile-bottom-nav {
+          background: rgba(17, 24, 39, 0.95);
+          border-top-color: rgba(255, 255, 255, 0.1);
         }
       }
     </style>
@@ -49,7 +148,8 @@
           duration: 800,
           easing: 'ease-in-out',
           once: true,
-          mirror: false
+          mirror: false,
+          disable: 'mobile' // Disable AOS on mobile for better performance
         });
       });
     </script>

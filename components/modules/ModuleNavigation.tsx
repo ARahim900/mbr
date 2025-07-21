@@ -24,8 +24,8 @@ export default function ModuleNavigation({ tabs, activeTab, onTabChange, classNa
             className={`
               px-4 py-2 rounded-lg font-medium transition-all duration-300
               ${activeTab === tab.id
-                ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md'
-                : 'text-gray-300 hover:text-white hover:bg-white/10'
+                ? 'bg-iceMint text-white shadow-md'
+                : 'text-gray-300 hover:text-white hover:bg-iceMint/20'
               }
             `}
           >

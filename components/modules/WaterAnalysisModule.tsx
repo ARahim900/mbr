@@ -22,6 +22,7 @@ import ChartCard from '../ui/ChartCard';
 import Button from '../ui/Button';
 import MonthRangeSlider from '../ui/MonthRangeSlider';
 import ModuleNavigation from '../ui/ModuleNavigation';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -122,17 +123,18 @@ const byTypeData = {
 };
 
 const waterSubSections = [
-    { name: 'Overview', id: 'Overview', icon: LayoutDashboard, shortName: 'Over' },
-    { name: 'Water Loss Analysis', id: 'WaterLoss', icon: TrendingUp, shortName: 'Loss' },
-    { name: 'Zone Analysis', id: 'ZoneAnalysis', icon: BarChart2, shortName: 'Zone' },
-    { name: 'Consumption by Type', id: 'ByTypeAnalysis', icon: Tags, shortName: 'Type' },
-    { name: 'Main Database', id: 'MainDatabase', icon: Database, shortName: 'Data' },
+    { name: 'Overview', id: 'Overview', icon: LayoutDashboard, shortName: 'Over', label: 'Overview' },
+    { name: 'Water Loss Analysis', id: 'WaterLoss', icon: TrendingUp, shortName: 'Loss', label: 'Water Loss Analysis' },
+    { name: 'Zone Analysis', id: 'ZoneAnalysis', icon: BarChart2, shortName: 'Zone', label: 'Zone Analysis' },
+    { name: 'Consumption by Type', id: 'ByTypeAnalysis', icon: Tags, shortName: 'Type', label: 'Consumption by Type' },
+    { name: 'Main Database', id: 'MainDatabase', icon: Database, shortName: 'Data', label: 'Main Database' },
 ];
 
 
 
 const WaterAnalysisModule: React.FC = () => {
   const [activeWaterSubSection, setActiveWaterSubSection] = useState('Overview');
+  const isMobile = useIsMobile(1024); // Use 1024px breakpoint for mobile detection
   
   // Debug: Check if data is loaded
   console.log('Water System Data Length:', waterSystemData.length);
@@ -464,9 +466,9 @@ Total System Loss: Overall efficiency
   }, []);
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className={`space-y-6 ${isMobile ? 'p-3' : 'p-4 sm:p-6'}`}>
       <h2 
-        className="text-3xl font-bold text-primary dark:text-white"
+        className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-primary dark:text-white`}
         data-aos="fade-down"
         data-aos-duration="800"
       >
@@ -514,7 +516,7 @@ Total System Loss: Overall efficiency
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 transition-colors duration-300">
               4-Level Water Distribution Totals for <span className="text-accent">{overviewCalculations.period}</span>
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'}`}>
               <MetricCard 
                 title="A1 - Main Source (L1)" 
                 value={overviewCalculations.A1_supply.toLocaleString()} 
@@ -600,7 +602,7 @@ Total System Loss: Overall efficiency
              data-aos-duration="800"
              data-aos-delay="600"
            >
-                <ChartCard title="Monthly Consumption Trend" subtitle="L1 Supply vs. L2 & L3 Meter Totals" className="min-h-[400px] sm:min-h-[450px]">
+                <ChartCard title="Monthly Consumption Trend" subtitle="L1 Supply vs. L2 & L3 Meter Totals" className={`${isMobile ? 'min-h-[300px]' : 'min-h-[400px] sm:min-h-[450px]'}`}>
                     <div className="flex flex-wrap gap-2 justify-center mb-4">
                         {Object.keys(consumptionVisibility).map((key, index) => (
                             <button
@@ -617,7 +619,7 @@ Total System Loss: Overall efficiency
                             </button>
                         ))}
                     </div>
-                    <div className="w-full h-[300px] sm:h-[350px]">
+                    <div className={`w-full ${isMobile ? 'h-[250px]' : 'h-[300px] sm:h-[350px]'}`}>
                         {monthlyWaterTrendData.length === 0 ? (
                           <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <div className="text-center">
@@ -658,7 +660,7 @@ Total System Loss: Overall efficiency
                         )}
                     </div>
                 </ChartCard>
-                <ChartCard title="Monthly Water Loss Trend" subtitle="Comparing loss at different stages of distribution" className="min-h-[400px] sm:min-h-[450px]">
+                <ChartCard title="Monthly Water Loss Trend" subtitle="Comparing loss at different stages of distribution" className={`${isMobile ? 'min-h-[300px]' : 'min-h-[400px] sm:min-h-[450px]'}`}>
                     <div className="flex flex-wrap gap-2 justify-center mb-4">
                         {Object.keys(lossVisibility).map((key, index) => (
                             <button
@@ -675,7 +677,7 @@ Total System Loss: Overall efficiency
                             </button>
                         ))}
                     </div>
-                    <div className="w-full h-[300px] sm:h-[350px]">
+                    <div className={`w-full ${isMobile ? 'h-[250px]' : 'h-[300px] sm:h-[350px]'}`}>
                         {lossTrendData.length === 0 ? (
                           <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <div className="text-center">
@@ -1452,7 +1454,7 @@ Total System Loss: Overall efficiency
                 unit="%"
                 icon={CheckCircle}
                 subtitle={`${selectedType} share of total`}
-                iconColor="text-purple-500"
+                iconColor="text-iceMint"
               />
             </div>
           )}
@@ -1739,7 +1741,7 @@ Total System Loss: Overall efficiency
       {isAiModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#23202A]">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-6 h-6 text-accent" />
                 AI Water System Analysis
@@ -1751,14 +1753,14 @@ Total System Loss: Overall efficiency
                 <X size={24} />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-8rem)]">
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-8rem)] bg-white dark:bg-[#23202A] text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-700">
               {isAiLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
                 </div>
               ) : (
                 <div className="prose dark:prose-invert max-w-none">
-                  <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 font-sans">
+                  <pre className="whitespace-pre-wrap text-sm font-sans text-gray-900 dark:text-white">
                     {aiAnalysisResult}
                   </pre>
                 </div>

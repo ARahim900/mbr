@@ -186,7 +186,7 @@ const StpPlantModule: React.FC = () => {
                     unit="OMR"
                     icon={TrendingUp}
                     subtitle="By using TSE water"
-                    iconColor="text-teal-500"
+                    iconColor="text-iceMint"
                 />
                 <MetricCard 
                     title="Total Impact"
@@ -194,7 +194,7 @@ const StpPlantModule: React.FC = () => {
                     unit="OMR"
                     icon={DollarSign}
                     subtitle="Savings + Income"
-                    iconColor="text-purple-500"
+                    iconColor="text-iceMint"
                 />
             </div>
         </div>

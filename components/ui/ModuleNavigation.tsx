@@ -1,10 +1,18 @@
 import React from 'react';
 import MobileBottomNav from './MobileBottomNav';
 
+interface Section {
+  id: string;
+  name: string;
+  label: string;
+  shortName: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
 interface ModuleNavigationProps {
-  sections: any[];
+  sections: Section[];
   activeSection: string;
-  onSectionChange: (id: string) => void;
+  onSectionChange: (sectionId: string) => void;
 }
 
 const ModuleNavigation: React.FC<ModuleNavigationProps> = ({ 
@@ -23,8 +31,8 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
               onClick={() => onSectionChange(section.id)}
               className={`flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
                 activeSection === section.id
-                  ? 'bg-gradient-to-r from-accent to-accent/80 text-white shadow-lg'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-white'
+                  ? 'bg-iceMint text-white shadow-lg'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-iceMint/10 hover:text-iceMint dark:hover:text-iceMint'
               }`}
             >
               <section.icon className="w-5 h-5 mr-2" />
@@ -36,7 +44,12 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
       
       {/* Mobile navigation */}
       <MobileBottomNav 
-        sections={sections}
+        sections={sections.map(section => ({
+          id: section.id,
+          label: section.label,
+          shortName: section.shortName,
+          icon: section.icon
+        }))}
         activeSection={activeSection}
         onSectionChange={onSectionChange}
       />

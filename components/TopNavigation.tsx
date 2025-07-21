@@ -36,7 +36,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
       <div className="lg:hidden">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-3 rounded-md text-white hover:bg-white/20 transition-colors"
+          className="p-3 rounded-md text-white hover:bg-iceMint/20 transition-colors"
           aria-label="Open navigation menu"
         >
           <Menu size={28} />
@@ -59,7 +59,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
             <h2 className="font-bold text-lg text-primary dark:text-white">Menu</h2>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-3 rounded-md text-primary dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="p-3 rounded-md text-primary dark:text-gray-300 hover:bg-iceMint/10 transition-colors"
               aria-label="Close navigation menu"
             >
               <X size={28} />
@@ -75,8 +75,8 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
                     onClick={() => handleNavClick(item.id)}
                     className={`w-full flex items-center gap-4 p-4 rounded-lg text-lg transition-colors duration-200 ${
                       isActive
-                        ? 'nav-item-active'
-                        : 'nav-item-inactive'
+                        ? 'bg-iceMint text-white shadow-md'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-iceMint/10 hover:text-iceMint dark:hover:text-iceMint'
                     }`}
                   >
                     <Icon className="h-6 w-6" />
@@ -90,7 +90,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
       </div>
 
       {/* Desktop Navigation */}
-      <div className="hidden lg:flex items-center gap-2">
+      <div className="hidden lg:flex items-center space-x-2">
         {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -100,8 +100,8 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ activeSection, onSectionC
                 onClick={() => handleNavClick(item.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold transition-all duration-200 ${
                     isActive
-                    ? 'nav-item-active'
-                    : 'nav-item-inactive'
+                    ? 'bg-iceMint text-white shadow-md'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-iceMint/10 hover:text-iceMint dark:hover:text-iceMint'
                 }`}
               >
                 <Icon className="h-5 w-5" />

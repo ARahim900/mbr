@@ -30,7 +30,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
       'text-blue-500': 'from-blue-400 to-blue-600',
       'text-red-500': 'from-red-400 to-red-600',
       'text-purple-500': 'from-purple-400 to-purple-600',
-      'text-teal-500': 'from-teal-400 to-teal-600',
+      'text-iceMint': 'from-iceMint-light to-iceMint-dark',
       'text-yellow-600': 'from-yellow-500 to-yellow-700',
       'text-green-600': 'from-green-500 to-green-700',
       'text-blue-600': 'from-blue-500 to-blue-700',

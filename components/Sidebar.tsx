@@ -27,17 +27,19 @@ interface NavItemProps {
 }
 
 const NavItem: React.FC<NavItemProps> = ({ id, icon, label, active, isOpen, onClick }) => (
-    <li>
-      <button 
-        onClick={() => onClick(id)} 
-        className={`sidebar-nav-item w-full flex items-center p-3 my-1 rounded-lg transition-all duration-300 transform hover:scale-105 ${
-          active 
-          ? 'bg-accent text-white shadow-lg' 
-          : 'text-gray-300 hover:bg-mint hover:text-white'
-      }`}
-        style={{
-          '--hover-bg-color': '#A2D0C8'
-        } as React.CSSProperties}
+  <li className="mb-2">
+    <button
+      onClick={() => onClick(id)}
+      className={`
+        w-full flex items-center p-3 rounded-lg transition-all duration-200 text-left
+        ${active 
+          ? 'bg-iceMint text-white shadow-md' 
+          : 'text-gray-300 hover:bg-iceMint/20 hover:text-white'
+        }
+      `}
+      style={{
+        '--hover-bg-color': '#5CB6BD'
+      } as React.CSSProperties}
       title={label}
       >
         {icon}
@@ -100,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, set
           {/* Desktop toggle button */}
           <button 
             onClick={() => setIsOpen(!isOpen)} 
-            className="sidebar-toggle-button hidden lg:flex p-1.5 rounded-full hover:bg-mint absolute -right-4 top-8 bg-[#4E4456] border-2 border-[#5A5563] text-gray-300 hover:text-white transition-all duration-300 shadow-lg"
+            className="sidebar-toggle-button hidden lg:flex p-1.5 rounded-full hover:bg-iceMint absolute -right-4 top-8 bg-[#4E4456] border-2 border-[#5A5563] text-gray-300 hover:text-white transition-all duration-300 shadow-lg"
           >
             {isOpen ? <ChevronsLeft className="h-5 w-5" /> : <ChevronsRight className="h-5 w-5" />}
           </button>

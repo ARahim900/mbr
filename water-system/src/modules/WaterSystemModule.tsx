@@ -401,8 +401,8 @@ const WaterSystemModule = () => {
                     isMobile ? 'w-full justify-center' : ''
                   } ${
                     activeTab === tab.id
-                      ? 'bg-teal-500 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-iceMint text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-iceMint/20'
                   }`}
                 >
                   <Icon className="w-5 h-5 mr-2" />
@@ -426,7 +426,7 @@ const WaterSystemModule = () => {
                   <select
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-iceMint focus:border-transparent"
                   >
                     {months.map((month) => (
                       <option key={month} value={month}>
@@ -446,7 +446,7 @@ const WaterSystemModule = () => {
                   <select
                     value={selectedZone}
                     onChange={(e) => setSelectedZone(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-iceMint focus:border-transparent"
                   >
                     {allZones.length === 0 ? (
                       <option value="">Please upload CSV data</option>
@@ -483,7 +483,7 @@ const WaterSystemModule = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <RefreshCw className="w-8 h-8 animate-spin text-teal-500" />
+              <RefreshCw className="w-8 h-8 animate-spin text-iceMint" />
               <span className="ml-2 text-gray-600">Loading data...</span>
             </div>
           ) : (

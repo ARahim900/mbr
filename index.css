@@ -2,14 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles for MBR Application */
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Custom scrollbar styles */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f9fafb;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -17,31 +35,31 @@ html {
 
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #c1c1c1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #a8a8a8;
 }
 
-/* Dark mode scrollbar */
 .dark ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #374151;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
+  background: #6b7280;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #6a6a6a;
+  background: #9ca3af;
 }
 
-/* Loading animation */
+/* Animations */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -55,45 +73,42 @@ html {
   animation: spin 1s linear infinite;
 }
 
-/* Fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .fade-in {
-  animation: fadeIn 0.5s ease-in;
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Custom focus styles */
+/* Focus styles */
 *:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 210, 179, 0.3);
+  outline: 2px solid #00D2B3;
+  outline-offset: 2px;
 }
 
-/* Slider thumb styles */
+/* Slider styles */
 .slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #374151;
-  cursor: pointer;
-  position: absolute;
-  margin-top: -12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #e5e7eb;
+  outline: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 
 .slider-thumb:hover {
-  background: #1f2937;
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 1;
 }
 
 .slider-thumb::-webkit-slider-thumb {
@@ -104,6 +119,7 @@ html {
   border-radius: 50%;
   background: #374151;
   cursor: pointer;
+  border: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
@@ -143,11 +159,11 @@ html {
 
 /* Navigation specific styles */
 .nav-item-active {
-  @apply bg-accent text-white shadow-md;
+  @apply bg-iceMint text-white shadow-md;
 }
 
 .nav-item-inactive {
-  @apply text-secondary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700;
+  @apply text-gray-600 dark:text-gray-300 hover:bg-iceMint/10 hover:text-iceMint dark:hover:text-iceMint;
 }
 
 /* Ensure navigation is always visible */
@@ -216,14 +232,17 @@ div[style*="width: 100%"][style*="height: 300px"] {
   position: relative !important;
 }
 
-/* Mobile specific chart fixes */
+/* Enhanced Mobile Responsive Styles */
 @media (max-width: 768px) {
+  /* Mobile-specific chart fixes */
   .recharts-responsive-container {
     min-height: 250px !important;
+    max-height: 400px !important;
   }
   
   .recharts-wrapper {
     font-size: 12px !important;
+    min-height: 250px !important;
   }
   
   .recharts-cartesian-axis-tick-value {
@@ -231,6 +250,11 @@ div[style*="width: 100%"][style*="height: 300px"] {
   }
   
   .recharts-legend-wrapper {
+    font-size: 12px !important;
+    padding: 8px !important;
+  }
+  
+  .recharts-tooltip-wrapper {
     font-size: 12px !important;
   }
   
@@ -242,6 +266,17 @@ div[style*="width: 100%"][style*="height: 300px"] {
   /* Fix touch interactions on mobile */
   .recharts-layer.recharts-active-dot {
     pointer-events: auto !important;
+  }
+  
+  /* Mobile card and layout improvements */
+  .mobile-card {
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .mobile-card:active {
+    transform: scale(0.98) !important;
   }
   
   /* Ensure proper spacing on mobile */
@@ -268,6 +303,68 @@ div[style*="width: 100%"][style*="height: 300px"] {
   main, .main-content {
     padding-bottom: 80px !important;
   }
+  
+  /* Mobile-specific text sizes */
+  h1 {
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  h3 {
+    font-size: 1.125rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Mobile button improvements */
+  .mobile-touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Mobile table improvements */
+  .mobile-table {
+    font-size: 12px !important;
+  }
+  
+  .mobile-table th,
+  .mobile-table td {
+    padding: 8px 4px !important;
+  }
+  
+  /* Mobile form improvements */
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  /* Mobile modal improvements */
+  .mobile-modal {
+    border-radius: 16px 16px 0 0 !important;
+    max-height: 90vh !important;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .recharts-responsive-container {
+    min-height: 200px !important;
+  }
+  
+  .mobile-card {
+    margin: 0.5rem !important;
+  }
+  
+  .container {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
 }
 
 /* Fix for chart label backgrounds */
@@ -284,56 +381,96 @@ div[style*="width: 100%"][style*="height: 300px"] {
 
 /* Sidebar hover color override */
 .sidebar-nav-item:hover {
-  background-color: var(--hover-bg-color, #A2D0C8) !important;
+  background-color: var(--hover-bg-color, #5CB6BD) !important;
   color: white !important;
 }
 
 .sidebar-toggle-button:hover {
-  background-color: #A2D0C8 !important;
+  background-color: #5CB6BD !important;
   color: white !important;
 }
 
 /* Force hover color for sidebar items */
-aside button:hover:not(.bg-accent) {
-  background-color: #A2D0C8 !important;
+aside button:hover:not(.bg-iceMint) {
+  background-color: #5CB6BD !important;
   color: white !important;
 }
 
-/* Specific sidebar navigation hover */
+/* Additional sidebar hover fixes */
 aside nav ul li button:hover {
-  background-color: #A2D0C8 !important;
+  background-color: #5CB6BD !important;
   color: white !important;
 }
 
-/* Override any conflicting hover styles */
 .bg-\[#4E4456\] button:hover {
-  background-color: #A2D0C8 !important;
+  background-color: #5CB6BD !important;
   color: white !important;
 }
 
-/* Target sidebar with data attribute */
-[data-sidebar="true"] button:hover:not(.bg-accent) {
-  background-color: #A2D0C8 !important;
+[data-sidebar="true"] button:hover:not(.bg-iceMint) {
+  background-color: #5CB6BD !important;
   color: white !important;
 }
 
-/* Force chart visibility in all states */
+/* Ensure charts work with AOS animations */
 .aos-animate .recharts-responsive-container,
-.aos-init .recharts-responsive-container,
-.recharts-responsive-container {
-  display: block !important;
+.aos-animate .recharts-wrapper,
+.aos-animate .recharts-surface {
+  pointer-events: auto !important;
   opacity: 1 !important;
   visibility: visible !important;
-  pointer-events: auto !important;
 }
 
-/* ULTIMATE SIDEBAR HOVER OVERRIDE - HIGHEST PRIORITY */
+/* Final sidebar hover fix */
 aside[data-sidebar="true"] nav ul li button:hover,
-aside[data-sidebar="true"] button:hover:not(.bg-accent),
-.sidebar-nav-item:hover,
-[data-sidebar="true"] .sidebar-nav-item:hover {
-  background-color: #A2D0C8 !important;
-  background: #A2D0C8 !important;
+aside[data-sidebar="true"] button:hover:not(.bg-iceMint) {
+  background-color: #5CB6BD !important;
   color: white !important;
-  border-color: #A2D0C8 !important;
+}
+
+/* Mobile-specific utility classes */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  .mobile-block {
+    display: block !important;
+  }
+  
+  .mobile-flex {
+    display: flex !important;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+  }
+  
+  .mobile-text-xs {
+    font-size: 0.75rem !important;
+  }
+  
+  .mobile-p-2 {
+    padding: 0.5rem !important;
+  }
+  
+  .mobile-p-3 {
+    padding: 0.75rem !important;
+  }
+  
+  .mobile-p-4 {
+    padding: 1rem !important;
+  }
+  
+  .mobile-m-2 {
+    margin: 0.5rem !important;
+  }
+  
+  .mobile-m-3 {
+    margin: 0.75rem !important;
+  }
+  
+  .mobile-m-4 {
+    margin: 1rem !important;
+  }
 }

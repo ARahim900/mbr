@@ -23,6 +23,11 @@ export default {
           DEFAULT: '#A2D0C8',
           light: '#B8DCD5',
           dark: '#8CC4BA'
+        },
+        iceMint: {
+          DEFAULT: '#81D8D0',
+          light: '#A2E6E0',
+          dark: '#5CB6BD'
         }
       },
       backdropBlur: {
