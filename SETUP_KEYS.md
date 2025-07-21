@@ -4,12 +4,14 @@
 
 ### 1. Create your .env.local file
 
-After pulling this branch, create a `.env.local` file in your project root with these exact values:
+After pulling this branch, create a `.env.local` file in your project root with these values:
 
 ```
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ZmFjdHVhbC1ib2FyLTkwLmNsZXJrLmFjY291bnRzLmRldiQ
-CLERK_SECRET_KEY=sk_test_ZMjZKQsSeJbT5kAnTj8wyB1TJ0QsFG6zTc5k15J3ek
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY_HERE
+CLERK_SECRET_KEY=YOUR_SECRET_KEY_HERE
 ```
+
+⚠️ **IMPORTANT**: Replace the placeholders above with your actual Clerk API keys from https://dashboard.clerk.com
 
 ### 2. Install dependencies
 
