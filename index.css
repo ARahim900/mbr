@@ -284,11 +284,35 @@ div[style*="width: 100%"][style*="height: 300px"] {
 
 /* Sidebar hover color override */
 .sidebar-nav-item:hover {
-  background-color: #A2D0C8 !important;
+  background-color: var(--hover-bg-color, #A2D0C8) !important;
   color: white !important;
 }
 
 .sidebar-toggle-button:hover {
+  background-color: #A2D0C8 !important;
+  color: white !important;
+}
+
+/* Force hover color for sidebar items */
+aside button:hover:not(.bg-accent) {
+  background-color: #A2D0C8 !important;
+  color: white !important;
+}
+
+/* Specific sidebar navigation hover */
+aside nav ul li button:hover {
+  background-color: #A2D0C8 !important;
+  color: white !important;
+}
+
+/* Override any conflicting hover styles */
+.bg-\[#4E4456\] button:hover {
+  background-color: #A2D0C8 !important;
+  color: white !important;
+}
+
+/* Target sidebar with data attribute */
+[data-sidebar="true"] button:hover:not(.bg-accent) {
   background-color: #A2D0C8 !important;
   color: white !important;
 }
@@ -301,4 +325,15 @@ div[style*="width: 100%"][style*="height: 300px"] {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
+}
+
+/* ULTIMATE SIDEBAR HOVER OVERRIDE - HIGHEST PRIORITY */
+aside[data-sidebar="true"] nav ul li button:hover,
+aside[data-sidebar="true"] button:hover:not(.bg-accent),
+.sidebar-nav-item:hover,
+[data-sidebar="true"] .sidebar-nav-item:hover {
+  background-color: #A2D0C8 !important;
+  background: #A2D0C8 !important;
+  color: white !important;
+  border-color: #A2D0C8 !important;
 }

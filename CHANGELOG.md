@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
   - Applied new hover color to both navigation items and desktop toggle button
   - Added custom CSS classes for guaranteed color application
   - Added mint color to Tailwind config for consistent theming
+  - Added multiple CSS override strategies with highest specificity
+  - Added data attributes for targeted styling
   - Improved contrast and visibility for selected items in sidebar
   - Color specifications: HEX: #A2D0C8, RGB: 162, 208, 200, CMYK: 22, 0, 4, 18
 

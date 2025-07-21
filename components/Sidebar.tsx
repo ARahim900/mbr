@@ -35,6 +35,9 @@ const NavItem: React.FC<NavItemProps> = ({ id, icon, label, active, isOpen, onCl
           ? 'bg-accent text-white shadow-lg' 
           : 'text-gray-300 hover:bg-mint hover:text-white'
       }`}
+        style={{
+          '--hover-bg-color': '#A2D0C8'
+        } as React.CSSProperties}
       title={label}
       >
         {icon}
@@ -64,7 +67,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeSection, set
       )}
 
       {/* Sidebar */}
-      <aside className={`
+      <aside 
+        data-sidebar="true"
+        className={`
         fixed lg:relative
         bg-[#4E4456]
         transition-all duration-300 ease-in-out 
