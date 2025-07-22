@@ -130,8 +130,6 @@ const waterSubSections = [
     { name: 'Main Database', id: 'MainDatabase', icon: Database, shortName: 'Data', label: 'Main Database' },
 ];
 
-
-
 const WaterAnalysisModule: React.FC = () => {
   const [activeWaterSubSection, setActiveWaterSubSection] = useState('Overview');
   const isMobile = useIsMobile(1024); // Use 1024px breakpoint for mobile detection
