@@ -708,10 +708,10 @@ Total System Loss: Overall efficiency
                                       </filter>
                                   </defs>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" opacity={0.5} />
-                                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                                  <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
+                                  <XAxis dataKey="name" fontSize={isMobile ? 11 : 14} tickLine={false} axisLine={false} />
+                                  <YAxis fontSize={isMobile ? 11 : 14} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
                                   <Tooltip content={<CustomTooltip />} />
-                                  <Legend />
+                                  <Legend wrapperStyle={{ fontSize: isMobile ? 11 : 14 }} />
                                   
                                   {consumptionVisibility['L1 - Main Source'] && <Line 
                                       type="monotone" 
@@ -781,10 +781,10 @@ Total System Loss: Overall efficiency
                           <ResponsiveContainer width="100%" height="100%">
                               <LineChart data={lossTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#fee2e2" opacity={0.5} />
-                                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                                  <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
+                                  <XAxis dataKey="name" fontSize={isMobile ? 11 : 14} tickLine={false} axisLine={false} />
+                                  <YAxis fontSize={isMobile ? 11 : 14} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
                                   <Tooltip content={<CustomTooltip />} />
-                                  <Legend />
+                                  <Legend wrapperStyle={{ fontSize: isMobile ? 11 : 14 }} />
                                   
                                   {lossVisibility['Stage 1 Loss'] && <Line 
                                       type="monotone" 

@@ -42,7 +42,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   };
 
   return (
-    <div className="group bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1 overflow-hidden relative">
+    <div className="group bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-4 sm:p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1 overflow-hidden relative">
       {/* Mobile tap effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-active:opacity-100 transition-opacity duration-300 pointer-events-none" />
       
@@ -52,8 +52,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
       />
       
       <div className="relative flex items-start space-x-4">
-        <div className={`p-4 rounded-2xl bg-gradient-to-br ${getIconBackground()} shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3`}>
-          <Icon className="w-6 h-6 text-white" />
+        <div className={`p-3 sm:p-4 rounded-2xl bg-gradient-to-br ${getIconBackground()} shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-3`}>
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         
         <div className="flex-1 min-w-0">
@@ -61,22 +61,22 @@ const MetricCard: React.FC<MetricCardProps> = ({
             {title}
           </p>
           <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-            <p className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
               {value}
             </p>
-            <span className="text-base lg:text-lg font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-sm sm:text-base lg:text-lg font-medium text-gray-500 dark:text-gray-400">
               {unit}
             </span>
             {trend && (
-              <div className={`flex items-center gap-1 text-sm font-medium ${
+              <div className={`flex items-center gap-1 text-xs sm:text-sm font-medium ${
                 trend.isPositive ? 'text-green-600' : 'text-red-600'
               }`}>
-                <span className="text-lg">{trend.isPositive ? '↑' : '↓'}</span>
+                <span className="text-base sm:text-lg">{trend.isPositive ? '↑' : '↓'}</span>
                 <span>{Math.abs(trend.value)}%</span>
               </div>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-2 font-medium">
             {subtitle}
           </p>
         </div>

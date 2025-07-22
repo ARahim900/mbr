@@ -13,12 +13,12 @@ const GlassCard: React.FC<GlassCardProps> = ({
   variant = 'default',
   onClick 
 }) => {
-  const baseClasses = 'glass-card';
+  const baseClasses = 'group rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1';
   
   const variantClasses = {
-    default: '',
-    gradient: 'bg-gradient-to-br from-white/10 to-white/5',
-    'hover-lift': 'hover-lift'
+    default: 'hover:shadow-2xl',
+    gradient: 'bg-gradient-to-br from-white/10 to-white/5 hover:shadow-2xl',
+    'hover-lift': 'hover:shadow-2xl hover:scale-[1.03]'
   };
 
   const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${className}`;
@@ -28,11 +28,11 @@ const GlassCard: React.FC<GlassCardProps> = ({
       className={combinedClasses}
       onClick={onClick}
       style={{
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)'
+        background: 'rgba(255, 255, 255, 0.15)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255, 255, 255, 0.25)',
+        boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.25), 0 4px 16px 0 rgba(0, 0, 0, 0.1)'
       }}
     >
       {children}
