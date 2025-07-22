@@ -40,6 +40,8 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       sourcemap: mode === 'development',
       minify: 'terser',
+      // Increase chunk size warning limit
+      chunkSizeWarningLimit: 1000,
       terserOptions: {
         compress: {
           drop_console: mode === 'production',
@@ -79,8 +81,6 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      // Increase chunk size warning limit
-      chunkSizeWarningLimit: 1000,
     },
     
     resolve: {
