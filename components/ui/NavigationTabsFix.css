@@ -1,0 +1,138 @@
+/* Global Navigation Tabs Styling Override */
+/* This file fixes the white/disappearing text issue on selected tabs across all modules */
+
+/* General tab styling for all modules */
+.tab,
+[class*="-tab"],
+[role="tab"],
+button[aria-selected] {
+  transition: all 0.3s ease;
+}
+
+/* Fix for any active/selected tab */
+.tab.active,
+.tab.selected,
+[class*="-tab"].active,
+[class*="-tab"].selected,
+[class*="-tab"][aria-selected="true"],
+[role="tab"][aria-selected="true"],
+button[aria-selected="true"],
+.active-tab,
+.selected-tab {
+  /* Ensure dark background for contrast */
+  background: rgba(78, 68, 86, 0.8) !important;
+  background-color: rgba(78, 68, 86, 0.8) !important;
+  
+  /* Force white text color */
+  color: #ffffff !important;
+  
+  /* Add teal accent border */
+  border-color: rgba(0, 210, 179, 0.5) !important;
+  
+  /* Add subtle glow effect */
+  box-shadow: 0 0 15px rgba(0, 210, 179, 0.3) !important;
+}
+
+/* Ensure all text elements inside active tabs are visible */
+.tab.active *,
+.tab.selected *,
+[class*="-tab"].active *,
+[class*="-tab"].selected *,
+[class*="-tab"][aria-selected="true"] *,
+[role="tab"][aria-selected="true"] *,
+button[aria-selected="true"] *,
+.active-tab *,
+.selected-tab * {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  fill: #ffffff !important;
+}
+
+/* Special handling for icons in active tabs */
+.tab.active svg,
+.tab.selected svg,
+[class*="-tab"].active svg,
+[class*="-tab"].selected svg,
+[class*="-tab"][aria-selected="true"] svg,
+[role="tab"][aria-selected="true"] svg,
+button[aria-selected="true"] svg,
+.active-tab svg,
+.selected-tab svg {
+  color: #00D2B3 !important;
+  fill: #00D2B3 !important;
+}
+
+/* Prevent white background on hover for active tabs */
+.tab.active:hover,
+.tab.selected:hover,
+[class*="-tab"].active:hover,
+[class*="-tab"].selected:hover,
+[class*="-tab"][aria-selected="true"]:hover,
+[role="tab"][aria-selected="true"]:hover,
+button[aria-selected="true"]:hover,
+.active-tab:hover,
+.selected-tab:hover {
+  background: rgba(78, 68, 86, 0.9) !important;
+  background-color: rgba(78, 68, 86, 0.9) !important;
+}
+
+/* Specific overrides for Tailwind classes that might cause issues */
+.bg-white\/80.active,
+.bg-white\/70.active,
+.bg-white\/60.active,
+.bg-white\/50.active,
+.bg-white\/40.active,
+.bg-white\/30.active,
+.bg-white\/20.active,
+.bg-white\/10.active {
+  background-color: rgba(78, 68, 86, 0.8) !important;
+}
+
+/* Fix for buttons with white backgrounds */
+button.bg-white[aria-selected="true"],
+button[class*="bg-white"][aria-selected="true"] {
+  background-color: rgba(78, 68, 86, 0.8) !important;
+  color: #ffffff !important;
+}
+
+/* Ensure proper contrast for disabled state */
+.tab:disabled,
+[class*="-tab"]:disabled,
+[role="tab"]:disabled,
+button[aria-selected]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .tab.active,
+  [class*="-tab"].active,
+  [role="tab"][aria-selected="true"],
+  button[aria-selected="true"] {
+    /* Slightly darker on mobile for better visibility */
+    background: rgba(78, 68, 86, 0.9) !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .tab.active,
+  [class*="-tab"].active,
+  [role="tab"][aria-selected="true"],
+  button[aria-selected="true"] {
+    background: #4E4456 !important;
+    color: #ffffff !important;
+    border: 2px solid #00D2B3 !important;
+  }
+}
+
+/* Dark mode specific adjustments */
+@media (prefers-color-scheme: dark) {
+  .tab.active,
+  [class*="-tab"].active,
+  [role="tab"][aria-selected="true"],
+  button[aria-selected="true"] {
+    background: rgba(78, 68, 86, 0.95) !important;
+  }
+}

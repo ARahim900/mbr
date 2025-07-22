@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#2196f3">
+  <title>MBR - Muscat Bay Resource Management</title>
+  
+  <!-- Framework7 Latest CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@8.3.3/css/framework7.bundle.min.css">
+  
+  <!-- Custom Navigation CSS for MBR Theme -->
+  <style>
+    :root {
+      --f7-theme-color: #4E4456;
+      --f7-theme-color-rgb: 78, 68, 86;
+      --f7-theme-color-shade: #3D3445;
+      --f7-theme-color-tint: #5D4D67;
+      --f7-tabbar-link-active-bg-color: linear-gradient(135deg, #4E4456 0%, #5D4D67 100%);
+      --f7-tabbar-link-active-color: #ffffff;
+      --f7-tabbar-link-inactive-color: #666666;
+      --f7-navbar-bg-color: rgba(255, 255, 255, 0.1);
+      --f7-navbar-border-color: rgba(255, 255, 255, 0.2);
+      --mbr-accent-color: #00D2B3;
+    }
+
+    /* MBR Custom Navigation Styles */
+    .navbar {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Active Tab Styling - CRITICAL FIX */
+    .tab-link-active,
+    .button.tab-link-active,
+    .segmented .button.tab-link-active {
+      background: linear-gradient(135deg, #4E4456 0%, #5D4D67 100%) !important;
+      color: white !important;
+      border-color: #4E4456 !important;
+      box-shadow: 0 4px 12px rgba(78, 68, 86, 0.3) !important;
+    }
+
+    .tab-link-active span,
+    .tab-link-active .icon,
+    .button.tab-link-active span,
+    .button.tab-link-active .icon {
+      color: white !important;
+    }
+
+    /* Inactive Tab Styling */
+    .tab-link:not(.tab-link-active),
+    .button.tab-link:not(.tab-link-active) {
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: #666666 !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* Segmented Control Enhancement */
+    .segmented {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 4px;
+      backdrop-filter: blur(10px);
+    }
+
+    .segmented .button {
+      margin: 0 2px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    /* Tab Bar Enhancement */
+    .tabbar .tab-link {
+      transition: all 0.3s ease;
+    }
+
+    .tabbar .tab-link.tab-link-active {
+      background: linear-gradient(135deg, #4E4456 0%, #5D4D67 100%) !important;
+      color: white !important;
+      border-radius: 12px;
+      margin: 4px;
+      box-shadow: 0 4px 12px rgba(78, 68, 86, 0.3);
+    }
+
+    .tabbar .tab-link.tab-link-active .icon {
+      color: var(--mbr-accent-color) !important;
+    }
+
+    /* Mobile Navigation Enhancement */
+    @media (max-width: 768px) {
+      .tab-link-active,
+      .button.tab-link-active {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+    }
+
+    /* Water System Specific Enhancements */
+    .water-system-navigation .tab-link-active {
+      background: linear-gradient(135deg, #4E4456 0%, #5D4D67 100%) !important;
+      color: white !important;
+    }
+
+    /* Page Content Styling */
+    .page-content {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    /* Card Enhancements */
+    .card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Override any conflicting styles */
+    .tab-link-active * {
+      color: white !important;
+    }
+
+    .tab-link-active .icon {
+      color: var(--mbr-accent-color) !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- App root element -->
+  <div id="app">
+    <!-- Views container, multiple tabs layout -->
+    <div class="views tabs safe-areas">
+      
+      <!-- Your main view-tab -->
+      <div class="view view-main tab tab-active" id="view-home">
+        
+        <!-- Top Navbar -->
+        <div class="navbar">
+          <div class="navbar-bg"></div>
+          <div class="navbar-inner">
+            <div class="title">Water System Analysis</div>
+            <div class="right">
+              <a href="#" class="link icon-only">
+                <i class="icon f7-icons">menu</i>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Navigation Tabs in Navbar -->
+          <div class="navbar-inner navbar-inner-large">
+            <div class="segmented segmented-raised water-system-navigation">
+              <a href="#tab-overview" class="button tab-link tab-link-active">
+                <i class="icon f7-icons">chart_bar</i>
+                <span>Overview</span>
+              </a>
+              <a href="#tab-loss" class="button tab-link">
+                <i class="icon f7-icons">arrow_down_circle</i>
+                <span>Water Loss</span>
+              </a>
+              <a href="#tab-zone" class="button tab-link">
+                <i class="icon f7-icons">drop</i>
+                <span>Zone Analysis</span>
+              </a>
+              <a href="#tab-consumption" class="button tab-link">
+                <i class="icon f7-icons">gear</i>
+                <span>Consumption</span>
+              </a>
+              <a href="#tab-database" class="button tab-link">
+                <i class="icon f7-icons">folder</i>
+                <span>Database</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Scrollable page content -->
+        <div class="page-content">
+          
+          <!-- Tabs container -->
+          <div class="tabs">
+            
+            <!-- Overview Tab -->
+            <div class="tab tab-active" id="tab-overview">
+              <div class="block">
+                <div class="card">
+                  <div class="card-content card-content-padding">
+                    <h2>Water System Overview</h2>
+                    <p>Complete overview of your water management system.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Water Loss Tab -->
+            <div class="tab" id="tab-loss">
+              <div class="block">
+                <div class="card">
+                  <div class="card-content card-content-padding">
+                    <h2>Water Loss Analysis</h2>
+                    <p>Detailed analysis of water loss and variance.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Zone Analysis Tab -->
+            <div class="tab" id="tab-zone">
+              <div class="block">
+                <div class="card">
+                  <div class="card-content card-content-padding">
+                    <h2>Zone Analysis</h2>
+                    <p>Zone-specific water consumption analysis.</p>
+                    
+                    <!-- Sample Data Cards -->
+                    <div class="row">
+                      <div class="col-50">
+                        <div class="card">
+                          <div class="card-content card-content-padding text-align-center">
+                            <h1 style="color: #4E4456; margin: 0;">4,898</h1>
+                            <p>Zone Bulk Meter</p>
+                            <p style="color: #00D2B3; font-weight: bold;">100%</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-50">
+                        <div class="card">
+                          <div class="card-content card-content-padding text-align-center">
+                            <h1 style="color: #4E4456; margin: 0;">2,054</h1>
+                            <p>Individual Meters</p>
+                            <p style="color: #00D2B3; font-weight: bold;">42%</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Consumption Tab -->
+            <div class="tab" id="tab-consumption">
+              <div class="block">
+                <div class="card">
+                  <div class="card-content card-content-padding">
+                    <h2>Consumption by Type</h2>
+                    <p>Consumption analysis by different categories.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Database Tab -->
+            <div class="tab" id="tab-database">
+              <div class="block">
+                <div class="card">
+                  <div class="card-content card-content-padding">
+                    <h2>Main Database</h2>
+                    <p>Access to the main water system database.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bottom Tab Bar -->
+      <div class="toolbar tabbar toolbar-bottom">
+        <div class="toolbar-inner">
+          <a href="#view-home" class="tab-link tab-link-active">
+            <i class="icon f7-icons">drop_fill</i>
+            <span class="tabbar-label">Water</span>
+          </a>
+          <a href="#view-electricity" class="tab-link">
+            <i class="icon f7-icons">bolt_fill</i>
+            <span class="tabbar-label">Electricity</span>
+          </a>
+          <a href="#view-hvac" class="tab-link">
+            <i class="icon f7-icons">wind</i>
+            <span class="tabbar-label">HVAC</span>
+          </a>
+          <a href="#view-contractors" class="tab-link">
+            <i class="icon f7-icons">person_2_fill</i>
+            <span class="tabbar-label">Contractors</span>
+          </a>
+          <a href="#view-stp" class="tab-link">
+            <i class="icon f7-icons">gear</i>
+            <span class="tabbar-label">STP Plant</span>
+          </a>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Framework7 Latest JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/framework7@8.3.3/js/framework7.bundle.min.js"></script>
+  
+  <!-- App initialization script -->
+  <script>
+    // Initialize Framework7 app
+    var app = new Framework7({
+      // App root element
+      el: '#app',
+      // App Name
+      name: 'MBR',
+      // App id
+      id: 'com.mbr.app',
+      // Theme
+      theme: 'auto',
+      // Enable touch events
+      touch: {
+        tapHold: true,
+        tapHoldDelay: 750,
+        tapHoldPreventClicks: false
+      },
+      // Tab settings
+      tabs: {
+        animate: true,
+        swipeable: false
+      },
+      // Navbar settings
+      navbar: {
+        iosCenterTitle: true,
+        hideOnPageScroll: false
+      },
+      // Toolbar settings  
+      toolbar: {
+        hideOnPageScroll: false
+      }
+    });
+
+    // Additional navigation enhancement
+    app.on('tabShow', function(tabEl) {
+      console.log('✅ Framework7 Tab navigation working correctly!');
+      
+      // Force proper styling on tab change
+      setTimeout(function() {
+        var activeLinks = document.querySelectorAll('.tab-link-active');
+        activeLinks.forEach(function(link) {
+          link.style.setProperty('background', 'linear-gradient(135deg, #4E4456 0%, #5D4D67 100%)', 'important');
+          link.style.setProperty('color', 'white', 'important');
+          
+          var children = link.querySelectorAll('*');
+          children.forEach(function(child) {
+            child.style.setProperty('color', 'white', 'important');
+          });
+          
+          var icons = link.querySelectorAll('.icon');
+          icons.forEach(function(icon) {
+            if (link.classList.contains('tab-link-active')) {
+              icon.style.setProperty('color', '#00D2B3', 'important');
+            }
+          });
+        });
+      }, 100);
+    });
+
+    // Manual contrast fix function
+    window.fixNavigationContrast = function() {
+      var activeElements = document.querySelectorAll('.tab-link-active, .button.tab-link-active');
+      activeElements.forEach(function(element) {
+        element.style.setProperty('background', 'linear-gradient(135deg, #4E4456 0%, #5D4D67 100%)', 'important');
+        element.style.setProperty('color', 'white', 'important');
+        
+        var children = element.querySelectorAll('*');
+        children.forEach(function(child) {
+          child.style.setProperty('color', 'white', 'important');
+        });
+      });
+      console.log('✅ Navigation contrast manually fixed!');
+    };
+
+    // Auto-fix on load
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(window.fixNavigationContrast, 500);
+    });
+
+    console.log('✅ Framework7 MBR App initialized successfully!');
+  </script>
+</body>
+</html>
