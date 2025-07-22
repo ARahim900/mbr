@@ -1,42 +1,39 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Droplets, BarChart3, TrendingUp, AlertCircle, Building2, MapPin } from 'lucide-react';
 import ModuleNavigation from './ModuleNavigation';
-import WaterOverview from '../../water-system/src/components/WaterOverview';
-import ConsumptionAnalysis from '../../water-system/src/components/ConsumptionAnalysis';
-import QualityMonitoring from '../../water-system/src/components/QualityMonitoring';
-import ZoneAnalysis from '../../water-system/src/components/ZoneAnalysis';
-import ConsumptionByType from '../../water-system/src/components/ConsumptionByType';
-import MeterByMeter from '../../water-system/src/components/MeterByMeter';
 
 const tabs = [
-  { id: 'overview', label: 'Overview', icon: <BarChart3 className="w-4 h-4" /> },
-  { id: 'consumption', label: 'Consumption Analysis', icon: <TrendingUp className="w-4 h-4" /> },
-  { id: 'byType', label: 'Consumption by Type', icon: <Building2 className="w-4 h-4" /> },
-  { id: 'quality', label: 'Quality', icon: <AlertCircle className="w-4 h-4" /> },
-  { id: 'zones', label: 'Zone Analysis', icon: <MapPin className="w-4 h-4" /> },
-  { id: 'meterByMeter', label: 'Meter by Meter', icon: <Droplets className="w-4 h-4" /> }
+  { id: 'overview', label: 'Overview', icon: BarChart3 },
+  { id: 'consumption', label: 'Consumption Analysis', icon: TrendingUp },
+  { id: 'byType', label: 'Consumption by Type', icon: Building2 },
+  { id: 'quality', label: 'Quality', icon: AlertCircle },
+  { id: 'zones', label: 'Zone Analysis', icon: MapPin },
+  { id: 'meterByMeter', label: 'Meter by Meter', icon: Droplets }
 ];
 
 export default function WaterSystem() {
   const [activeTab, setActiveTab] = useState('overview');
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'overview':
-        return <WaterOverview />;
-      case 'consumption':
-        return <ConsumptionAnalysis />;
-      case 'byType':
-        return <ConsumptionByType />;
-      case 'quality':
-        return <QualityMonitoring />;
-      case 'zones':
-        return <ZoneAnalysis />;
-      case 'meterByMeter':
-        return <MeterByMeter />;
-      default:
-        return <WaterOverview />;
-    }
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+        <div className="text-center py-12">
+          <Droplets className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+            Water System Module
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            This section is under development. Please use the Water Analysis Module for detailed water system analysis.
+          </p>
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Go to Water Analysis
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -51,7 +48,7 @@ export default function WaterSystem() {
         </div>
       </div>
 
-      <ModuleNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      <ModuleNavigation sections={tabs} activeSection={activeTab} onSectionChange={setActiveTab} />
       
       <div className="transition-all duration-300">
         {renderContent()}

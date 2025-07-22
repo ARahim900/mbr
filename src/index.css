@@ -1,21 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS Variables */
+/* Modern CSS Custom Properties */
 :root {
-  --primary: #4E4456;
-  --primary-dark: #3A2F40;
-  --primary-light: #6B5D73;
-  --accent: #00D2B3;
-  --accent-dark: #00B899;
-  --accent-light: #00E6C7;
-  --mint: #A2D0C8;
-  --mint-light: #B8DCD5;
-  --mint-dark: #8CC4BA;
-  --ice-mint: #81D8D0;
-  --ice-mint-light: #A2E6E0;
-  --ice-mint-dark: #5CB6BD;
+  /* Primary Brand Colors */
+  --color-primary: #4E4456;
+  --color-accent: #00D2B3;
+  --color-mint: #A2D0C8;
+  --color-ice-mint: #81D8D0;
+  
+  /* Neutral Colors */
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f9fafb;
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-border: #e5e7eb;
+  
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
 }
 
 /* Base Styles */
@@ -26,8 +45,6 @@
 html {
   scroll-behavior: smooth;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 body {
   font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
