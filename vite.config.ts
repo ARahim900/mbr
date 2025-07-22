@@ -49,6 +49,13 @@ export default defineConfig(({ mode }) => {
         },
       },
       rollupOptions: {
+        // Explicitly exclude platform-specific packages
+        external: [
+          /^@rollup\/rollup-darwin-/,
+          /^@rollup\/rollup-win32-/,
+          /^@esbuild\/darwin-/,
+          /^@esbuild\/win32-/,
+        ],
         output: {
           manualChunks: {
             // Vendor chunks for better caching
