@@ -4,6 +4,16 @@ All notable changes to the Muscat Bay Resource Management System will be documen
 
 ## [Unreleased]
 
+### 🔧 Build & Deployment Fixes
+- **Terser Dependency Fix**: Added Terser as a dev dependency to resolve deployment build errors
+  - Added `terser: ^5.37.0` to package.json devDependencies
+  - Fixed ES module compatibility issue in `scripts/setup-hooks-windows.js`
+  - Converted CommonJS require statements to ES module imports
+  - Verified successful build process with `npm run build`
+  - Ensured TypeScript compilation passes without errors
+  - Build process now completes successfully with all necessary files generated in dist folder
+  - Ready for Netlify deployment with proper dependency configuration
+
 ### 🎨 UI/UX Improvements - Complete Ice Mint Color Scheme Implementation
 - **Comprehensive Ice Mint Color Update**: Standardized all UI elements to use the preferred Ice Mint color (#5CB6BD) throughout the application
   - **Navigation Components**: Updated all navigation tabs, buttons, and active states to use Ice Mint color
