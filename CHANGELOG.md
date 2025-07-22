@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `terser: ^5.37.0` to package.json devDependencies
   - Fixed ES module compatibility issue in `scripts/setup-hooks-windows.js`
   - Converted CommonJS require statements to ES module imports
+  - Added missing routing dependencies: `react-router-dom`, `@tanstack/react-query`, `@tanstack/react-query-devtools`, `react-hot-toast`
   - Verified successful build process with `npm run build`
   - Ensured TypeScript compilation passes without errors
   - Build process now completes successfully with all necessary files generated in dist folder
