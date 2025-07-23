@@ -49,32 +49,38 @@ export default defineConfig(({ mode }) => {
         },
       },
       rollupOptions: {
-        // Explicitly exclude platform-specific packages
-        external: [
-          /^@rollup\/rollup-darwin-/,
-          /^@rollup\/rollup-win32-/,
-          /^@esbuild\/darwin-/,
-          /^@esbuild\/win32-/,
-        ],
         onwarn(warning, warn) {
           // Suppress warnings about missing optional dependencies
           if (warning.code === 'MODULE_NOT_FOUND' && 
-              warning.message.includes('@rollup/rollup-linux-x64-gnu')) {
+              (warning.message.includes('@rollup/rollup-') || 
+               warning.message.includes('@esbuild/'))) {
             return;
           }
           warn(warning);
         },
         output: {
-          manualChunks: {
-            // Vendor chunks for better caching
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'query-vendor': ['@tanstack/react-query'],
-            'chart-vendor': ['recharts'],
-            'animation-vendor': ['aos', 'framer-motion', 'react-intersection-observer'],
-            'ui-vendor': ['lucide-react', 'react-hot-toast', 'clsx'],
-            'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
-            'date-vendor': ['date-fns'],
-            'supabase-vendor': ['@supabase/supabase-js'],
+          manualChunks: (id) => {
+            // Only create chunks for large dependencies
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+                return 'react-vendor';
+              }
+              if (id.includes('@tanstack/react-query')) {
+                return 'query-vendor';
+              }
+              if (id.includes('recharts')) {
+                return 'chart-vendor';
+              }
+              if (id.includes('@supabase/supabase-js')) {
+                return 'supabase-vendor';
+              }
+              // Group smaller dependencies together
+              if (id.includes('lucide-react') || id.includes('react-hot-toast') || 
+                  id.includes('clsx') || id.includes('date-fns')) {
+                return 'utils-vendor';
+              }
+              return 'vendor';
+            }
           },
           // Optimize chunk names
           chunkFileNames: (chunkInfo) => {

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:vercel": "npm ci --production=false && vite build",
+    "build:production": "NODE_ENV=production vite build",
+    "build:vercel": "npm ci --legacy-peer-deps && NODE_ENV=production vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -22,11 +23,14 @@
     "rollback": "node scripts/rollback-helper.js",
     "commit-helper": "git add . && git commit",
     "lint:check": "node scripts/verify-commit.js",
-    "postinstall": "npm run setup-hooks || npm run setup-hooks:windows",
+    "postinstall": "npm run setup-hooks:windows 2>nul || npm run setup-hooks 2>/dev/null || echo 'Hooks setup skipped'",
     "clean": "if exist node_modules rmdir /s /q node_modules && if exist package-lock.json del package-lock.json && if exist dist rmdir /s /q dist",
     "clean-install": "npm run clean && npm install",
     "vercel-build": "node scripts/vercel-build.js",
-    "build:safe": "npm install --legacy-peer-deps && vite build"
+    "build:production": "node scripts/build-production.js",
+    "fix-lockfile": "node scripts/fix-lockfile.js",
+    "validate-lockfile": "node scripts/validate-lockfile.js",
+    "build:vercel-safe": "node vercel-build-safe.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -53,7 +57,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
-    "esbuild": "0.25.6",
+    "@rollup/rollup-win32-x64-msvc": "^4.45.1",
     "@tanstack/react-query-devtools": "^5.83.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
@@ -65,12 +69,14 @@
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.20",
     "depcheck": "^1.4.7",
+    "esbuild": "0.25.6",
     "eslint": "^9.31.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
+    "rollup": "^4.21.2",
     "tailwindcss": "^3.4.17",
     "terser": "^5.43.1",
     "ts-prune": "^0.10.3",
@@ -79,21 +85,16 @@
     "vitest": "^2.1.8",
     "webpack-bundle-analyzer": "^4.10.2"
   },
-  "overrides": {
-    "@rollup/rollup-linux-x64-gnu": "4.21.2",
-    "@rollup/rollup-darwin-x64": "4.21.2",
-    "@rollup/rollup-win32-x64-msvc": "4.21.2",
-    "rollup": "4.21.2",
-    "esbuild": "0.25.6"
-  },
-  "resolutions": {
-    "esbuild": "0.25.6"
-  },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.21.2"
+    "@rollup/rollup-darwin-x64": "4.21.2",
+    "@rollup/rollup-linux-x64-gnu": "4.21.2",
+    "@rollup/rollup-win32-x64-msvc": "4.21.2"
+  },
+  "overrides": {
+    "@rollup/rollup-win32-x64-msvc": "4.21.2"
   },
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=18.0.0",
     "npm": ">=9.0.0"
   }
 }
