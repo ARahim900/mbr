@@ -56,6 +56,14 @@ export default defineConfig(({ mode }) => {
           /^@esbuild\/darwin-/,
           /^@esbuild\/win32-/,
         ],
+        onwarn(warning, warn) {
+          // Suppress warnings about missing optional dependencies
+          if (warning.code === 'MODULE_NOT_FOUND' && 
+              warning.message.includes('@rollup/rollup-linux-x64-gnu')) {
+            return;
+          }
+          warn(warning);
+        },
         output: {
           manualChunks: {
             // Vendor chunks for better caching

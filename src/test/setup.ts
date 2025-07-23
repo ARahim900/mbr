@@ -2,6 +2,12 @@ import '@testing-library/jest-dom';
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
+  root: Element | null = null;
+  rootMargin: string = '';
+  thresholds: ReadonlyArray<number> = [];
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
   constructor() {}
   disconnect() {}
   observe() {}

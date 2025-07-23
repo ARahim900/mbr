@@ -13,8 +13,8 @@ import { NavigationTabs, SecondaryNavigation } from '../ui/NavigationTabs';
 
 const WaterSystemAnalysis: React.FC = () => {
   const [activeTab, setActiveTab] = useState('zone-analysis');
-  const [selectedMonth, setSelectedMonth] = useState('May-25');
-  const [selectedZone, setSelectedZone] = useState('Zone 03(A)');
+  const [selectedMonth] = useState('May-25');
+  const [selectedZone] = useState('Zone 03(A)');
   const [showFilters, setShowFilters] = useState(false);
 
   // Main navigation tabs

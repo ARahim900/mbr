@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:vercel": "npm ci --production=false && vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -21,7 +22,10 @@
     "rollback": "node scripts/rollback-helper.js",
     "commit-helper": "git add . && git commit",
     "lint:check": "node scripts/verify-commit.js",
-    "postinstall": "npm run setup-hooks || npm run setup-hooks:windows"
+    "postinstall": "npm run setup-hooks || npm run setup-hooks:windows",
+    "clean": "if exist node_modules rmdir /s /q node_modules && if exist package-lock.json del package-lock.json && if exist dist rmdir /s /q dist",
+    "clean-install": "npm run clean && npm install",
+    "vercel-build": "node scripts/vercel-build.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -76,9 +80,12 @@
   "overrides": {
     "@rollup/rollup-linux-x64-gnu": "4.21.2",
     "@rollup/rollup-darwin-x64": "4.21.2",
-    "@rollup/rollup-win32-x64-msvc": "4.21.2"
+    "@rollup/rollup-win32-x64-msvc": "4.21.2",
+    "rollup": "4.21.2"
   },
-  "optionalDependencies": {},
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.21.2"
+  },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"

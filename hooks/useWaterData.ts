@@ -31,7 +31,7 @@ export const useWaterData = () => {
 };
 
 // Fetch filtered water data
-export const useFilteredWaterData = (zones: string[], startDate?: Date, endDate?: Date) => {
+export const useFilteredWaterData = (zones: string[]) => {
   return useQuery({
     queryKey: waterQueryKeys.zones(zones),
     queryFn: async (): Promise<ProcessedData> => {
