@@ -135,9 +135,9 @@ const WaterAnalysisModule: React.FC = () => {
   const isMobile = useIsMobile(1024); // Use 1024px breakpoint for mobile detection
   
   // Debug: Check if data is loaded
-  console.log('Water System Data Length:', waterSystemData?.length || 0);
-  console.log('Water Months Available:', waterMonthsAvailable);
-  console.log('Sample Water System Data:', waterSystemData?.slice(0, 3) || []);
+  // console.log('Water System Data Length:', waterSystemData?.length || 0);
+  // console.log('Water Months Available:', waterMonthsAvailable);
+  // console.log('Sample Water System Data:', waterSystemData?.slice(0, 3) || []);
 
   const [selectedWaterMonth, setSelectedWaterMonth] = useState('May-25');
   const [overviewDateRange, setOverviewDateRange] = useState({
@@ -258,7 +258,7 @@ const WaterAnalysisModule: React.FC = () => {
   const overviewCalculations = useMemo(() => {
     try {
       const calculations = calculateAggregatedDataForPeriod(overviewDateRange.start, overviewDateRange.end);
-      console.log('Overview Calculations:', calculations);
+      // console.log('Overview Calculations:', calculations);
       return calculations;
     } catch (error) {
       console.error('Error calculating overview data:', error);
@@ -295,7 +295,7 @@ const WaterAnalysisModule: React.FC = () => {
           'L3 - Building/Villa Meters': L3_total || 0,
         };
       });
-      console.log('Monthly Water Trend Data:', data);
+      // console.log('Monthly Water Trend Data:', data);
       return data.length > 0 ? data : [
         { name: 'Jan-25', 'L1 - Main Source': 32580, 'L2 - Zone Bulk Meters': 15403, 'L3 - Building/Villa Meters': 154 },
         { name: 'Feb-25', 'L1 - Main Source': 44043, 'L2 - Zone Bulk Meters': 14784, 'L3 - Building/Villa Meters': 193 },
@@ -340,7 +340,7 @@ const WaterAnalysisModule: React.FC = () => {
           'Total Loss': Math.abs(totalLoss) || 0,
         };
       });
-      console.log('Loss Trend Data:', data);
+      // console.log('Loss Trend Data:', data);
       return data.length > 0 ? data : [
         { name: 'Jan-25', 'Stage 1 Loss': 10699, 'Stage 2 Loss': 33231, 'Stage 3 Loss': 575, 'Total Loss': 44505 },
         { name: 'Feb-25', 'Stage 1 Loss': 2722, 'Stage 2 Loss': 14784, 'Stage 3 Loss': 193, 'Total Loss': 17699 },

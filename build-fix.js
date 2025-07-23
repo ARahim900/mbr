@@ -1,35 +1,33 @@
 #!/usr/bin/env node
 
 /**
- * Vercel Build Script
- * Handles platform-specific build issues and ensures successful deployment
+ * Build Fix Script
+ * Handles Rollup dependency issues on Windows
  */
 
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-console.log('🚀 Starting Vercel build process...');
+console.log('🔧 Starting build with dependency fixes...');
 
 try {
-  // Check if we're in a Vercel environment
-  const isVercel = process.env.VERCEL === '1';
+  // Set environment variables to help with build
+  process.env.ROLLUP_WATCH = 'false';
+  process.env.NODE_OPTIONS = '--max-old-space-size=4096';
   
-  if (isVercel) {
-    console.log('📦 Detected Vercel environment');
-    console.log('🔍 Node.js version:', process.version);
+  // Try to create a symlink or copy the missing dependency
+  const nodeModulesPath = path.join(process.cwd(), 'node_modules');
+  const rollupPath = path.join(nodeModulesPath, '@rollup');
+  
+  if (!fs.existsSync(rollupPath)) {
+    fs.mkdirSync(rollupPath, { recursive: true });
   }
   
-  // Set build environment variables
-  process.env.NODE_OPTIONS = '--max-old-space-size=4096';
-  process.env.ROLLUP_WATCH = 'false';
-  
-  // Run the actual build with error handling
-  console.log('🏗️  Running Vite build...');
-  
+  // Try alternative build approaches
   const buildCommands = [
     'npx vite build --mode production',
-    'npx vite build',
+    'npx vite build --force',
     'node_modules/.bin/vite build'
   ];
   
@@ -37,22 +35,22 @@ try {
   
   for (const command of buildCommands) {
     try {
-      console.log(`🔨 Attempting: ${command}`);
+      console.log(`🏗️ Trying: ${command}`);
       execSync(command, { 
         stdio: 'inherit',
-        timeout: 300000, // 5 minutes timeout
-        env: { ...process.env }
+        timeout: 300000,
+        env: { ...process.env, ROLLUP_WATCH: 'false' }
       });
       buildSuccess = true;
       break;
     } catch (error) {
-      console.log(`⚠️  Command failed: ${command}, trying next...`);
+      console.log(`⚠️ Command failed: ${command}`);
       continue;
     }
   }
   
   if (!buildSuccess) {
-    throw new Error('All build commands failed');
+    throw new Error('All build attempts failed');
   }
   
   // Verify build output
@@ -71,6 +69,6 @@ try {
   
 } catch (error) {
   console.error('❌ Build failed:', error.message);
-  console.error('Stack trace:', error.stack);
+  console.log('💡 Try running: npm run clean-install');
   process.exit(1);
 }

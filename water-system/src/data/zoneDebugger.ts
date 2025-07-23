@@ -233,26 +233,26 @@ export class ZoneDebugger {
    * Quick check for zones 03(A) and 03(B)
    */
   quickCheck(): void {
-    console.log('Quick Check for Zones 03(A) and 03(B)');
-    console.log('=====================================');
+    // console.log('Quick Check for Zones 03(A) and 03(B)');
+    // console.log('=====================================');
     
     const zones = ['Zone 03(A)', 'Zone 03(B)'];
     
     zones.forEach(zone => {
       const meters = waterMeters.filter(m => m.Zone === zone);
-      console.log(`\n${zone}:`);
-      console.log(`  Total Meters: ${meters.length}`);
+      // console.log(`\n${zone}:`);
+      // console.log(`  Total Meters: ${meters.length}`);
       
       if (meters.length > 0) {
         meters.forEach(meter => {
-          console.log(`  - ${meter["Meter Label"]} (${meter.Type})`);
+          // console.log(`  - ${meter["Meter Label"]} (${meter.Type})`);
         });
       } else {
-        console.log('  ⚠️  NO METERS FOUND!');
+        // console.log('  ⚠️  NO METERS FOUND!');
       }
     });
 
-    console.log('\nAll Zones in Database:', getAllZones());
+    // console.log('\nAll Zones in Database:', getAllZones());
   }
 }
 
@@ -262,6 +262,6 @@ export const zoneDebugger = new ZoneDebugger();
 // Export convenience function for quick debugging
 export async function debugZone03Issues(): Promise<void> {
   const report = await zoneDebugger.generateDebugReport();
-  console.log(report);
+  // console.log(report);
   return;
 }

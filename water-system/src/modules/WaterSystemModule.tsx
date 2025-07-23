@@ -42,9 +42,9 @@ const WaterSystemModule = () => {
       setZoneData(data);
       
       // Debug logging
-      console.log('Zone Data:', data);
+      // console.log('Zone Data:', data);
       if (!waterDataService.hasData()) {
-        console.log('No data loaded. Please upload CSV file.');
+        // console.log('No data loaded. Please upload CSV file.');
       }
     }
   };

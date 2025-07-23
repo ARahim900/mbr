@@ -372,9 +372,9 @@ export const parseWaterSystemData = (rawData: string): WaterDataEntry[] => {
     const dataLines = lines.slice(1);
     const monthColumns = headers.slice(6);
 
-    console.log('Parsing water data - Headers:', headers);
-    console.log('Month columns:', monthColumns);
-    console.log('Data lines count:', dataLines.length);
+    // console.log('Parsing water data - Headers:', headers);
+    // console.log('Month columns:', monthColumns);
+    // console.log('Data lines count:', dataLines.length);
 
     return dataLines.map((line, index) => {
       const values = line.split(',').map(v => v.trim());
@@ -411,10 +411,10 @@ export const waterSystemData = parseWaterSystemData(waterRawDataString);
 export const waterMonthsAvailable = waterSystemData.length > 0 ? Object.keys(waterSystemData[0].consumption || {}) : ['Jan-25', 'Feb-25', 'Mar-25', 'Apr-25', 'May-25'];
 
 // Debug logging
-console.log('Water System Data loaded:', waterSystemData.length, 'entries');
-console.log('Months available:', waterMonthsAvailable);
+// console.log('Water System Data loaded:', waterSystemData.length, 'entries');
+// console.log('Months available:', waterMonthsAvailable);
 if (waterSystemData.length > 0) {
-  console.log('Sample entry:', waterSystemData[0]);
+  // console.log('Sample entry:', waterSystemData[0]);
 }
 
 // 4-Level Water System Hierarchy Helper Functions
