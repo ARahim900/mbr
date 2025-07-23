@@ -1,33 +1,20 @@
 [build]
-  command = "rm -rf node_modules package-lock.json .npm && npm cache clean --force && npm install --no-optional --prefer-offline --platform=linux --arch=x64 && npm run build"
+  command = "npm install && npm run build"
   publish = "dist"
   base = ""
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_CONFIG_FUND = "false"
-  NPM_CONFIG_AUDIT = "false" 
-  NPM_CONFIG_LEGACY_PEER_DEPS = "false"
-  NPM_CONFIG_OMIT = "optional"
-  NPM_CONFIG_IGNORE_OPTIONAL = "true"
-  NPM_CONFIG_NO_OPTIONAL = "true"
-  NPM_CONFIG_OPTIONAL = "false"
+  NPM_CONFIG_AUDIT = "false"
   NODE_OPTIONS = "--max-old-space-size=4096"
-  NPM_CONFIG_TARGET_PLATFORM = "linux"
-  NPM_CONFIG_TARGET_ARCH = "x64"
-  NPM_CONFIG_TARGET_CPU = "x64"
-  NPM_CONFIG_PLATFORM = "linux"
-  NPM_CONFIG_ARCH = "x64"
-  NPM_CONFIG_PROGRESS = "false"
-  NPM_CONFIG_LOGLEVEL = "error"
-  NETLIFY_USE_YARN = "false"
   SKIP_PREFLIGHT_CHECK = "true"
 
 [context.production]
-  command = "rm -rf node_modules package-lock.json .npm && npm cache clean --force && npm install --no-optional --prefer-offline --platform=linux --arch=x64 && npm run build"
+  command = "npm install && npm run build"
   
 [context.deploy-preview]
-  command = "rm -rf node_modules package-lock.json .npm && npm cache clean --force && npm install --no-optional --prefer-offline --platform=linux --arch=x64 && npm run build"
+  command = "npm install && npm run build"
 
 [[redirects]]
   from = "/*"
