@@ -1,35 +1,60 @@
 #!/usr/bin/env node
 
+/**
+ * Vercel Build Script
+ * Handles platform-specific build issues and ensures successful deployment
+ */
+
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Starting Vercel build process...');
+console.log('🚀 Starting Vercel build process...');
 
 try {
-  // Clean up any existing node_modules and package-lock.json
-  console.log('🧹 Cleaning up existing dependencies...');
-  if (fs.existsSync('node_modules')) {
-    execSync('rm -rf node_modules', { stdio: 'inherit' });
+  // Check if we're in a Vercel environment
+  const isVercel = process.env.VERCEL === '1';
+  
+  if (isVercel) {
+    console.log('📦 Detected Vercel environment');
+    
+    // Ensure we have the correct Node.js version
+    console.log('🔍 Node.js version:', process.version);
+    
+    // Try to install missing rollup dependencies if needed
+    try {
+      console.log('🔧 Installing platform-specific dependencies...');
+      execSync('npm install @rollup/rollup-linux-x64-gnu --save-optional --no-audit', { 
+        stdio: 'inherit',
+        timeout: 120000 
+      });
+    } catch (error) {
+      console.log('⚠️  Optional dependency installation failed, continuing...');
+    }
   }
-  if (fs.existsSync('package-lock.json')) {
-    execSync('rm -f package-lock.json', { stdio: 'inherit' });
+  
+  // Run the actual build
+  console.log('🏗️  Running Vite build...');
+  execSync('npx vite build', { 
+    stdio: 'inherit',
+    timeout: 300000 // 5 minutes timeout
+  });
+  
+  // Verify build output
+  const distPath = path.join(process.cwd(), 'dist');
+  if (!fs.existsSync(distPath)) {
+    throw new Error('Build output directory not found');
   }
-
-  // Install dependencies with production=false to include devDependencies
-  console.log('📦 Installing dependencies...');
-  execSync('npm install --legacy-peer-deps', { stdio: 'inherit' });
-
-  // Force install the Linux-specific Rollup dependency
-  console.log('🔧 Installing platform-specific dependencies...');
-  execSync('npm install @rollup/rollup-linux-x64-gnu@4.21.2 --no-save', { stdio: 'inherit' });
-
-  // Run the build
-  console.log('🏗️ Building the application...');
-  execSync('npm run build', { stdio: 'inherit' });
-
+  
+  const indexPath = path.join(distPath, 'index.html');
+  if (!fs.existsSync(indexPath)) {
+    throw new Error('index.html not found in build output');
+  }
+  
   console.log('✅ Build completed successfully!');
+  console.log('📁 Build output verified in dist/ directory');
+  
 } catch (error) {
   console.error('❌ Build failed:', error.message);
   process.exit(1);
-} 
+}
