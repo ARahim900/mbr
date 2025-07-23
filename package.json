@@ -32,7 +32,9 @@
     "validate-lockfile": "node scripts/validate-lockfile.js",
     "build:vercel-safe": "node vercel-build-safe.js",
     "fix-console-logs": "node scripts/remove-console-logs.js",
-    "deploy:quick": "npm run fix-console-logs && git add . && git commit --no-verify -m 'fix: remove console logs for deployment' && git push origin main"
+    "fix-design": "node scripts/fix-design-violations.js",
+    "deploy:quick": "npm run fix-console-logs && git add . && git commit --no-verify -m 'fix: remove console logs for deployment' && git push origin main",
+    "deploy:clean": "npm run fix-console-logs && npm run fix-design && git add . && git commit --no-verify -m 'fix: clean up code for deployment' && git push origin main"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
