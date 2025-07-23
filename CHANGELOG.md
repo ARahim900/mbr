@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2024-01-21] - Vercel Deployment Fix
+
+### Fixed
+- **CRITICAL FIX**: Resolved Vercel deployment failure caused by Rollup optional dependencies
+  - Issue: Build failing with "Cannot find module @rollup/rollup-linux-x64-gnu" error on Vercel
+  - Solution: Implemented comprehensive Rollup dependency management system
+  - Added package.json overrides to pin Rollup platform-specific packages to v4.21.2
+  - Created Vercel-specific build script (scripts/vercel-build.js) to handle clean installation
+  - Added .npmrc configuration for better optional dependency handling
+  - Created vercel.json configuration file for optimized build process
+  - Added .nvmrc file to ensure consistent Node.js version (18.20.0)
+
+### Technical Details
+- **Package.json Updates**:
+  - Added `build:vercel` and `vercel-build` scripts
+  - Enhanced `overrides` section with explicit Rollup version pinning
+  - Added `optionalDependencies` for Linux-specific Rollup package
+  - Added clean installation scripts for dependency management
+
+- **Vite Configuration**:
+  - Added `onwarn` handler to suppress Rollup optional dependency warnings
+  - Enhanced external package exclusions for platform-specific modules
+  - Improved build optimization for Vercel environment
+
+- **Build Scripts**:
+  - Created `scripts/vercel-build.js` for automated clean build process
+  - Implemented proper error handling and logging
+  - Added platform-specific dependency installation
+
+- **Configuration Files**:
+  - `vercel.json`: Custom build commands and environment variables
+  - `.npmrc`: Optional dependency configuration
+  - `.nvmrc`: Node.js version specification
+
+### Deployment Status
+- ✅ Vercel build process now handles Rollup dependencies correctly
+- ✅ Clean installation process prevents dependency conflicts
+- ✅ Platform-specific packages properly resolved
+- ✅ Build optimization for Vercel's Linux environment
+- ✅ Memory allocation increased for complex builds
+
+### Files Modified
+- `package.json` - Enhanced scripts and dependencies
+- `vite.config.ts` - Added Rollup warning suppression
+- `vercel.json` - New Vercel configuration
+- `.npmrc` - New npm configuration
+- `.nvmrc` - Node.js version specification
+- `scripts/vercel-build.js` - New build script
+
 ## [2024-01-21] - Deployment Issue Fix
 
 ### Fixed

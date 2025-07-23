@@ -50,11 +50,11 @@ export const useFormValidation = <T extends z.ZodType<any, any>>(
 ) => {
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(schema),
-    defaultValues,
+    defaultValues: defaultValues as any,
     mode: 'onChange',
   });
 
-  const handleSubmit = form.handleSubmit(async (data) => {
+  const handleSubmit = async (data: z.infer<T>) => {
     try {
       if (onSubmit) {
         await onSubmit(data);
@@ -63,7 +63,7 @@ export const useFormValidation = <T extends z.ZodType<any, any>>(
       toast.error('Form submission failed');
       console.error('Form submission error:', error);
     }
-  });
+  };
 
   const handleError = (errors: any) => {
     const firstError = Object.values(errors)[0] as any;
