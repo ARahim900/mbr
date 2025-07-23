@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "vite build",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm ci --legacy-peer-deps --production=false",
-  "framework": null,
+  "framework": "vite",
   "env": {
     "NODE_OPTIONS": "--max-old-space-size=4096"
   },

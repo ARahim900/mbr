@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2024-01-21] - Vercel Serverless Functions Error Fix
+
+### Fixed
+- **CRITICAL FIX**: Resolved Vercel deployment error "The pattern 'app/api/**/*.js' defined in `functions` doesn't match any Serverless Functions"
+  - Issue: Vercel incorrectly detecting React/Vite app as Next.js application with API routes
+  - Solution: Updated vercel.json configuration to properly specify Vite framework
+  - Removed problematic Rollup overrides causing build failures on Windows
+  - Downgraded Vite from 5.4.8 to 4.5.0 for better stability and compatibility
+
+### Technical Details
+- **Vercel Configuration Updates**:
+  - Changed `framework` from `null` to `"vite"` in vercel.json
+  - Updated `buildCommand` from `"vite build"` to `"npm run build"`
+  - Maintained all existing headers and rewrites configuration
+
+- **Package.json Improvements**:
+  - Removed problematic `overrides` and `resolutions` sections causing Rollup conflicts
+  - Removed `optionalDependencies` that were causing Windows build issues
+  - Downgraded Vite to version 4.5.0 for better stability
+  - Maintained all existing scripts and dependencies
+
+- **Build Process**:
+  - ✅ TypeScript compilation passes without errors
+  - ✅ Build process completes successfully (1m 17s build time)
+  - ✅ All necessary files generated in dist folder
+  - ✅ Proper asset optimization and chunking
+
+### Deployment Status
+- ✅ Vercel no longer looks for serverless functions in non-existent api directory
+- ✅ Build process optimized for Vite React application
+- ✅ Windows development environment now works without Rollup errors
+- ✅ All assets properly generated and optimized
+- ✅ Ready for successful Vercel deployment
+
+### Files Modified
+- `vercel.json` - Updated framework specification and build command
+- `package.json` - Removed problematic overrides, downgraded Vite version
+
 ## [2024-01-21] - Vercel Deployment Fix
 
 ### Fixed

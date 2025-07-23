@@ -75,22 +75,9 @@
     "terser": "^5.43.1",
     "ts-prune": "^0.10.3",
     "typescript": "~5.7.2",
-    "vite": "^5.4.8",
+    "vite": "^4.5.0",
     "vitest": "^2.1.8",
     "webpack-bundle-analyzer": "^4.10.2"
-  },
-  "overrides": {
-    "@rollup/rollup-linux-x64-gnu": "4.21.2",
-    "@rollup/rollup-darwin-x64": "4.21.2",
-    "@rollup/rollup-win32-x64-msvc": "4.21.2",
-    "rollup": "4.21.2",
-    "esbuild": "0.25.6"
-  },
-  "resolutions": {
-    "esbuild": "0.25.6"
-  },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.21.2"
   },
   "engines": {
     "node": ">=20.0.0",
