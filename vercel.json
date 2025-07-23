@@ -3,11 +3,6 @@
   "outputDirectory": "dist",
   "installCommand": "npm ci --production=false",
   "framework": "vite",
-  "functions": {
-    "app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "env": {
     "NODE_OPTIONS": "--max-old-space-size=4096"
   },
