@@ -27,7 +27,6 @@
     "clean": "if exist node_modules rmdir /s /q node_modules && if exist package-lock.json del package-lock.json && if exist dist rmdir /s /q dist",
     "clean-install": "npm run clean && npm install",
     "vercel-build": "node scripts/vercel-build.js",
-    "build:production": "node scripts/build-production.js",
     "fix-lockfile": "node scripts/fix-lockfile.js",
     "validate-lockfile": "node scripts/validate-lockfile.js",
     "build:vercel-safe": "node vercel-build-safe.js",
