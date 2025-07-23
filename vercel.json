@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel-build",
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install --legacy-peer-deps",
-  "framework": "vite",
+  "installCommand": "echo 'Skipping default install'",
+  "framework": null,
   "env": {
     "NODE_OPTIONS": "--max-old-space-size=4096"
   },
