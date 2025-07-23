@@ -42,8 +42,8 @@ export class WaterDataService {
       }));
       
       this.isDataLoaded = true;
-      console.log('Loaded meters:', this.waterMeters.length);
-      console.log('Zones found:', this.getAllZones());
+      // console.log('Loaded meters:', this.waterMeters.length);
+      // console.log('Zones found:', this.getAllZones());
       
       return this.waterMeters;
     } catch (error) {
@@ -266,7 +266,7 @@ export class WaterDataService {
 
   // Debug method to check zone bulk meters
   debugZoneBulkMeters(): void {
-    console.log('=== Zone Bulk Meters Debug ===');
+    // console.log('=== Zone Bulk Meters Debug ===');
     const zones = this.getAllZones();
     zones.forEach(zone => {
       const meters = this.getMetersByZone(zone);
@@ -275,11 +275,11 @@ export class WaterDataService {
         m.Label === 'L2 - Zone Bulk' ||
         m['Meter Label']?.toLowerCase().includes('bulk')
       );
-      console.log(`Zone: ${zone}`);
-      console.log(`Total meters: ${meters.length}`);
-      console.log(`Bulk meters found: ${bulkMeters.length}`);
+      // console.log(`Zone: ${zone}`);
+      // console.log(`Total meters: ${meters.length}`);
+      // console.log(`Bulk meters found: ${bulkMeters.length}`);
       bulkMeters.forEach(m => {
-        console.log(`  - ${m['Meter Label']} (Type: ${m.Type}, Label: ${m.Label})`);
+        // console.log(`  - ${m['Meter Label']} (Type: ${m.Type}, Label: ${m.Label})`);
       });
     });
   }

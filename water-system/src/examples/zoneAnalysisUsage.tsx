@@ -9,23 +9,23 @@ import { zoneDebugger } from '../data/zoneDebugger';
 
 // Example 1: Display zones with complete data representation
 export function displayAllZonesWithData(month: string) {
-  console.log('=== Displaying All Zones with Complete Data ===');
+  // console.log('=== Displaying All Zones with Complete Data ===');
   
   const completeData = zoneDataWrapper.getCompleteZoneData(month);
   
   completeData.forEach((data, zone) => {
-    console.log(`\n${zone}:`);
-    console.log(`  Status: ${data.status}`);
-    console.log(`  Bulk Consumption: ${data.zoneBulkConsumption}`);
-    console.log(`  Individual Sum: ${data.sumOfIndividualMeters}`);
-    console.log(`  Distribution Loss: ${data.distributionLoss}`);
-    console.log(`  Efficiency: ${data.efficiency.toFixed(2)}%`);
+    // console.log(`\n${zone}:`);
+    // console.log(`  Status: ${data.status}`);
+    // console.log(`  Bulk Consumption: ${data.zoneBulkConsumption}`);
+    // console.log(`  Individual Sum: ${data.sumOfIndividualMeters}`);
+    // console.log(`  Distribution Loss: ${data.distributionLoss}`);
+    // console.log(`  Efficiency: ${data.efficiency.toFixed(2)}%`);
   });
 }
 
 // Example 2: Check specific zones 03(A) and 03(B)
 export function checkZone03Status() {
-  console.log('=== Checking Zones 03(A) and 03(B) ===');
+  // console.log('=== Checking Zones 03(A) and 03(B) ===');
   
   // Quick check
   zoneDebugger.quickCheck();
@@ -34,10 +34,10 @@ export function checkZone03Status() {
   const zones = ['Zone 03(A)', 'Zone 03(B)'];
   zones.forEach(zone => {
     const connectivity = zoneDebugger.checkZoneConnectivity(zone);
-    console.log(`\n${zone} Connectivity:`, connectivity);
+    // console.log(`\n${zone} Connectivity:`, connectivity);
     
     const data = getZoneAnalysisData(zone, 'May-25');
-    console.log(`${zone} Analysis:`, {
+    // console.log(`${zone} Analysis:`, {
       hasBulkMeter: data.zoneBulkConsumption > 0,
       numberOfRetailMeters: data.meters.filter(m => m.Type === 'Retail').length,
       totalConsumption: data.zoneBulkConsumption
@@ -67,7 +67,7 @@ export const ZoneAnalysisComponent = ({ month }: { month: string }) => {
         // Run diagnostics in development
         if (process.env.NODE_ENV === 'development') {
           const report = await zoneDebugger.generateDebugReport();
-          console.log('Debug Report:', report);
+          // console.log('Debug Report:', report);
         }
       } catch (error) {
         console.error('Error loading zone data:', error);
@@ -134,7 +134,7 @@ export const ZoneAnalysisComponent = ({ month }: { month: string }) => {
 
 // Example 4: Validation before saving data
 export async function validateBeforeSave(): Promise<boolean> {
-  console.log('=== Validating Zone Data ===');
+  // console.log('=== Validating Zone Data ===');
   
   const requiredZones = [
     'Zone 01', 'Zone 02', 'Zone 03(A)', 'Zone 03(B)',
@@ -150,28 +150,28 @@ export async function validateBeforeSave(): Promise<boolean> {
     return false;
   }
   
-  console.log('✅ All zones validated successfully');
+  // console.log('✅ All zones validated successfully');
   return true;
 }
 
 // Example 5: Debug specific issues
 export async function debugZone03Issues() {
-  console.log('=== Debugging Zone 03 Issues ===');
+  // console.log('=== Debugging Zone 03 Issues ===');
   
   // Run full diagnostics
   const report = await zoneDebugger.generateDebugReport();
-  console.log(report);
+  // console.log(report);
   
   // Check specific month data
   const months = ['Jan-25', 'Feb-25', 'Mar-25', 'Apr-25', 'May-25'];
   const zones = ['Zone 03(A)', 'Zone 03(B)'];
   
   zones.forEach(zone => {
-    console.log(`\n${zone} Monthly Data:`);
+    // console.log(`\n${zone} Monthly Data:`);
     months.forEach(month => {
       const comparison = zoneDebugger.compareZoneData(zone, month);
       if (comparison.expected.zoneBulk > 0) {
-        console.log(`  ${month}: Bulk=${comparison.actual.zoneBulk}, Loss=${comparison.discrepancy}`);
+        // console.log(`  ${month}: Bulk=${comparison.actual.zoneBulk}, Loss=${comparison.discrepancy}`);
       }
     });
   });
