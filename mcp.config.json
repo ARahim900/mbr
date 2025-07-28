@@ -1,0 +1,41 @@
+{
+  "name": "mbr-mcp",
+  "version": "1.0.0",
+  "description": "Model Context Protocol configuration for MBR application",
+  "server": {
+    "command": "node",
+    "args": ["./mcp-server.js"],
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "integrations": [
+    {
+      "name": "github",
+      "config": "./.mcp/github-config.json",
+      "enabled": true
+    },
+    {
+      "name": "zapier",
+      "config": "./.mcp/zapier-config.json",
+      "enabled": true
+    }
+  ],
+  "features": {
+    "autoSync": true,
+    "realTimeUpdates": true,
+    "errorRecovery": true,
+    "logging": {
+      "level": "info",
+      "destination": "./logs/mcp.log"
+    }
+  },
+  "security": {
+    "authentication": true,
+    "encryption": "AES-256",
+    "cors": {
+      "enabled": true,
+      "origins": ["https://mbdb-theta.vercel.app"]
+    }
+  }
+}
