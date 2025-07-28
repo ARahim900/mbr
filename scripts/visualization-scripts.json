@@ -1,0 +1,29 @@
+{
+  "name": "mbr-visualization-fixes",
+  "version": "1.1.0",
+  "description": "MBR Application with Visualization Fixes and MCP Integration",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "verify": "bash scripts/verify-visualization-fixes.sh",
+    "clean:logs": "node scripts/remove-console-logs.js",
+    "fix:design": "node scripts/fix-design-violations.js",
+    "setup:mcp": "bash setup-mcp.sh",
+    "test": "npm run verify",
+    "precommit": "npm run clean:logs && npm run build",
+    "deploy": "npm run build && echo 'Deploy to production'",
+    "check:all": "npm run clean:logs && npm run verify && npm run build"
+  },
+  "visualization-fixes": {
+    "implemented": true,
+    "features": [
+      "React plugin configuration",
+      "Import map conflict resolution",
+      "Mobile responsiveness",
+      "Glassmorphism effects",
+      "Touch-friendly interactions"
+    ],
+    "date": "2025-07-28"
+  }
+}
