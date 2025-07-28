@@ -23,7 +23,7 @@ export function lazyLoadComponent<T extends ComponentType<any>>(
 export function decimateData<T>(
   data: T[],
   maxPoints: number = 1000,
-  keyExtractor: (item: T) => number
+  _keyExtractor: (item: T) => number
 ): T[] {
   if (data.length <= maxPoints) return data;
   

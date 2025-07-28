@@ -4,14 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FolderIcon, 
   DocumentIcon, 
-  PlusIcon, 
   TrashIcon,
   ArrowUpTrayIcon,
   MagnifyingGlassIcon,
   FolderPlusIcon,
-  DocumentPlusIcon,
-  ChevronRightIcon,
-  ChevronDownIcon
+  ChevronRightIcon
 } from '@heroicons/react/24/outline';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -38,7 +35,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
   const [currentPath, setCurrentPath] = useState(initialPath);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [expandedFolders] = useState<Set<string>>(new Set());
   const queryClient = useQueryClient();
 
   // Enhanced glassmorphism styles
@@ -58,7 +55,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
       return fetchFiles(currentPath);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   // File upload mutation
@@ -68,7 +65,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
       return uploadFile(file, currentPath);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['files', currentPath]);
+      queryClient.invalidateQueries({ queryKey: ['files', currentPath] });
     },
   });
 
@@ -78,7 +75,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
       return createFolder(name, currentPath);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['files', currentPath]);
+      queryClient.invalidateQueries({ queryKey: ['files', currentPath] });
     },
   });
 
@@ -88,7 +85,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
       return deleteItems(itemIds);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['files']);
+      queryClient.invalidateQueries({ queryKey: ['files'] });
       setSelectedItems([]);
     },
   });
@@ -98,24 +95,13 @@ export const FileManager: React.FC<FileManagerProps> = ({
     if (!files) return [];
     if (!searchQuery) return files;
     
-    return files.filter(file => 
+    return files.filter((file: FileItem) => 
       file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      file.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      file.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   }, [files, searchQuery]);
 
-  // Handle folder toggle
-  const toggleFolder = useCallback((folderId: string) => {
-    setExpandedFolders(prev => {
-      const next = new Set(prev);
-      if (next.has(folderId)) {
-        next.delete(folderId);
-      } else {
-        next.add(folderId);
-      }
-      return next;
-    });
-  }, []);
+  // Folder expansion functionality available for future use via expandedFolders state
 
   // Handle item selection
   const handleItemSelect = useCallback((itemId: string, multiSelect = false) => {
@@ -222,7 +208,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <AnimatePresence>
-              {filteredFiles?.map((file) => (
+              {filteredFiles?.map((file: FileItem) => (
                 <motion.div
                   key={file.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -282,7 +268,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
                   {/* Tags */}
                   {file.tags && file.tags.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-1">
-                      {file.tags.map((tag, index) => (
+                      {file.tags.map((tag: string, index: number) => (
                         <span
                           key={index}
                           className="px-2 py-1 text-xs bg-white/10 rounded-full"
@@ -338,11 +324,11 @@ const formatDate = (date: Date): string => {
 };
 
 // API simulation functions - replace with actual API calls
-const fetchFiles = async (path: string): Promise<FileItem[]> => {
+const fetchFiles = async (_path: string): Promise<FileItem[]> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
-  // Return mock data
+  // Return mock data - path parameter available for future use
   return [
     {
       id: '1',
@@ -365,18 +351,18 @@ const fetchFiles = async (path: string): Promise<FileItem[]> => {
   ];
 };
 
-const uploadFile = async (file: File, path: string): Promise<void> => {
-  // Implement file upload logic
+const uploadFile = async (_file: File, _path: string): Promise<void> => {
+  // Implement file upload logic - parameters available for future use
   await new Promise(resolve => setTimeout(resolve, 1000));
 };
 
-const createFolder = async (name: string, path: string): Promise<void> => {
-  // Implement folder creation logic
+const createFolder = async (_name: string, _path: string): Promise<void> => {
+  // Implement folder creation logic - parameters available for future use
   await new Promise(resolve => setTimeout(resolve, 500));
 };
 
-const deleteItems = async (itemIds: string[]): Promise<void> => {
-  // Implement delete logic
+const deleteItems = async (_itemIds: string[]): Promise<void> => {
+  // Implement delete logic - parameter available for future use
   await new Promise(resolve => setTimeout(resolve, 500));
 };
 

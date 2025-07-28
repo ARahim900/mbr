@@ -11,9 +11,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  TooltipProps
 } from 'recharts';
 import { motion } from 'framer-motion';
 import { decimateData } from '../../utils/performance';
@@ -56,7 +54,7 @@ export const OptimizedChart: React.FC<OptimizedChartProps> = ({
   }, [data, maxDataPoints]);
 
   // Custom tooltip with glassmorphism
-  const CustomTooltip = useCallback(({ active, payload, label }: TooltipProps<number, string>) => {
+  const CustomTooltip = useCallback(({ active, payload, label }: any) => {
     if (!active || !payload || !payload.length) return null;
 
     return (
