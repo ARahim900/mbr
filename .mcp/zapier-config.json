@@ -1,0 +1,43 @@
+{
+  "name": "zapier-mcp",
+  "version": "1.0.0",
+  "description": "MCP configuration for Zapier integration",
+  "integration": {
+    "type": "zapier",
+    "features": {
+      "autoTriggers": true,
+      "dataSync": true,
+      "bidirectional": true
+    },
+    "supportedActions": [
+      "github.push",
+      "github.issue.created",
+      "github.pr.merged",
+      "database.updated",
+      "notification.send"
+    ],
+    "triggers": [
+      {
+        "event": "github.push",
+        "action": "deploy.vercel"
+      },
+      {
+        "event": "database.update",
+        "action": "sync.github"
+      }
+    ]
+  },
+  "webhooks": {
+    "endpoint": "https://mbdb-theta.vercel.app/api/webhooks/zapier",
+    "secret": "process.env.ZAPIER_WEBHOOK_SECRET"
+  },
+  "authentication": {
+    "method": "api_key",
+    "keyLocation": "header",
+    "keyName": "X-Zapier-API-Key"
+  },
+  "rateLimits": {
+    "requests": 1000,
+    "period": "hour"
+  }
+}
