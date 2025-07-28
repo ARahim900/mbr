@@ -1,0 +1,28 @@
+{
+  "name": "github-mcp",
+  "version": "1.0.0",
+  "description": "MCP configuration for GitHub integration",
+  "integration": {
+    "type": "github",
+    "repository": "ARahim900/mbr",
+    "features": {
+      "autoSync": true,
+      "webhooks": {
+        "enabled": true,
+        "events": ["push", "pull_request", "issues"]
+      },
+      "actions": {
+        "enabled": true,
+        "workflows": ["build", "test", "deploy"]
+      }
+    }
+  },
+  "authentication": {
+    "method": "oauth",
+    "scope": ["repo", "workflow"]
+  },
+  "endpoints": {
+    "api": "https://api.github.com",
+    "webhook": "https://mbdb-theta.vercel.app/api/webhooks/github"
+  }
+}
