@@ -27,6 +27,7 @@
     "postinstall": "npm run setup-hooks:windows 2>nul || npm run setup-hooks 2>/dev/null || echo 'Hooks setup skipped'",
     "clean": "if exist node_modules rmdir /s /q node_modules && if exist package-lock.json del package-lock.json && if exist dist rmdir /s /q dist",
     "clean-install": "npm run clean && npm install",
+    "install-platform": "node scripts/install-platform-deps.js",
     "vercel-build": "node scripts/vercel-build.js",
     "fix-lockfile": "node scripts/fix-lockfile.js",
     "validate-lockfile": "node scripts/validate-lockfile.js",
@@ -61,7 +62,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
-    "@rollup/rollup-win32-x64-msvc": "^4.45.1",
     "@tanstack/react-query-devtools": "^5.83.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
@@ -92,5 +92,8 @@
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=9.0.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-win32-x64-msvc": "^4.45.1"
   }
 }

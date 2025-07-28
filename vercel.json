@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run build",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "pnpm install --frozen-lockfile || npm ci --legacy-peer-deps",
+  "installCommand": "npm ci --legacy-peer-deps --no-optional",
   "framework": "vite",
   "env": {
     "NODE_OPTIONS": "--max-old-space-size=4096"
@@ -11,6 +11,7 @@
     "env": {
       "NODE_OPTIONS": "--max-old-space-size=4096",
       "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
+      "NPM_CONFIG_OPTIONAL": "false",
       "NODE_ENV": "production"
     }
   },

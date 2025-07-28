@@ -38,10 +38,10 @@ export function checkZone03Status() {
     
     const data = getZoneAnalysisData(zone, 'May-25');
     // console.log(`${zone} Analysis:`, {
-      hasBulkMeter: data.zoneBulkConsumption > 0,
-      numberOfRetailMeters: data.meters.filter(m => m.Type === 'Retail').length,
-      totalConsumption: data.zoneBulkConsumption
-    });
+    //   hasBulkMeter: data.zoneBulkConsumption > 0,
+    //   numberOfRetailMeters: data.meters.filter(m => m.Type === 'Retail').length,
+    //   totalConsumption: data.zoneBulkConsumption
+    // });
   });
 }
 
