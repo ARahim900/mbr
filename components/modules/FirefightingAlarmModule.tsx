@@ -373,6 +373,8 @@ const FirefightingAlarmModule: React.FC = () => {
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input 
+                id="equipment-search"
+                name="equipmentSearch"
                 type="text" 
                 placeholder="Search by equipment, building, etc." 
                 value={searchTerm}

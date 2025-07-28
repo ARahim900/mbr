@@ -199,6 +199,7 @@ const HvacSystemModule: React.FC = () => {
                             <input 
                                 type="text" 
                                 id="search"
+                                name="hvacSearch"
                                 placeholder="Search across all fields..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}

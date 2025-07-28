@@ -116,6 +116,8 @@ const WaterSystemModule = () => {
             <Upload className="w-5 h-5 mr-2" />
             Upload CSV Data
             <input
+              id="csv-upload"
+              name="csvUpload"
               type="file"
               accept=".csv"
               onChange={handleFileUpload}
@@ -424,6 +426,8 @@ const WaterSystemModule = () => {
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <select
+                    id="month-selector"
+                    name="monthSelector"
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
                     className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -444,6 +448,8 @@ const WaterSystemModule = () => {
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <select
+                    id="zone-selector"
+                    name="zoneSelector"
                     value={selectedZone}
                     onChange={(e) => setSelectedZone(e.target.value)}
                     className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"

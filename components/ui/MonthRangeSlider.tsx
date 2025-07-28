@@ -144,6 +144,8 @@ const MonthRangeSlider: React.FC<MonthRangeSliderProps> = ({
     <div className={`month-range-slider ${className}`}>
       <div className="flex items-center justify-between gap-4 mb-4">
         <input 
+          id="month-range-start"
+          name="monthRangeStart"
           type="text" 
           readOnly 
           value={value.start} 
@@ -156,6 +158,8 @@ const MonthRangeSlider: React.FC<MonthRangeSliderProps> = ({
         />
         <span className="text-gray-600 dark:text-gray-400 font-semibold">to</span>
         <input 
+          id="month-range-end"
+          name="monthRangeEnd"
           type="text" 
           readOnly 
           value={value.end} 
