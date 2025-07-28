@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         await handleSendNotification(data);
         break;
       default:
-        console.log(`Unhandled Zapier event: ${event}`);
+        // console.log(`Unhandled Zapier event: ${event}`);
     }
 
     res.status(200).json({ 
@@ -48,26 +48,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGitHubPush(data: any) {
-  console.log('GitHub push received via Zapier:', data);
+  // console.log('GitHub push received via Zapier:', data);
   // Trigger deployment or other actions
 }
 
 async function handleGitHubIssueCreated(data: any) {
-  console.log('GitHub issue created:', data);
+  // console.log('GitHub issue created:', data);
   // Create corresponding task in project management system
 }
 
 async function handleGitHubPRMerged(data: any) {
-  console.log('GitHub PR merged:', data);
+  // console.log('GitHub PR merged:', data);
   // Update deployment status or trigger CI/CD
 }
 
 async function handleDatabaseUpdate(data: any) {
-  console.log('Database update received:', data);
+  // console.log('Database update received:', data);
   // Sync changes to GitHub or trigger notifications
 }
 
 async function handleSendNotification(data: any) {
-  console.log('Send notification request:', data);
+  // console.log('Send notification request:', data);
   // Send notifications via email, Slack, etc.
 }

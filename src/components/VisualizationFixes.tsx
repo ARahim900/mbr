@@ -5,7 +5,7 @@ import React from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 // Enhanced Chart Container with Mobile Fixes
-export const EnhancedChartContainer = ({ children, height = 400 }) => {
+export const EnhancedChartContainer: React.FC<{ children: React.ReactNode; height?: number }> = ({ children, height = 400 }) => {
   return (
     <div className="chart-container" style={{
       width: '100%',
@@ -44,7 +44,7 @@ export const EnhancedChartContainer = ({ children, height = 400 }) => {
 };
 
 // Enhanced Tooltip with Glassmorphism
-export const EnhancedTooltip = ({ active, payload, label }) => {
+export const EnhancedTooltip: React.FC<{ active?: boolean; payload?: any; label?: string }> = ({ active, payload, label }) => {
   if (!active || !payload || !payload.length) return null;
 
   return (
@@ -66,7 +66,7 @@ export const EnhancedTooltip = ({ active, payload, label }) => {
       }}>
         {label}
       </p>
-      {payload.map((entry, index) => (
+      {payload.map((entry: any, index: number) => (
         <p key={index} style={{
           margin: '4px 0',
           fontSize: '13px',
@@ -81,7 +81,7 @@ export const EnhancedTooltip = ({ active, payload, label }) => {
 };
 
 // Fixed Chart Component with All Enhancements
-export const FixedLineChart = ({ data, dataKeys, colors }) => {
+export const FixedLineChart: React.FC<{ data: any[]; dataKeys: string[]; colors: string[] }> = ({ data, dataKeys, colors }) => {
   return (
     <EnhancedChartContainer>
       <ResponsiveContainer width="100%" height="100%">
@@ -113,7 +113,7 @@ export const FixedLineChart = ({ data, dataKeys, colors }) => {
             }}
             iconType="line"
           />
-          {dataKeys.map((key, index) => (
+          {dataKeys.map((key: string, index: number) => (
             <Line
               key={key}
               type="monotone"

@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         await handleIssue(payload);
         break;
       default:
-        console.log(`Unhandled event: ${event}`);
+        // console.log(`Unhandled event: ${event}`);
     }
 
     res.status(200).json({ message: 'Webhook processed successfully' });
@@ -46,20 +46,20 @@ function verifyWebhookSignature(payload: string, secret: string, signature: stri
 }
 
 async function handlePush(payload: any) {
-  console.log('Push event received:', payload.ref);
+  // console.log('Push event received:', payload.ref);
   // Auto-deploy to Vercel if main branch
   if (payload.ref === 'refs/heads/main') {
     // Trigger Vercel deployment
-    console.log('Triggering Vercel deployment...');
+    // console.log('Triggering Vercel deployment...');
   }
 }
 
 async function handlePullRequest(payload: any) {
-  console.log('Pull request event:', payload.action);
+  // console.log('Pull request event:', payload.action);
   // Handle PR events (opened, closed, merged)
 }
 
 async function handleIssue(payload: any) {
-  console.log('Issue event:', payload.action);
+  // console.log('Issue event:', payload.action);
   // Handle issue events
 }
