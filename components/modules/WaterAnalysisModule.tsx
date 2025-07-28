@@ -689,13 +689,12 @@ Total System Loss: Overall efficiency
                         ))}
                     </div>
                     <div className={`w-full ${isMobile ? 'h-[250px]' : 'h-[300px] sm:h-[350px]'}`}>
-                        {false ? (
+                        {!monthlyWaterTrendData || monthlyWaterTrendData.length === 0 ? (
                           <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <div className="text-center">
                               <p className="text-gray-500 dark:text-gray-400 mb-2">No chart data available</p>
                               <p className="text-sm text-gray-400 dark:text-gray-500">Data length: {monthlyWaterTrendData?.length || 0}</p>
                               <p className="text-sm text-gray-400 dark:text-gray-500">Months available: {waterMonthsAvailable.length}</p>
-                              <p className="text-sm text-gray-400 dark:text-gray-500">Debug: {JSON.stringify(monthlyWaterTrendData?.slice(0, 2))}</p>
                             </div>
                           </div>
                         ) : (
@@ -768,13 +767,12 @@ Total System Loss: Overall efficiency
                         ))}
                     </div>
                     <div className={`w-full ${isMobile ? 'h-[250px]' : 'h-[300px] sm:h-[350px]'}`}>
-                        {false ? (
+                        {!lossTrendData || lossTrendData.length === 0 ? (
                           <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <div className="text-center">
                               <p className="text-gray-500 dark:text-gray-400 mb-2">No loss trend data available</p>
                               <p className="text-sm text-gray-400 dark:text-gray-500">Data length: {lossTrendData?.length || 0}</p>
                               <p className="text-sm text-gray-400 dark:text-gray-500">Months available: {waterMonthsAvailable.length}</p>
-                              <p className="text-sm text-gray-400 dark:text-gray-500">Debug: {JSON.stringify(lossTrendData?.slice(0, 2))}</p>
                             </div>
                           </div>
                         ) : (

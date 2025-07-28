@@ -9,7 +9,7 @@ import {
   Filter,
   ChevronDown
 } from 'lucide-react';
-import { NavigationTabs, SecondaryNavigation } from '../ui/NavigationTabs';
+import { NavigationTabs } from '../ui/NavigationTabs';
 
 const WaterSystemAnalysis: React.FC = () => {
   const [activeTab, setActiveTab] = useState('zone-analysis');
@@ -26,14 +26,6 @@ const WaterSystemAnalysis: React.FC = () => {
     { id: 'main-database', label: 'Main Database', icon: Database }
   ];
 
-  // Secondary navigation for sub-sections
-  const secondaryNavigation = [
-    { id: 'overview-icon', label: 'Over', icon: BarChart3 },
-    { id: 'loss-icon', label: 'Loss', icon: TrendingDown },
-    { id: 'zone-icon', label: 'Zone', icon: Droplets },
-    { id: 'type-icon', label: 'Type', icon: Settings },
-    { id: 'data-icon', label: 'Data', icon: Database }
-  ];
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-6">
@@ -52,19 +44,6 @@ const WaterSystemAnalysis: React.FC = () => {
             className="mb-4"
           />
           
-          {/* Secondary Navigation Icons */}
-          <SecondaryNavigation
-            items={secondaryNavigation}
-            activeItem={`${activeTab.split('-')[0]}-icon`}
-            onItemChange={(itemId) => {
-              const tabId = itemId.replace('-icon', '');
-              if (tabId === 'overview') setActiveTab('overview');
-              else if (tabId === 'loss') setActiveTab('water-loss');
-              else if (tabId === 'zone') setActiveTab('zone-analysis');
-              else if (tabId === 'type') setActiveTab('consumption-type');
-              else if (tabId === 'data') setActiveTab('main-database');
-            }}
-          />
         </div>
 
         {/* Filter Options */}
