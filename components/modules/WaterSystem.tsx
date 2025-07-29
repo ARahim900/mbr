@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Droplets, BarChart3, TrendingUp, AlertCircle, Building2, MapPin } from 'lucide-react';
-import ModuleNavigation from './ModuleNavigation';
+import ModuleNavigation from '../ui/ModuleNavigation';
 
 const tabs = [
   { id: 'overview', name: 'Overview', label: 'Overview', icon: BarChart3 },

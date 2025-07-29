@@ -1,9 +1,29 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Replace these with your actual Supabase project details
-// You can find these in your Supabase dashboard under Settings > API
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'YOUR_SUPABASE_PROJECT_URL'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY'
+// Validate environment variables
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl) {
+  throw new Error(
+    'VITE_SUPABASE_URL environment variable is required. Please add it to your .env.local file.'
+  );
+}
+
+if (!supabaseAnonKey) {
+  throw new Error(
+    'VITE_SUPABASE_ANON_KEY environment variable is required. Please add it to your .env.local file.'
+  );
+}
+
+// Validate URL format
+try {
+  new URL(supabaseUrl);
+} catch {
+  throw new Error(
+    'VITE_SUPABASE_URL must be a valid URL. Please check your .env.local file.'
+  );
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
