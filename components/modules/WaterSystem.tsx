@@ -3,12 +3,12 @@ import { Droplets, BarChart3, TrendingUp, AlertCircle, Building2, MapPin } from 
 import ModuleNavigation from '../ui/ModuleNavigation';
 
 const tabs = [
-  { id: 'overview', name: 'Overview', label: 'Overview', icon: BarChart3 },
-  { id: 'consumption', name: 'Consumption Analysis', label: 'Consumption Analysis', icon: TrendingUp },
-  { id: 'byType', name: 'Consumption by Type', label: 'Consumption by Type', icon: Building2 },
-  { id: 'quality', name: 'Quality', label: 'Quality', icon: AlertCircle },
-  { id: 'zones', name: 'Zone Analysis', label: 'Zone Analysis', icon: MapPin },
-  { id: 'meterByMeter', name: 'Meter by Meter', label: 'Meter by Meter', icon: Droplets }
+  { id: 'overview', name: 'Overview', label: 'Overview', shortName: 'Overview', icon: BarChart3 },
+  { id: 'consumption', name: 'Consumption Analysis', label: 'Consumption Analysis', shortName: 'Analysis', icon: TrendingUp },
+  { id: 'byType', name: 'Consumption by Type', label: 'Consumption by Type', shortName: 'By Type', icon: Building2 },
+  { id: 'quality', name: 'Quality', label: 'Quality', shortName: 'Quality', icon: AlertCircle },
+  { id: 'zones', name: 'Zone Analysis', label: 'Zone Analysis', shortName: 'Zones', icon: MapPin },
+  { id: 'meterByMeter', name: 'Meter by Meter', label: 'Meter by Meter', shortName: 'Meters', icon: Droplets }
 ];
 
 export default function WaterSystem() {
