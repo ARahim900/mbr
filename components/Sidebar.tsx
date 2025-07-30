@@ -8,6 +8,7 @@ import {
   ChevronsRight,
   Wind,
   Shield,
+  BarChart3,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -50,6 +51,7 @@ const NavItem: React.FC<NavItemProps> = ({ id, icon, label, active, isOpen, onCl
 
 const navItems = [
     { id: 'Water System', label: 'Water System', icon: <Droplets className="h-6 w-6" /> },
+    { id: 'Water Consumption', label: 'Water Consumption', icon: <BarChart3 className="h-6 w-6" /> },
     { id: 'Electricity System', label: 'Electricity System', icon: <Zap className="h-6 w-6" /> },
     { id: 'HVAC System', label: 'HVAC System', icon: <Wind className="h-6 w-6" /> },
     { id: 'Firefighting & Alarm', label: 'Firefighting & Alarm', icon: <Shield className="h-6 w-6" /> },

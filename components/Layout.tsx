@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileBottomNav from './ui/MobileBottomNav';
-import { Bell, Search, Menu, User, Settings, Droplets, Zap, Wind, Shield, HardHat, Recycle } from 'lucide-react';
+import { Bell, Search, Menu, User, Settings, Droplets, Zap, Wind, Shield, HardHat, Recycle, BarChart3 } from 'lucide-react';
 import { useIsMobile } from '../hooks/useIsMobile';
 
 interface LayoutProps {
@@ -21,6 +21,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     switch (path) {
       case '/water':
         return 'Water System';
+      case '/water-consumption':
+        return 'Water Consumption';
       case '/electricity':
         return 'Electricity System';
       case '/hvac':
@@ -42,6 +44,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     switch (section) {
       case 'Water System':
         navigate('/water');
+        break;
+      case 'Water Consumption':
+        navigate('/water-consumption');
         break;
       case 'Electricity System':
         navigate('/electricity');
@@ -66,6 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Navigation items for mobile bottom nav
   const mobileNavItems = [
     { id: 'Water System', label: 'Water', icon: Droplets, shortName: 'Water' },
+    { id: 'Water Consumption', label: 'Consumption', icon: BarChart3, shortName: 'Data' },
     { id: 'Electricity System', label: 'Electricity', icon: Zap, shortName: 'Power' },
     { id: 'HVAC System', label: 'HVAC', icon: Wind, shortName: 'HVAC' },
     { id: 'Firefighting & Alarm', label: 'Fire', icon: Shield, shortName: 'Fire' },
