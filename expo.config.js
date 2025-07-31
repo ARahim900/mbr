@@ -1,0 +1,46 @@
+import { ExpoConfig, ConfigContext } from 'expo/config';
+
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  name: 'Muscat Bay Assets & Operations',
+  slug: 'muscat-bay-app',
+  version: '1.0.0',
+  orientation: 'portrait',
+  icon: './public/APP Logo.png',
+  userInterfaceStyle: 'light',
+  splash: {
+    image: './public/APP Logo.png',
+    resizeMode: 'contain',
+    backgroundColor: '#ffffff'
+  },
+  assetBundlePatterns: [
+    '**/*'
+  ],
+  ios: {
+    supportsTablet: true,
+    bundleIdentifier: 'com.muscatbay.assets'
+  },
+  android: {
+    adaptiveIcon: {
+      foregroundImage: './public/APP Logo.png',
+      backgroundColor: '#ffffff'
+    },
+    package: 'com.muscatbay.assets'
+  },
+  web: {
+    favicon: './public/APP Logo.png',
+    bundler: 'vite'
+  },
+  plugins: [
+    'expo-router'
+  ],
+  scheme: 'muscat-bay-app',
+  experiments: {
+    typedRoutes: true
+  },
+  extra: {
+    eas: {
+      projectId: 'your-project-id-here'
+    }
+  }
+}); 
