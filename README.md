@@ -131,6 +131,14 @@ The application is built with a mobile-first approach:
 - Progressive Web App (PWA) capabilities
 - Offline support for critical features
 
+## 📱 Mobile Features
+
+- **QR Code Generation**: Automatic QR code creation for easy mobile access
+  - `npm run generate:qr` - Generate QR code image
+  - `npm run expo:qr` - Show QR code in terminal
+  - QR code saved to `expo-qr-code.png` (generated successfully)
+  - Direct QR code generation via Node.js for immediate mobile access
+
 ## 🔒 Security Features
 
 - Environment variable protection
