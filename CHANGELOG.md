@@ -15,7 +15,8 @@ All notable changes to this project will be documented in this file.
 - **QR Code Generation**: Automatic QR code creation for easy mobile access
   - `npm run generate:qr` - Generate QR code image
   - `npm run expo:qr` - Show QR code in terminal
-  - QR code saved to `public/expo-qr-code.png`
+  - QR code saved to `expo-qr-code.png` (generated successfully)
+  - Direct QR code generation via Node.js for immediate mobile access
 
 ### 🔧 New Scripts
 - `npm run setup:expo` - Complete Expo setup and configuration
