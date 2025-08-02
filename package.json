@@ -9,6 +9,7 @@
     "build": "vite build",
     "build:production": "NODE_ENV=production vite build",
     "build:vercel": "npm ci --legacy-peer-deps && NODE_ENV=production vite build",
+    "build:netlify": "rm -rf node_modules package-lock.json && npm install --force --legacy-peer-deps && npm run build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",

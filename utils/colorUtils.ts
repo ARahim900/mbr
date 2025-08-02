@@ -2,19 +2,6 @@
  * Utility functions for color mapping throughout the application
  */
 
-// Water meter type colors
-export const getTypeColor = (type: string): string => {
-  const typeColors: Record<string, string> = {
-    'Main Bulk': 'from-blue-500 to-blue-600',
-    'Zone Bulk': 'from-green-500 to-green-600', 
-    'Building Bulk': 'from-purple-500 to-purple-600',
-    'Unit Meter': 'from-orange-500 to-orange-600',
-    'default': 'from-gray-500 to-gray-600'
-  };
-  
-  return typeColors[type] || typeColors['default'];
-};
-
 // Water meter status colors  
 export const getStatusColor = (status: string): string => {
   const statusColors: Record<string, string> = {
@@ -25,18 +12,6 @@ export const getStatusColor = (status: string): string => {
   };
   
   return statusColors[status] || statusColors['default'];
-};
-
-// Chart color palette
-export const chartColors = {
-  primary: '#00D2B3',
-  secondary: '#4E4456',
-  accent: '#FF6B6B',
-  success: '#4ECDC4',
-  warning: '#FFE66D',
-  info: '#74B9FF',
-  light: '#DDD6FE',
-  dark: '#374151'
 };
 
 // Gradient backgrounds for cards

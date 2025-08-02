@@ -1327,9 +1327,6 @@ Total System Loss: Overall efficiency
                           .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                           .map((meter: any) => {
                             const currentMonthConsumption = meter.consumption[selectedWaterMonth] || 0;
-                            // const percentage = zoneAnalysisData.isDirectConnection ? 
-                            //   (zoneAnalysisData.totalIndividualConsumption > 0 ? (currentMonthConsumption / zoneAnalysisData.totalIndividualConsumption) * 100 : 0) :
-                            //   (zoneAnalysisData.zoneBulkConsumption > 0 ? (currentMonthConsumption / zoneAnalysisData.zoneBulkConsumption) * 100 : 0);
                             
                             return (
                               <tr key={meter.account} className={`border-b border-neutral-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 ${

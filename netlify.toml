@@ -1,24 +1,24 @@
 [build]
-  command = "node --version && npm --version && npm install --force --legacy-peer-deps && npm run build"
+  command = "node --version && npm --version && npm run build:netlify"
   publish = "dist"
   base = ""
 
 [build.environment]
   NODE_VERSION = "20.11.1"
   NPM_VERSION = "10"
+  NODE_OPTIONS = "--max-old-space-size=4096"
   NPM_CONFIG_FUND = "false"
   NPM_CONFIG_AUDIT = "false"
-  NODE_OPTIONS = "--max-old-space-size=4096"
   SKIP_PREFLIGHT_CHECK = "true"
   NPM_CONFIG_OPTIONAL = "true"
   NPM_CONFIG_LEGACY_PEER_DEPS = "true"
   NETLIFY_USE_YARN = "false"
 
 [context.production]
-  command = "node --version && npm --version && npm install --force --legacy-peer-deps && npm run build"
+  command = "node --version && npm --version && npm run build:netlify"
   
 [context.deploy-preview]
-  command = "node --version && npm --version && npm install --force --legacy-peer-deps && npm run build"
+  command = "node --version && npm --version && npm run build:netlify"
 
 [[redirects]]
   from = "/*"

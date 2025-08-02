@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expo QR Code - Muscat Bay App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 15px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .qr-code {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .qr-code img {
+            max-width: 250px;
+            height: auto;
+            border-radius: 10px;
+        }
+        .url {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .instructions {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .instructions ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .status {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="public/APP Logo.png" alt="App Logo" class="logo">
+        <h1>Muscat Bay Assets & Operations</h1>
+        <p class="subtitle">Scan the QR code below to open the app in Expo Go</p>
+        
+        <div class="status">
+            ✅ Expo Development Server is running on port 8081
+        </div>
+        
+        <div class="qr-code">
+            <img src="expo-qr-code.png" alt="Expo QR Code">
+        </div>
+        
+        <div class="url">
+            exp://192.168.1.40:8081
+        </div>
+        
+        <div class="instructions">
+            <strong>📱 How to connect:</strong>
+            <ol>
+                <li>Install <strong>Expo Go</strong> app from App Store (iOS) or Google Play (Android)</li>
+                <li>Open the <strong>Expo Go</strong> app on your device</li>
+                <li>Tap <strong>"Scan QR Code"</strong> or <strong>"Enter URL manually"</strong></li>
+                <li>Point your camera at the QR code above, or manually enter the URL</li>
+                <li>Your Muscat Bay app will load in Expo Go!</li>
+            </ol>
+        </div>
+        
+        <div style="margin-top: 30px; color: #666; font-size: 14px;">
+            <strong>💡 Tips:</strong><br>
+            • Make sure your device is on the same WiFi network as this computer<br>
+            • If scanning doesn't work, try manually entering the URL<br>
+            • The app will automatically reload when you make changes to the code
+        </div>
+    </div>
+</body>
+</html> 
