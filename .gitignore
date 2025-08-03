@@ -32,3 +32,21 @@ dist-ssr
 
 # MCP configuration with credentials
 .mcp.json
+
+# Build and deployment
+build/
+.netlify/
+.vercel/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.vite/
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Temporary files
+tmp/
+temp/

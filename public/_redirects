@@ -1,0 +1,18 @@
+# SPA fallback - redirect all routes to index.html
+/*    /index.html   200
+
+# API routes (if any) - add specific API redirects above the catch-all
+# /api/*  https://your-api-endpoint.com/:splat  200
+
+# Prevent access to sensitive files
+/.env*  /404.html  404
+/package.json  /404.html  404
+/package-lock.json  /404.html  404
+/yarn.lock  /404.html  404
+
+# Security headers for all pages
+/*
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
