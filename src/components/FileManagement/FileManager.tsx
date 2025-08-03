@@ -3,13 +3,13 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FolderIcon, 
-  DocumentIcon, 
+  FileTextIcon, 
   TrashIcon,
-  ArrowUpTrayIcon,
-  MagnifyingGlassIcon,
+  UploadIcon,
+  SearchIcon,
   FolderPlusIcon,
   ChevronRightIcon
-} from '@heroicons/react/24/outline';
+} from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface FileItem {
@@ -130,7 +130,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Search bar */}
           <div className="flex-1 relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               id="file-search"
               name="fileSearch"
@@ -152,7 +152,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
               className="px-4 py-2 bg-white/10 hover:bg-white/15 rounded-lg flex items-center gap-2 transition-all duration-300"
               style={{ backdropFilter: 'blur(10px)' }}
             >
-              <ArrowUpTrayIcon className="w-5 h-5" />
+              <UploadIcon className="w-5 h-5" />
               <span className="hidden sm:inline">Upload</span>
             </motion.button>
             
@@ -241,7 +241,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
                       {file.type === 'folder' ? (
                         <FolderIcon className="w-8 h-8 text-yellow-400" />
                       ) : (
-                        <DocumentIcon className="w-8 h-8 text-blue-400" />
+                        <FileTextIcon className="w-8 h-8 text-blue-400" />
                       )}
                       <div>
                         <h3 className="font-medium text-white truncate max-w-[150px]">
