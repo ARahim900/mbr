@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:production": "NODE_ENV=production vite build",
+    "build:netlify": "node scripts/netlify-build.cjs",
     "build:vercel": "npm ci --legacy-peer-deps && NODE_ENV=production vite build",
     "preview": "vite preview",
     "test": "vitest",
@@ -117,8 +118,16 @@
     "npm": ">=9.0.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.45.1",
-    "@rollup/rollup-linux-x64-gnu": "^4.45.1",
-    "@esbuild/linux-x64": "^0.25.8"
+    "@rollup/rollup-win32-x64-msvc": "^4.46.1",
+    "@rollup/rollup-linux-x64-gnu": "^4.46.1",
+    "@rollup/rollup-darwin-x64": "^4.46.1",
+    "@rollup/rollup-darwin-arm64": "^4.46.1",
+    "@esbuild/linux-x64": "^0.25.8",
+    "@esbuild/darwin-x64": "^0.25.8",
+    "@esbuild/darwin-arm64": "^0.25.8",
+    "@esbuild/win32-x64": "^0.25.8"
+  },
+  "overrides": {
+    "rollup": "^4.46.1"
   }
 }
