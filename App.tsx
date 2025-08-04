@@ -4,7 +4,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import WaterAnalysisModule from './components/modules/WaterAnalysisModule';
-import WaterConsumptionModule from './components/modules/WaterConsumptionModule';
 import ElectricityModule from './components/modules/ElectricityModule';
 import HvacSystemModule from './components/modules/HvacSystemModule';
 import ContractorTrackerModule from './components/modules/ContractorTrackerModule';
@@ -35,7 +34,6 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/water" replace />} />
             <Route path="/water" element={<WaterAnalysisModule />} />
-            <Route path="/water-consumption" element={<WaterConsumptionModule />} />
             <Route path="/electricity" element={<ElectricityModule />} />
             <Route path="/hvac" element={<HvacSystemModule />} />
             <Route path="/firefighting" element={<FirefightingAlarmModule />} />
