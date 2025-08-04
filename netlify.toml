@@ -1,14 +1,15 @@
 [build]
-  command = "rm -rf node_modules package-lock.json && npm install --include=optional --legacy-peer-deps && npm run build"
+  command = "rm -rf node_modules && npm cache clean --force && npm install --legacy-peer-deps && npm run build"
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20.0.0"
-  NPM_VERSION = "9.0.0"
+  NODE_VERSION = "20"
+  NPM_VERSION = "10"
   NPM_CONFIG_FUND = "false"
   NPM_CONFIG_AUDIT = "false"
-  NPM_CONFIG_OPTIONAL = "true"
+  NODE_OPTIONS = "--max-old-space-size=8192"
   SKIP_PREFLIGHT_CHECK = "true"
+  CI = "true"
 
 [[headers]]
   for = "/assets/*"
