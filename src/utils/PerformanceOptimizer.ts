@@ -168,92 +168,7 @@ export class MemoryMonitor {
   }
 }
 
-// React component error boundary HOC
-import React, { Component, ReactNode, ErrorInfo } from 'react';
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error?: Error;
-  errorInfo?: ErrorInfo;
-}
-
-interface ErrorBoundaryProps {
-  children: ReactNode;
-  fallback?: (error: Error, errorInfo: ErrorInfo) => ReactNode;
-  onError?: (error: Error, errorInfo: ErrorInfo) => void;
-}
-
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    const optimizer = PerformanceOptimizer.getInstance();
-    optimizer.logError(error, 'React Error Boundary');
-    
-    this.setState({ errorInfo });
-    this.props.onError?.(error, errorInfo);
-  }
-
-  render(): ReactNode {
-    if (this.state.hasError && this.state.error) {
-      if (this.props.fallback) {
-        return this.props.fallback(this.state.error, this.state.errorInfo!);
-      }
-
-      return (
-        <div style={{
-          padding: '20px',
-          border: '1px solid #ff6b6b',
-          borderRadius: '8px',
-          backgroundColor: '#fff5f5',
-          color: '#721c24',
-          margin: '20px 0'
-        }}>
-          <h3>Something went wrong</h3>
-          <p>An error occurred while rendering this component.</p>
-          {process.env.NODE_ENV === 'development' && (
-            <details style={{ marginTop: '10px' }}>
-              <summary>Error Details</summary>
-              <pre style={{
-                backgroundColor: '#f8f9fa',
-                padding: '10px',
-                borderRadius: '4px',
-                overflow: 'auto',
-                fontSize: '12px'
-              }}>
-                {this.state.error.toString()}
-                {this.state.errorInfo?.componentStack}
-              </pre>
-            </details>
-          )}
-          <button
-            onClick={() => this.setState({ hasError: false, error: undefined, errorInfo: undefined })}
-            style={{
-              marginTop: '10px',
-              padding: '8px 16px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Try Again
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
+// Note: ErrorBoundary component is already available in components/ui/ErrorBoundary.tsx
 
 // Async operation utilities with error handling
 export const withErrorHandling = <T extends (...args: any[]) => Promise<any>>(
@@ -355,48 +270,7 @@ export class ApiCache {
   }
 }
 
-// Custom hook for safe async operations in React
-import { useState, useCallback, useRef, useEffect } from 'react';
-
-export const useSafeAsync = <T>() => {
-  const [state, setState] = useState<{
-    data: T | null;
-    loading: boolean;
-    error: Error | null;
-  }>({
-    data: null,
-    loading: false,
-    error: null
-  });
-
-  const isMountedRef = useRef(true);
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  const execute = useCallback(async (asyncFn: () => Promise<T>) => {
-    if (!isMountedRef.current) return;
-
-    setState({ data: null, loading: true, error: null });
-
-    try {
-      const result = await asyncFn();
-      
-      if (isMountedRef.current) {
-        setState({ data: result, loading: false, error: null });
-      }
-    } catch (error) {
-      if (isMountedRef.current) {
-        setState({ data: null, loading: false, error: error as Error });
-      }
-    }
-  }, []);
-
-  return { ...state, execute };
-};
+// Custom hook for safe async operations is now available in hooks/useSafeAsync.tsx
 
 // Zone data validation and sanitization
 export const validateZoneData = (data: any): { isValid: boolean; errors: string[] } => {
