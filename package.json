@@ -46,7 +46,18 @@
     "expo:qr": "expo start --qr",
     "generate:qr": "node scripts/generate-qr.js",
     "setup:expo": "node scripts/setup-expo.js",
-    "get:ip": "node scripts/get-local-ip.js"
+    "get:ip": "node scripts/get-local-ip.js",
+    "cdn:deploy": "node scripts/cdn-deploy.js deploy",
+    "cdn:validate": "node scripts/cdn-deploy.js validate",
+    "cdn:build": "node scripts/cdn-deploy.js build",
+    "cdn:test": "node scripts/test-cdn-integration.js",
+    "cdn:security-scan": "node scripts/cdn-deploy.js security-scan",
+    "cdn:performance-test": "node scripts/cdn-deploy.js performance-test",
+    "cdn:test-fallback": "node scripts/test-cdn-integration.js --test-fallback",
+    "cdn:load-test": "node scripts/test-cdn-integration.js --load-test",
+    "cdn:geo-test": "node scripts/test-cdn-integration.js --geo-test",
+    "cdn:monitor": "node scripts/cdn-deploy.js monitor",
+    "cdn:status": "node scripts/cdn-deploy.js status"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
