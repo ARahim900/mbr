@@ -38,7 +38,8 @@ run('npm config set legacy-peer-deps true');
 
 // Install dependencies with specific flags for Netlify
 console.log('📦 Installing dependencies...');
-run('npm install --legacy-peer-deps --no-audit --no-fund --prefer-offline');
+// Force installation of all dependencies including devDependencies
+run('npm install --legacy-peer-deps --no-audit --no-fund --prefer-offline --production=false');
 
 // Install platform-specific rollup dependencies if needed
 console.log('🔧 Installing platform-specific dependencies...');

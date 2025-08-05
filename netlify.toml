@@ -15,7 +15,7 @@
   NPM_FLAGS = "--legacy-peer-deps"
   NETLIFY_USE_YARN = "false"
   NETLIFY_USE_PNPM = "false"
-  NODE_ENV = "production"
+  # NODE_ENV = "production" # Commented out to ensure devDependencies are installed
 
 [[headers]]
   for = "/assets/*"
