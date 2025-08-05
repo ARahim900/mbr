@@ -16,6 +16,14 @@ import {
   getAvailableZones,
   calculateAggregatedDataForPeriod,
 } from '../../database/waterDatabase';
+import { 
+  validateWaterData, 
+  validateMonthsAvailable, 
+  validateChartData,
+  createFallbackData,
+  safeGetWaterValue 
+} from '../../utils/dataValidation';
+import ErrorBoundary from '../ui/ErrorBoundary';
 import GaugeChart from '../ui/GaugeChart';
 import MetricCard from '../ui/MetricCard';
 import ChartCard from '../ui/ChartCard';
@@ -134,16 +142,38 @@ const WaterAnalysisModule: React.FC = () => {
   const [activeWaterSubSection, setActiveWaterSubSection] = useState('Overview');
   const isMobile = useIsMobile(1024); // Use 1024px breakpoint for mobile detection
   
-  // Debug: Check if data is loaded
-  // console.log('Water System Data Length:', waterSystemData?.length || 0);
-  // console.log('Water Months Available:', waterMonthsAvailable);
-  // console.log('Sample Water System Data:', waterSystemData?.slice(0, 3) || []);
+  // Validate data integrity
+  const dataValidation = useMemo(() => {
+    const waterValidation = validateWaterData(waterSystemData);
+    const monthsValidation = validateMonthsAvailable(waterMonthsAvailable);
+    
+    if (!waterValidation.isValid) {
+      console.error('Water data validation failed:', waterValidation.errors);
+    }
+    if (!monthsValidation.isValid) {
+      console.error('Months validation failed:', monthsValidation.errors);
+    }
+    
+    return {
+      safeWaterData: waterValidation.safeData,
+      safeMonths: monthsValidation.safeMonths,
+      hasErrors: !waterValidation.isValid || !monthsValidation.isValid,
+      errors: [...waterValidation.errors, ...monthsValidation.errors]
+    };
+  }, []);
+  
+  // Use validated data
+  const validatedWaterData = dataValidation.safeWaterData;
+  const validatedMonths = dataValidation.safeMonths;
 
-  const [selectedWaterMonth, setSelectedWaterMonth] = useState('Jul-25');
-  const [overviewDateRange, setOverviewDateRange] = useState({
-    start: waterMonthsAvailable[0],
-    end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
+  const [selectedWaterMonth, setSelectedWaterMonth] = useState(() => {
+    const lastMonth = validatedMonths[validatedMonths.length - 1];
+    return lastMonth || 'Jul-25';
   });
+  const [overviewDateRange, setOverviewDateRange] = useState(() => ({
+    start: validatedMonths[0] || 'Jan-25',
+    end: validatedMonths[validatedMonths.length - 1] || 'Jul-25',
+  }));
   const [selectedZoneForAnalysis, setSelectedZoneForAnalysis] = useState('Zone_03A');
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [aiAnalysisResult, setAiAnalysisResult] = useState("");
@@ -151,10 +181,10 @@ const WaterAnalysisModule: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [useRangeSelector, setUseRangeSelector] = useState(false);
-  const [zoneAnalysisDateRange, setZoneAnalysisDateRange] = useState({
-    start: waterMonthsAvailable[0],
-    end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
-  });
+  const [zoneAnalysisDateRange, setZoneAnalysisDateRange] = useState(() => ({
+    start: validatedMonths[0] || 'Jan-25',
+    end: validatedMonths[validatedMonths.length - 1] || 'Jul-25',
+  }));
   const [isZoneDataLoading, setIsZoneDataLoading] = useState(false);
 
   const [consumptionVisibility, setConsumptionVisibility] = useState({

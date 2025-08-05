@@ -408,7 +408,7 @@ export const parseWaterSystemData = (rawData: string): WaterDataEntry[] => {
 
 // Export parsed data
 export const waterSystemData = parseWaterSystemData(waterRawDataString);
-export const waterMonthsAvailable = waterSystemData.length > 0 ? Object.keys(waterSystemData[0].consumption || {}) : ['Jan-25', 'Feb-25', 'Mar-25', 'Apr-25', 'May-25'];
+export const waterMonthsAvailable = waterSystemData.length > 0 ? Object.keys(waterSystemData[0].consumption || {}) : ['Jan-25', 'Feb-25', 'Mar-25', 'Apr-25', 'May-25', 'Jun-25', 'Jul-25'];
 
 // Debug logging
 // console.log('Water System Data loaded:', waterSystemData.length, 'entries');
