@@ -1,6 +1,7 @@
 [build]
   command = "node scripts/netlify-build.cjs"
   publish = "dist"
+  ignore = "/bin/false"
 
 [build.environment]
   NODE_VERSION = "20.11.1"
@@ -25,9 +26,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-[build]
-  ignore = "/bin/false"
 
 [functions]
   node_bundler = "esbuild"
