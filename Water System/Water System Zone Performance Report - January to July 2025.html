@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water System Zone Performance Report - January to July 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #1e40af;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #2563eb;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 5px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .alert-box {
+            background: #fef2f2;
+            border: 2px solid #dc2626;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .alert-box h3 {
+            color: #991b1b;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            color: white;
+        }
+        
+        .card-red { background-color: #dc2626; }
+        .card-orange { background-color: #f97316; }
+        .card-yellow { background-color: #fbbf24; }
+        .card-green { background-color: #10b981; }
+        .card-blue { background-color: #3b82f6; }
+        .card-purple { background-color: #8b5cf6; }
+        
+        .card h3 {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+        
+        .card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .card .label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th {
+            background-color: #e0e7ff;
+            color: #1e40af;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #c7d2fe;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .total-row {
+            background-color: #f3f4f6;
+            font-weight: bold;
+        }
+        
+        .status-excellent { color: #10b981; font-weight: bold; }
+        .status-good { color: #10b981; }
+        .status-warning { color: #f59e0b; }
+        .status-moderate { color: #f59e0b; }
+        .status-high { color: #f97316; font-weight: bold; }
+        .status-critical { color: #dc2626; font-weight: bold; }
+        .status-anomaly { color: #8b5cf6; font-weight: bold; }
+        
+        .negative {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        
+        .zone-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .zone-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .zone-card-header {
+            padding: 15px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .zone-card-header.critical { background-color: #dc2626; }
+        .zone-card-header.high { background-color: #f97316; }
+        .zone-card-header.moderate { background-color: #fbbf24; }
+        .zone-card-header.good { background-color: #10b981; }
+        .zone-card-header.excellent { background-color: #059669; }
+        .zone-card-header.anomaly { background-color: #8b5cf6; }
+        
+        .zone-card-body {
+            padding: 20px;
+            background: white;
+        }
+        
+        .zone-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .zone-metric:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .zone-metric-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .zone-metric-value {
+            font-weight: bold;
+            color: #1f2937;
+        }
+        
+        .dc-section {
+            background: #eff6ff;
+            border: 1px solid #60a5fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .dc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .dc-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #dbeafe;
+        }
+        
+        .dc-item-name {
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 5px;
+        }
+        
+        .dc-item-value {
+            font-size: 1.2rem;
+            color: #1f2937;
+        }
+        
+        .dc-item-percent {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .chart-container {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        @media (max-width: 768px) {
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .zone-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.875rem;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <h1>Water System Zone Performance Report</h1>
+        <div class="subtitle">Monthly System Performance & Zone Analysis - January to July 2025</div>
+        
+        <!-- Alert Box -->
+        <div class="alert-box">
+            <h3>🚨 CRITICAL PERFORMANCE ALERT</h3>
+            <p><strong>System deteriorating: July losses at 41.3%</strong> - 4 of 8 zones operating above 30% loss threshold with Zone_SC showing complete failure</p>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="cards-grid">
+            <div class="card card-blue">
+                <h3>Total Zones</h3>
+                <div class="value">8</div>
+                <div class="label">Active zones</div>
+            </div>
+            <div class="card card-red">
+                <h3>Critical Zones</h3>
+                <div class="value">3</div>
+                <div class="label">>50% loss</div>
+            </div>
+            <div class="card card-orange">
+                <h3>Zone Input (July)</h3>
+                <div class="value">20.2k</div>
+                <div class="label">m³ total</div>
+            </div>
+            <div class="card card-purple">
+                <h3>Zone Loss (July)</h3>
+                <div class="value">34.9%</div>
+                <div class="label">5,651 m³</div>
+            </div>
+            <div class="card card-green">
+                <h3>DC Total (July)</h3>
+                <div class="value">17.0k</div>
+                <div class="label">m³ (45.6% of A2)</div>
+            </div>
+            <div class="card card-red">
+                <h3>System Efficiency</h3>
+                <div class="value">69.5%</div>
+                <div class="label">7-month average</div>
+            </div>
+        </div>
+        
+        <!-- Monthly Performance Summary -->
+        <div class="section">
+            <h2>Monthly Performance Summary</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>A1 (m³)</th>
+                            <th>A2 (m³)</th>
+                            <th>A3 Bulk (m³)</th>
+                            <th>A3 Individual (m³)</th>
+                            <th>Stage 1 Loss</th>
+                            <th>Stage 2 Loss</th>
+                            <th>Total Loss</th>
+                            <th>Loss %</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Jan-25</strong></td>
+                            <td>32,580</td>
+                            <td>34,728</td>
+                            <td>27,076</td>
+                            <td>25,079</td>
+                            <td class="negative">-2,148</td>
+                            <td>9,649</td>
+                            <td>7,501</td>
+                            <td>23.0%</td>
+                            <td class="status-warning">🟡 Moderate</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Feb-25</strong></td>
+                            <td>44,043</td>
+                            <td>35,291</td>
+                            <td>27,637</td>
+                            <td>25,872</td>
+                            <td>8,752</td>
+                            <td>9,419</td>
+                            <td>18,171</td>
+                            <td>41.3%</td>
+                            <td class="status-critical">🔴 Critical</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mar-25</strong></td>
+                            <td>34,915</td>
+                            <td>38,985</td>
+                            <td>32,413</td>
+                            <td>29,754</td>
+                            <td class="negative">-4,070</td>
+                            <td>9,231</td>
+                            <td>5,161</td>
+                            <td>14.8%</td>
+                            <td class="status-good">🟢 Good</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Apr-25</strong></td>
+                            <td>46,039</td>
+                            <td>45,263</td>
+                            <td>38,191</td>
+                            <td>36,634</td>
+                            <td>776</td>
+                            <td>8,629</td>
+                            <td>9,405</td>
+                            <td>20.4%</td>
+                            <td class="status-warning">🟡 Moderate</td>
+                        </tr>
+                        <tr>
+                            <td><strong>May-25</strong></td>
+                            <td>58,425</td>
+                            <td>46,041</td>
+                            <td>41,932</td>
+                            <td>39,530</td>
+                            <td>12,384</td>
+                            <td>6,511</td>
+                            <td>18,895</td>
+                            <td>32.3%</td>
+                            <td class="status-critical">🔴 Critical</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Jun-25</strong></td>
+                            <td>41,840</td>
+                            <td>39,949</td>
+                            <td>28,763</td>
+                            <td>26,873</td>
+                            <td>1,891</td>
+                            <td>13,076</td>
+                            <td>14,967</td>
+                            <td>35.8%</td>
+                            <td class="status-critical">🔴 Critical</td>
+                        </tr>
+                        <tr style="background-color: #f0f9ff;">
+                            <td><strong>Jul-25</strong></td>
+                            <td><strong>41,475</strong></td>
+                            <td><strong>37,154</strong></td>
+                            <td><strong>26,567</strong></td>
+                            <td><strong>24,355</strong></td>
+                            <td><strong>4,321</strong></td>
+                            <td><strong>12,799</strong></td>
+                            <td><strong>17,120</strong></td>
+                            <td><strong>41.3%</strong></td>
+                            <td class="status-critical"><strong>🔴 Critical</strong></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>TOTAL</strong></td>
+                            <td><strong>299,317</strong></td>
+                            <td><strong>277,411</strong></td>
+                            <td><strong>222,579</strong></td>
+                            <td><strong>208,097</strong></td>
+                            <td><strong>21,906</strong></td>
+                            <td><strong>69,314</strong></td>
+                            <td><strong>91,220</strong></td>
+                            <td><strong>30.5%</strong></td>
+                            <td class="status-critical"><strong>🔴 Critical</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Performance Trend Analysis -->
+        <div class="section">
+            <h2>Performance Trend Analysis</h2>
+            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 15px;">
+                <h3 style="color: #92400e; margin-bottom: 10px;">📉 Deteriorating System Performance</h3>
+                <ul style="margin-left: 20px; color: #78350f; line-height: 1.8;">
+                    <li><strong>Critical Months:</strong> 4 out of 7 months (57%) showed critical performance (>30% losses)</li>
+                    <li><strong>Worst Performance:</strong> February and July both at 41.3% losses</li>
+                    <li><strong>Best Performance:</strong> March at 14.8% losses (only month meeting target)</li>
+                    <li><strong>Trend Direction:</strong> System losses increasing - from 23% in January to 41.3% in July</li>
+                    <li><strong>7-Month Average:</strong> 30.5% losses vs. 15% target (double the acceptable threshold)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Zone Performance Table -->
+        <div class="section">
+            <h2>Zone Performance Ranking - July 2025</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Zone</th>
+                        <th>Input (m³)</th>
+                        <th>Output (m³)</th>
+                        <th>Loss (m³)</th>
+                        <th>Loss %</th>
+                        <th>Connected</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><strong>Zone_SC (Sales Center)</strong></td>
+                        <td>60</td>
+                        <td>0</td>
+                        <td>60</td>
+                        <td class="status-critical">100.0%</td>
+                        <td>0 meters</td>
+                        <td class="status-critical">🔴 Critical</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><strong>Zone_03_(A)</strong></td>
+                        <td>4,113</td>
+                        <td>1,445</td>
+                        <td>2,668</td>
+                        <td class="status-critical">64.9%</td>
+                        <td>10 bldgs, 21 villas</td>
+                        <td class="status-critical">🔴 Critical</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><strong>Zone_05</strong></td>
+                        <td>3,497</td>
+                        <td>1,678</td>
+                        <td>1,819</td>
+                        <td class="status-critical">52.0%</td>
+                        <td>34 villas</td>
+                        <td class="status-critical">🔴 Critical</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><strong>Zone_03_(B)</strong></td>
+                        <td>2,616</td>
+                        <td>1,798</td>
+                        <td>818</td>
+                        <td class="status-high">31.3%</td>
+                        <td>11 bldgs, 14 villas</td>
+                        <td class="status-high">🟠 High</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><strong>Al_Adrak</strong></td>
+                        <td>1,890</td>
+                        <td>1,593</td>
+                        <td>297</td>
+                        <td class="status-good">15.7%</td>
+                        <td>Camp area</td>
+                        <td class="status-good">🟢 Good</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><strong>Zone_VS (Village Square)</strong></td>
+                        <td>60</td>
+                        <td>53</td>
+                        <td>7</td>
+                        <td class="status-good">11.7%</td>
+                        <td>7 retail units</td>
+                        <td class="status-good">🟢 Good</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td><strong>Zone_01_(FM)</strong></td>
+                        <td>1,974</td>
+                        <td>1,820</td>
+                        <td>154</td>
+                        <td class="status-excellent">7.8%</td>
+                        <td>17 buildings</td>
+                        <td class="status-excellent">🟢 Excellent</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td><strong>Zone_08</strong></td>
+                        <td>1,994</td>
+                        <td>2,166</td>
+                        <td>-172</td>
+                        <td class="status-anomaly">-8.6%</td>
+                        <td>56 villas</td>
+                        <td class="status-anomaly">⚠️ Anomaly</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2"><strong>TOTAL</strong></td>
+                        <td><strong>16,204</strong></td>
+                        <td><strong>10,553</strong></td>
+                        <td><strong>5,651</strong></td>
+                        <td><strong>34.9%</strong></td>
+                        <td><strong>125 villas, 58 bldgs</strong></td>
+                        <td class="status-high"><strong>🟠 High</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Zone Cards Grid -->
+        <div class="section">
+            <h2>Zone Details</h2>
+            <div class="zone-cards">
+                <!-- Critical Zones -->
+                <div class="zone-card">
+                    <div class="zone-card-header critical">
+                        Zone_SC (Sales Center) - 🔴 CRITICAL
+                    </div>
+                    <div class="zone-card-body">
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Input</span>
+                            <span class="zone-metric-value">60 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Output</span>
+                            <span class="zone-metric-value">0 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Loss</span>
+                            <span class="zone-metric-value" style="color: #dc2626;">60 m³ (100%)</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Connected Meters</span>
+                            <span class="zone-metric-value">None</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="zone-card">
+                    <div class="zone-card-header critical">
+                        Zone_03_(A) - 🔴 CRITICAL
+                    </div>
+                    <div class="zone-card-body">
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Input</span>
+                            <span class="zone-metric-value">4,113 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Output</span>
+                            <span class="zone-metric-value">1,445 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Loss</span>
+                            <span class="zone-metric-value" style="color: #dc2626;">2,668 m³ (64.9%)</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Connected</span>
+                            <span class="zone-metric-value">10 buildings, 21 villas</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="zone-card">
+                    <div class="zone-card-header critical">
+                        Zone_05 - 🔴 CRITICAL
+                    </div>
+                    <div class="zone-card-body">
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Input</span>
+                            <span class="zone-metric-value">3,497 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Output</span>
+                            <span class="zone-metric-value">1,678 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Loss</span>
+                            <span class="zone-metric-value" style="color: #dc2626;">1,819 m³ (52.0%)</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Connected</span>
+                            <span class="zone-metric-value">34 villas</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- High Performance Zone -->
+                <div class="zone-card">
+                    <div class="zone-card-header high">
+                        Zone_03_(B) - 🟠 HIGH
+                    </div>
+                    <div class="zone-card-body">
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Input</span>
+                            <span class="zone-metric-value">2,616 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Output</span>
+                            <span class="zone-metric-value">1,798 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Loss</span>
+                            <span class="zone-metric-value" style="color: #f97316;">818 m³ (31.3%)</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Connected</span>
+                            <span class="zone-metric-value">11 buildings, 14 villas</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Good Performance Zones -->
+                <div class="zone-card">
+                    <div class="zone-card-header excellent">
+                        Zone_01_(FM) - 🟢 EXCELLENT
+                    </div>
+                    <div class="zone-card-body">
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Input</span>
+                            <span class="zone-metric-value">1,974 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Output</span>
+                            <span class="zone-metric-value">1,820 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Loss</span>
+                            <span class="zone-metric-value" style="color: #10b981;">154 m³ (7.8%)</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Connected</span>
+                            <span class="zone-metric-value">17 buildings</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Anomaly Zone -->
+                <div class="zone-card">
+                    <div class="zone-card-header anomaly">
+                        Zone_08 - ⚠️ ANOMALY
+                    </div>
+                    <div class="zone-card-body">
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Input</span>
+                            <span class="zone-metric-value">1,994 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Output</span>
+                            <span class="zone-metric-value">2,166 m³</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Gain</span>
+                            <span class="zone-metric-value" style="color: #8b5cf6;">+172 m³ (-8.6%)</span>
+                        </div>
+                        <div class="zone-metric">
+                            <span class="zone-metric-label">Connected</span>
+                            <span class="zone-metric-value">56 villas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Direct Connections Section -->
+        <div class="dc-section">
+            <h2>Direct Connections (DC) - July 2025</h2>
+            <p><strong>Total DC Consumption: 16,950 m³</strong> (45.6% of total A2 distribution)</p>
+            
+            <div class="dc-grid">
+                <div class="dc-item">
+                    <div class="dc-item-name">Hotel Main Building</div>
+                    <div class="dc-item-value">14,713 m³</div>
+                    <div class="dc-item-percent">86.8% of DC total</div>
+                </div>
+                <div class="dc-item">
+                    <div class="dc-item-name">Al Adrak Camp</div>
+                    <div class="dc-item-value">972 m³</div>
+                    <div class="dc-item-percent">5.7% of DC total</div>
+                </div>
+                <div class="dc-item">
+                    <div class="dc-item-name">Irrigation Controller DOWN</div>
+                    <div class="dc-item-value">611 m³</div>
+                    <div class="dc-item-percent">3.6% of DC total</div>
+                </div>
+                <div class="dc-item">
+                    <div class="dc-item-name">Irrigation Controller UP</div>
+                    <div class="dc-item-value">554 m³</div>
+                    <div class="dc-item-percent">3.3% of DC total</div>
+                </div>
+                <div class="dc-item">
+                    <div class="dc-item-name">Community Mgmt - STP</div>
+                    <div class="dc-item-value">50 m³</div>
+                    <div class="dc-item-percent">0.3% of DC total</div>
+                </div>
+                <div class="dc-item">
+                    <div class="dc-item-name">Other Irrigation</div>
+                    <div class="dc-item-value">50 m³</div>
+                    <div class="dc-item-percent">0.3% of DC total</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Analysis Grid -->
+        <div class="performance-grid">
+            <div class="section">
+                <h2>Critical Findings</h2>
+                <ul style="line-height: 1.8; color: #374151;">
+                    <li><strong style="color: #dc2626;">System Deterioration:</strong> July marks the second-worst month with 41.3% losses</li>
+                    <li><strong style="color: #dc2626;">Zone_SC Complete Failure:</strong> 100% loss indicates total infrastructure failure or meter malfunction</li>
+                    <li><strong style="color: #dc2626;">Zone_03_(A) Crisis:</strong> 64.9% loss (2,668 m³) - highest volume loss, urgent leak detection needed</li>
+                    <li><strong style="color: #dc2626;">Zone_05 Major Leakage:</strong> 52% loss (1,819 m³) affecting 34 villas</li>
+                    <li><strong style="color: #f97316;">Zone_03_(B) Deteriorating:</strong> 31.3% loss exceeds acceptable threshold</li>
+                    <li><strong style="color: #8b5cf6;">Zone_08 Anomaly:</strong> Negative loss indicates meter error or unregistered connections</li>
+                    <li><strong style="color: #1e40af;">Hotel Dominance:</strong> Single DC consumer using 14,713 m³ (39.6% of total A2)</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Immediate Actions Required</h2>
+                <ol style="line-height: 1.8; color: #374151;">
+                    <li><strong>Emergency Response Team</strong> to Zone_SC for complete system check</li>
+                    <li><strong>Leak Detection Priority:</strong> Deploy teams to Zones 3A and 5 immediately</li>
+                    <li><strong>Meter Verification:</strong> Check Zone_08 bulk meter and all connected villas</li>
+                    <li><strong>Pressure Testing:</strong> All zones showing >30% losses</li>
+                    <li><strong>Hotel Submetering:</strong> Install additional meters to monitor 39.6% of system flow</li>
+                    <li><strong>24/7 Monitoring:</strong> Implement for all critical zones</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- Zone Distribution Chart Placeholder -->
+        <div class="section">
+            <h2>Zone Input Distribution - July 2025</h2>
+            <div class="chart-container">
+                <p>Zone Input Distribution Chart<br>
+                Zone_03_(A): 25.4% | Zone_05: 21.6% | Zone_03_(B): 16.1%<br>
+                Zone_01_(FM): 12.2% | Zone_08: 12.3% | Al_Adrak: 11.7%<br>
+                Others: 0.7%</p>
+            </div>
+        </div>
+        
+        <!-- Summary Statistics -->
+        <div class="section">
+            <h2>July 2025 Zone Performance Statistics</h2>
+            <div class="cards-grid">
+                <div class="card card-blue">
+                    <h3>Zone Input (L2)</h3>
+                    <div class="value">20,204</div>
+                    <div class="label">m³ total</div>
+                </div>
+                <div class="card card-purple">
+                    <h3>Zone Output (L3)</h3>
+                    <div class="value">10,553</div>
+                    <div class="label">m³ total</div>
+                </div>
+                <div class="card card-orange">
+                    <h3>Zone Network Loss</h3>
+                    <div class="value">5,651</div>
+                    <div class="label">m³ (34.9%)</div>
+                </div>
+                <div class="card card-green">
+                    <h3>Direct Connections</h3>
+                    <div class="value">16,950</div>
+                    <div class="label">m³ (45.6%)</div>
+                </div>
+                <div class="card card-blue">
+                    <h3>Total A2</h3>
+                    <div class="value">37,154</div>
+                    <div class="label">m³ distributed</div>
+                </div>
+                <div class="card card-red">
+                    <h3>Critical Zones</h3>
+                    <div class="value">4 / 8</div>
+                    <div class="label">zones failing</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Water System Zone Performance Report - January to July 2025</strong></p>
+            <p><strong>Report Generated:</strong> <span id="reportDate"></span></p>
+            <p><strong>Data Source:</strong> Muscat Bay Water Management System</p>
+            <p><strong>Period Coverage:</strong> 7 months | <strong>Total Zones:</strong> 8 | <strong>Critical Zones:</strong> 4 | <strong>Zone Efficiency:</strong> 65.1%</p>
+            <p style="color: #dc2626; font-weight: bold; margin-top: 10px;">
+                ⚠️ SYSTEM ALERT: 50% of zones operating in critical state - Immediate intervention required
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Simple JavaScript for the date
+        document.getElementById('reportDate').textContent = new Date().toLocaleDateString();
+    </script>
+</body>
+</html>
