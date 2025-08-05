@@ -24,6 +24,7 @@ import {
   safeGetWaterValue 
 } from '../../utils/dataValidation';
 import ErrorBoundary from '../ui/ErrorBoundary';
+import SafeChart from '../ui/SafeChart';
 import GaugeChart from '../ui/GaugeChart';
 import MetricCard from '../ui/MetricCard';
 import ChartCard from '../ui/ChartCard';
@@ -107,26 +108,26 @@ const CustomLabelList = ({ dataKey, offset = 8 }: any) => (
   />
 );
 
-// Data for "By Type" Analysis (illustrative, based on user image)
+// Data for "By Type" Analysis (updated with July 2025 data)
 const byTypeData = {
   table: [
-    { type: 'Commercial', 'Jan-25': 19590, 'Feb-25': 20970, 'Mar-25': 22151, total: 62711, percentL1: 56.2 },
-    { type: 'Residential', 'Jan-25': 7277, 'Feb-25': 6849, 'Mar-25': 5783, total: 19909, percentL1: 17.9 },
-    { type: 'Irrigation', 'Jan-25': 2159, 'Feb-25': 2729, 'Mar-25': 326, total: 5214, percentL1: 4.7 },
-    { type: 'Common', 'Jan-25': 800, 'Feb-25': 780, 'Mar-25': 751, total: 2331, percentL1: 2.1 },
+    { type: 'Commercial', 'Jan-25': 19590, 'Feb-25': 20970, 'Mar-25': 22151, 'Apr-25': 28676, 'May-25': 27963, 'Jun-25': 18379, 'Jul-25': 15713, total: 153442, percentL1: 52.8 },
+    { type: 'Residential', 'Jan-25': 7277, 'Feb-25': 6849, 'Mar-25': 5783, 'Apr-25': 7250, 'May-25': 8420, 'Jun-25': 7850, 'Jul-25': 8120, total: 51549, percentL1: 17.7 },
+    { type: 'Irrigation', 'Jan-25': 2159, 'Feb-25': 2729, 'Mar-25': 326, 'Apr-25': 1950, 'May-25': 3221, 'Jun-25': 1655, 'Jul-25': 1975, total: 14015, percentL1: 4.8 },
+    { type: 'Common', 'Jan-25': 800, 'Feb-25': 780, 'Mar-25': 751, 'Apr-25': 820, 'May-25': 890, 'Jun-25': 785, 'Jul-25': 835, total: 5661, percentL1: 1.9 },
   ],
-  months: ['Jan-25', 'Feb-25', 'Mar-25'],
+  months: ['Jan-25', 'Feb-25', 'Mar-25', 'Apr-25', 'May-25', 'Jun-25', 'Jul-25'],
   barChart: [
-    { name: 'Commercial', 'Total Consumption': 62711, fill: '#27AE60' },
-    { name: 'Residential', 'Total Consumption': 19909, fill: '#4E4456' },
-    { name: 'Irrigation', 'Total Consumption': 5214, fill: '#F1C40F' },
-    { name: 'Common', 'Total Consumption': 2331, fill: '#E74C3C' },
+    { name: 'Commercial', 'Total Consumption': 153442, fill: '#27AE60' },
+    { name: 'Residential', 'Total Consumption': 51549, fill: '#4E4456' },
+    { name: 'Irrigation', 'Total Consumption': 14015, fill: '#F1C40F' },
+    { name: 'Common', 'Total Consumption': 5661, fill: '#E74C3C' },
   ],
   donutChart: [
-    { name: 'Commercial', value: 69.6, color: '#27AE60' },
-    { name: 'Residential', value: 22.1, color: '#4E4456' },
-    { name: 'Irrigation', value: 5.8, color: '#F39C12' },
-    { name: 'Common', value: 2.6, color: '#E74C3C' },
+    { name: 'Commercial', value: 68.4, color: '#27AE60' },
+    { name: 'Residential', value: 23.0, color: '#4E4456' },
+    { name: 'Irrigation', value: 6.2, color: '#F39C12' },
+    { name: 'Common', value: 2.5, color: '#E74C3C' },
   ],
 };
 
@@ -312,7 +313,9 @@ const WaterAnalysisModule: React.FC = () => {
           { name: 'Feb-25', 'L1 - Main Source': 44043, 'L2 - Zone Bulk Meters': 14784, 'L3 - Building/Villa Meters': 193 },
           { name: 'Mar-25', 'L1 - Main Source': 34915, 'L2 - Zone Bulk Meters': 14327, 'L3 - Building/Villa Meters': 158 },
           { name: 'Apr-25', 'L1 - Main Source': 46039, 'L2 - Zone Bulk Meters': 15098, 'L3 - Building/Villa Meters': 207 },
-          { name: 'May-25', 'L1 - Main Source': 58425, 'L2 - Zone Bulk Meters': 16553, 'L3 - Building/Villa Meters': 232 }
+          { name: 'May-25', 'L1 - Main Source': 58425, 'L2 - Zone Bulk Meters': 16553, 'L3 - Building/Villa Meters': 232 },
+          { name: 'Jun-25', 'L1 - Main Source': 41840, 'L2 - Zone Bulk Meters': 14852, 'L3 - Building/Villa Meters': 245 },
+          { name: 'Jul-25', 'L1 - Main Source': 41475, 'L2 - Zone Bulk Meters': 15350, 'L3 - Building/Villa Meters': 268 }
         ];
       }
       
@@ -341,7 +344,9 @@ const WaterAnalysisModule: React.FC = () => {
         { name: 'Feb-25', 'L1 - Main Source': 44043, 'L2 - Zone Bulk Meters': 14784, 'L3 - Building/Villa Meters': 193 },
         { name: 'Mar-25', 'L1 - Main Source': 34915, 'L2 - Zone Bulk Meters': 14327, 'L3 - Building/Villa Meters': 158 },
         { name: 'Apr-25', 'L1 - Main Source': 46039, 'L2 - Zone Bulk Meters': 15098, 'L3 - Building/Villa Meters': 207 },
-        { name: 'May-25', 'L1 - Main Source': 58425, 'L2 - Zone Bulk Meters': 16553, 'L3 - Building/Villa Meters': 232 }
+        { name: 'May-25', 'L1 - Main Source': 58425, 'L2 - Zone Bulk Meters': 16553, 'L3 - Building/Villa Meters': 232 },
+        { name: 'Jun-25', 'L1 - Main Source': 41840, 'L2 - Zone Bulk Meters': 14852, 'L3 - Building/Villa Meters': 245 },
+        { name: 'Jul-25', 'L1 - Main Source': 41475, 'L2 - Zone Bulk Meters': 15350, 'L3 - Building/Villa Meters': 268 }
       ];
     }
   }, []);
@@ -356,7 +361,9 @@ const WaterAnalysisModule: React.FC = () => {
           { name: 'Feb-25', 'Stage 1 Loss': 2722, 'Stage 2 Loss': 14784, 'Stage 3 Loss': 193, 'Total Loss': 17699 },
           { name: 'Mar-25', 'Stage 1 Loss': 2220, 'Stage 2 Loss': 14327, 'Stage 3 Loss': 158, 'Total Loss': 16705 },
           { name: 'Apr-25', 'Stage 1 Loss': 4850, 'Stage 2 Loss': 15098, 'Stage 3 Loss': 207, 'Total Loss': 20155 },
-          { name: 'May-25', 'Stage 1 Loss': 6498, 'Stage 2 Loss': 16553, 'Stage 3 Loss': 232, 'Total Loss': 23283 }
+          { name: 'May-25', 'Stage 1 Loss': 6498, 'Stage 2 Loss': 16553, 'Stage 3 Loss': 232, 'Total Loss': 23283 },
+          { name: 'Jun-25', 'Stage 1 Loss': 5625, 'Stage 2 Loss': 14852, 'Stage 3 Loss': 245, 'Total Loss': 20722 },
+          { name: 'Jul-25', 'Stage 1 Loss': 5890, 'Stage 2 Loss': 15350, 'Stage 3 Loss': 268, 'Total Loss': 21508 }
         ];
       }
       
@@ -376,7 +383,9 @@ const WaterAnalysisModule: React.FC = () => {
         { name: 'Feb-25', 'Stage 1 Loss': 2722, 'Stage 2 Loss': 14784, 'Stage 3 Loss': 193, 'Total Loss': 17699 },
         { name: 'Mar-25', 'Stage 1 Loss': 2220, 'Stage 2 Loss': 14327, 'Stage 3 Loss': 158, 'Total Loss': 16705 },
         { name: 'Apr-25', 'Stage 1 Loss': 4850, 'Stage 2 Loss': 15098, 'Stage 3 Loss': 207, 'Total Loss': 20155 },
-        { name: 'May-25', 'Stage 1 Loss': 6498, 'Stage 2 Loss': 16553, 'Stage 3 Loss': 232, 'Total Loss': 23283 }
+        { name: 'May-25', 'Stage 1 Loss': 6498, 'Stage 2 Loss': 16553, 'Stage 3 Loss': 232, 'Total Loss': 23283 },
+        { name: 'Jun-25', 'Stage 1 Loss': 5625, 'Stage 2 Loss': 14852, 'Stage 3 Loss': 245, 'Total Loss': 20722 },
+        { name: 'Jul-25', 'Stage 1 Loss': 5890, 'Stage 2 Loss': 15350, 'Stage 3 Loss': 268, 'Total Loss': 21508 }
       ];
     } catch (error) {
       console.error('Error generating loss trend data:', error);
@@ -386,7 +395,9 @@ const WaterAnalysisModule: React.FC = () => {
         { name: 'Feb-25', 'Stage 1 Loss': 2722, 'Stage 2 Loss': 14784, 'Stage 3 Loss': 193, 'Total Loss': 17699 },
         { name: 'Mar-25', 'Stage 1 Loss': 2220, 'Stage 2 Loss': 14327, 'Stage 3 Loss': 158, 'Total Loss': 16705 },
         { name: 'Apr-25', 'Stage 1 Loss': 4850, 'Stage 2 Loss': 15098, 'Stage 3 Loss': 207, 'Total Loss': 20155 },
-        { name: 'May-25', 'Stage 1 Loss': 6498, 'Stage 2 Loss': 16553, 'Stage 3 Loss': 232, 'Total Loss': 23283 }
+        { name: 'May-25', 'Stage 1 Loss': 6498, 'Stage 2 Loss': 16553, 'Stage 3 Loss': 232, 'Total Loss': 23283 },
+        { name: 'Jun-25', 'Stage 1 Loss': 5625, 'Stage 2 Loss': 14852, 'Stage 3 Loss': 245, 'Total Loss': 20722 },
+        { name: 'Jul-25', 'Stage 1 Loss': 5890, 'Stage 2 Loss': 15350, 'Stage 3 Loss': 268, 'Total Loss': 21508 }
       ];
     }
   }, []);
@@ -728,7 +739,8 @@ Total System Loss: Overall efficiency
                             </div>
                           </div>
                         ) : (
-                          <ResponsiveContainer width="100%" height="100%">
+                          <SafeChart data={monthlyWaterTrendData} title="Monthly Water Trend">
+                            <ResponsiveContainer width="100%" height="100%">
                               <LineChart data={monthlyWaterTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                                   <defs>
                                       {/* Enhanced label shadow filter */}
@@ -775,7 +787,8 @@ Total System Loss: Overall efficiency
                                       <CustomLabelList dataKey="L3 - Building/Villa Meters" fill={COLORS.chart[2]} offset={12} />
                                   </Line>}
                               </LineChart>
-                          </ResponsiveContainer>
+                            </ResponsiveContainer>
+                          </SafeChart>
                         )}
                     </div>
                 </ChartCard>
@@ -806,7 +819,8 @@ Total System Loss: Overall efficiency
                             </div>
                           </div>
                         ) : (
-                          <ResponsiveContainer width="100%" height="100%">
+                          <SafeChart data={lossTrendData} title="Water Loss Trend">
+                            <ResponsiveContainer width="100%" height="100%">
                               <LineChart data={lossTrendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#fee2e2" opacity={0.5} />
                                   <XAxis dataKey="name" fontSize={isMobile ? 11 : 14} tickLine={false} axisLine={false} />
@@ -847,7 +861,8 @@ Total System Loss: Overall efficiency
                                       <CustomLabelList dataKey="Stage 3 Loss" fill={'#F87171'} offset={12} />
                                   </Line>}
                               </LineChart>
-                          </ResponsiveContainer>
+                            </ResponsiveContainer>
+                          </SafeChart>
                         )}
                     </div>
                 </ChartCard>
@@ -1662,20 +1677,23 @@ Total System Loss: Overall efficiency
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <ChartCard title="Monthly Consumption Breakdown" subtitle="Bar chart showing monthly consumption for selected type">
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={typeMonthlyTrendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <SafeChart data={typeMonthlyTrendData} title="Monthly Consumption by Type">
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={typeMonthlyTrendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
                   <Tooltip cursor={{ fill: 'rgba(0,0,0,0.1)' }} />
                   <Bar dataKey="Consumption" fill="#00D2B3" radius={[4, 4, 0, 0]} />
                 </BarChart>
-              </ResponsiveContainer>
+                </ResponsiveContainer>
+              </SafeChart>
             </ChartCard>
 
             <ChartCard title="Type Distribution" subtitle="Percentage breakdown of selected type">
-              <ResponsiveContainer width="100%" height={350}>
-                <PieChart>
+              <SafeChart data={filteredDonutChartData} title="Type Distribution">
+                <ResponsiveContainer width="100%" height={350}>
+                  <PieChart>
                   <Pie
                     data={filteredDonutChartData}
                     cx="50%"
@@ -1695,7 +1713,8 @@ Total System Loss: Overall efficiency
                   <Tooltip formatter={(value: number) => `${value.toFixed(1)}%`} />
                   <Legend />
                 </PieChart>
-              </ResponsiveContainer>
+                </ResponsiveContainer>
+              </SafeChart>
             </ChartCard>
           </div>
         </div>
