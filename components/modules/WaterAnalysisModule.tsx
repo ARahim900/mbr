@@ -139,7 +139,7 @@ const WaterAnalysisModule: React.FC = () => {
   // console.log('Water Months Available:', waterMonthsAvailable);
   // console.log('Sample Water System Data:', waterSystemData?.slice(0, 3) || []);
 
-  const [selectedWaterMonth, setSelectedWaterMonth] = useState('May-25');
+  const [selectedWaterMonth, setSelectedWaterMonth] = useState('Jul-25');
   const [overviewDateRange, setOverviewDateRange] = useState({
     start: waterMonthsAvailable[0],
     end: waterMonthsAvailable[waterMonthsAvailable.length - 1],
@@ -451,7 +451,7 @@ const WaterAnalysisModule: React.FC = () => {
   }, []);
 
   const resetZoneFilters = useCallback(() => {
-    setSelectedWaterMonth('May-25');
+    setSelectedWaterMonth('Jul-25');
     setSelectedZoneForAnalysis('Zone_03A');
     setZoneAnalysisDateRange({
       start: waterMonthsAvailable[0],
