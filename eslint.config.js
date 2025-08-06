@@ -8,7 +8,25 @@ export default [
   js.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
-    ignores: ['dist/**', 'node_modules/**', '*.config.js', '*.config.ts', '.eslintrc.js'],
+    ignores: [
+      'dist/**', 
+      'node_modules/**', 
+      'build/**',
+      '*.config.js', 
+      '*.config.ts', 
+      '.eslintrc.js',
+      'cdn-config/**',
+      'scripts/**',
+      '**/*.cjs',
+      'public/**',
+      'docs/**',
+      'vercel-deployment-ultimate-fix.js',
+      'build-test.cjs',
+      'vite.config.ts',
+      'vitest.config.ts',
+      'tailwind.config.js',
+      'postcss.config.js'
+    ],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
@@ -66,10 +84,34 @@ export default [
       ...typescript.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
+      
+      // React rules
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      '@typescript-eslint/no-unused-vars': 'warn',
+      'react/display-name': 'warn',
+      'react/no-unused-prop-types': 'warn',
+      'react/jsx-uses-react': 'off',
+      'react/jsx-uses-vars': 'error',
+      
+      // TypeScript rules
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'error',
+      '@typescript-eslint/no-var-requires': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      
+      // General JavaScript rules
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+      'no-unused-vars': 'off', // Handled by TypeScript
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'eqeqeq': ['error', 'always'],
+      'curly': ['error', 'multi-line'],
+      
+      // Import/export rules
+      'no-duplicate-imports': 'error',
     },
     settings: {
       react: {

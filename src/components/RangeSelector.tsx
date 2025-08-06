@@ -165,7 +165,7 @@ const RangeSelector: React.FC<RangeSelectorProps> = ({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .range-selector {
           padding: 1rem;
           border: 1px solid #ddd;

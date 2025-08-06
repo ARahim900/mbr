@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, BarChart3 } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 import ErrorBoundary from './ErrorBoundary';
 import { validateChartData } from '../../utils/dataValidation';
 

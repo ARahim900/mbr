@@ -1,7 +1,7 @@
 import { debounce, throttle } from 'lodash';
 
 // Performance monitoring and optimization utilities
-export class PerformanceOptimizer {
+class PerformanceOptimizer {
   private static instance: PerformanceOptimizer;
   private performanceMetrics: Map<string, number[]> = new Map();
   private errorLogs: Array<{ timestamp: Date; error: Error; context: string }> = [];
@@ -120,7 +120,7 @@ export const createDebouncedFunction = <T extends (...args: any[]) => any>(
   func: T,
   wait: number,
   options?: { leading?: boolean; trailing?: boolean }
-): T & { cancel(): void; flush(): ReturnType<T> } => {
+) => {
   return debounce(func, wait, options);
 };
 
@@ -128,12 +128,12 @@ export const createThrottledFunction = <T extends (...args: any[]) => any>(
   func: T,
   wait: number,
   options?: { leading?: boolean; trailing?: boolean }
-): T & { cancel(): void; flush(): ReturnType<T> } => {
+) => {
   return throttle(func, wait, options);
 };
 
 // Memory usage monitoring
-export class MemoryMonitor {
+class MemoryMonitor {
   private static memoryCheckInterval: NodeJS.Timeout | null = null;
   private static memoryWarningThreshold = 50 * 1024 * 1024; // 50MB
 
@@ -220,7 +220,7 @@ export const withErrorHandling = <T extends (...args: any[]) => Promise<any>>(
 };
 
 // Cache management for API responses
-export class ApiCache {
+class ApiCache {
   private static cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
   private static maxSize = 100;
 
@@ -228,7 +228,9 @@ export class ApiCache {
     // Remove oldest entries if cache is full
     if (this.cache.size >= this.maxSize) {
       const oldestKey = this.cache.keys().next().value;
-      this.cache.delete(oldestKey);
+      if (oldestKey !== undefined) {
+        this.cache.delete(oldestKey);
+      }
     }
 
     this.cache.set(key, {
@@ -327,7 +329,7 @@ export const validateZoneData = (data: any): { isValid: boolean; errors: string[
 };
 
 // Application health checker
-export class ApplicationHealthChecker {
+class ApplicationHealthChecker {
   private static checks: Map<string, () => Promise<boolean>> = new Map();
 
   static addHealthCheck(name: string, checkFn: () => Promise<boolean>): void {
@@ -397,3 +399,6 @@ export {
   ApiCache,
   ApplicationHealthChecker
 };
+
+// Default export for easy importing
+export default PerformanceOptimizer;

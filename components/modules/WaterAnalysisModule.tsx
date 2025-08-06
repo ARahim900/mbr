@@ -18,12 +18,8 @@ import {
 } from '../../database/waterDatabase';
 import { 
   validateWaterData, 
-  validateMonthsAvailable, 
-  validateChartData,
-  createFallbackData,
-  safeGetWaterValue 
+  validateMonthsAvailable
 } from '../../utils/dataValidation';
-import ErrorBoundary from '../ui/ErrorBoundary';
 import SafeChart from '../ui/SafeChart';
 import GaugeChart from '../ui/GaugeChart';
 import MetricCard from '../ui/MetricCard';
@@ -164,7 +160,6 @@ const WaterAnalysisModule: React.FC = () => {
   }, []);
   
   // Use validated data
-  const validatedWaterData = dataValidation.safeWaterData;
   const validatedMonths = dataValidation.safeMonths;
 
   const [selectedWaterMonth, setSelectedWaterMonth] = useState(() => {

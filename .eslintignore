@@ -1,0 +1,15 @@
+dist/
+node_modules/
+build/
+scripts/
+public/
+docs/
+**/*.cjs
+**/*.js
+vite.config.ts
+vitest.config.ts
+tailwind.config.js
+postcss.config.js
+.husky/
+*.d.ts
+coverage/

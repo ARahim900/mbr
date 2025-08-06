@@ -323,7 +323,7 @@ const ZoneDataManager: React.FC<ZoneDataManagerProps> = ({ onDataUpdate }) => {
         </div>
       )}
 
-      <style jsx>{`
+      <style >{`
         .zone-data-manager {
           padding: 1.5rem;
           background: white;

@@ -29,7 +29,7 @@ const ContractorTrackerModule: React.FC = () => {
   }, [contracts, statusFilter, typeFilter, searchTerm]);
 
   const sortedContracts = useMemo(() => {
-    let sortableItems = [...filteredContracts];
+    const sortableItems = [...filteredContracts];
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
         const aVal = a[sortConfig.key];

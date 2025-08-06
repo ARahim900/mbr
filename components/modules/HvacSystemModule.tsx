@@ -115,7 +115,7 @@ const HvacSystemModule: React.FC = () => {
     }, [entries, searchTerm]);
 
     const sortedEntries = useMemo(() => {
-        let sortableItems = [...filteredEntries];
+        const sortableItems = [...filteredEntries];
         if (sortConfig !== null) {
             sortableItems.sort((a, b) => {
                 const aVal = a[sortConfig.key] || '';

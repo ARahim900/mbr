@@ -360,7 +360,7 @@ const ResponsiveNavigationHeader: React.FC<ResponsiveNavProps> = ({
         />
       )}
 
-      <style jsx>{`
+      <style >{`
         .responsive-nav-header {
           position: sticky;
           top: 0;
