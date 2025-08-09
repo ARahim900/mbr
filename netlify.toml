@@ -1,10 +1,13 @@
 [build]
-  command = "npm run build"
+  command = "npm run build:netlify"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_FLAGS = "--legacy-peer-deps"
+  NETLIFY = "true"
+  CI = "true"
+  SKIP_HUSKY = "true"
 
 [[redirects]]
   from = "/*"
@@ -15,7 +18,7 @@
   NODE_ENV = "production"
 
 [context.deploy-preview]
-  command = "npm run build"
+  command = "npm run build:netlify"
 
 [context.branch-deploy]
-  command = "npm run build"
+  command = "npm run build:netlify"
