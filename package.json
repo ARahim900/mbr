@@ -4,6 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "packageManager": "npm@10.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ARahim900/mbr-magic-box.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "npm run type-check && npm run lint && vite build",
