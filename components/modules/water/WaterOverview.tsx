@@ -137,25 +137,37 @@ const WaterOverview: React.FC = () => {
 
   // Generate consumption trend data
   const consumptionTrendData = useMemo(() => {
-    if (!aggregatedData) return [];
+    if (!aggregatedData || !aggregatedData.monthlyData) {
+      console.warn('No aggregated data or monthly data available for charts');
+      return [];
+    }
     
-    return validatedMonths.map((month: string) => ({
+    const chartData = validatedMonths.map((month: string) => ({
       month,
-      supply: (aggregatedData as any).monthlyData?.[month]?.A1_supply || 0,
-      consumption: (aggregatedData as any).monthlyData?.[month]?.A4_total || 0,
-      loss: (aggregatedData as any).monthlyData?.[month]?.totalLoss || 0
+      supply: aggregatedData.monthlyData[month]?.A1_supply || 0,
+      consumption: aggregatedData.monthlyData[month]?.A4_total || 0,
+      loss: aggregatedData.monthlyData[month]?.totalLoss || 0
     }));
+    
+    console.log('Generated consumption trend data:', chartData);
+    return chartData;
   }, [aggregatedData, validatedMonths]);
 
   // Generate zone distribution data
   const zoneDistributionData = useMemo(() => {
-    if (!currentMonthData?.zoneBulkMeters) return [];
+    if (!currentMonthData?.zoneBulkMeters) {
+      console.warn('No zone bulk meters data available for pie chart');
+      return [];
+    }
     
-    return currentMonthData.zoneBulkMeters.map((meter: any) => ({
+    const pieData = currentMonthData.zoneBulkMeters.map((meter: any) => ({
       name: meter.zone,
       value: meter.consumption[currentMonth] || 0,
       color: COLORS.chart[Math.floor(Math.random() * COLORS.chart.length)]
     }));
+    
+    console.log('Generated zone distribution data:', pieData);
+    return pieData;
   }, [currentMonthData, currentMonth]);
 
   if (dataValidation.hasErrors) {

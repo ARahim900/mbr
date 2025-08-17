@@ -526,7 +526,8 @@ export const calculateAggregatedDataForPeriod = (startMonth: string, endMonth: s
     stage1Loss: 0, stage2Loss: 0, stage3Loss: 0, totalLoss: 0,
     stage1LossPercent: 0, stage2LossPercent: 0, stage3LossPercent: 0,
     totalLossPercent: 0, systemEfficiency: 0,
-    period: startMonth === endMonth ? startMonth : `${startMonth} to ${endMonth}`
+    period: startMonth === endMonth ? startMonth : `${startMonth} to ${endMonth}`,
+    monthlyData: {}
   };
 
   try {
@@ -550,9 +551,24 @@ export const calculateAggregatedDataForPeriod = (startMonth: string, endMonth: s
         L2_total: 0, L3_total: 0, L4_total: 0, DC_total: 0
     };
 
+    // Store monthly data for charts
+    const monthlyData: { [key: string]: any } = {};
+
     selectedMonths.forEach(month => {
         try {
           const monthData = calculateWaterLoss(month);
+          
+          // Store individual month data for chart consumption
+          monthlyData[month] = {
+            A1_supply: monthData.A1_supply || 0,
+            A2_total: monthData.A2_total || 0,
+            A3_total: monthData.A3_total || 0,
+            A4_total: monthData.A4_total || 0,
+            totalLoss: monthData.totalLoss || 0,
+            systemEfficiency: monthData.systemEfficiency || 0
+          };
+          
+          // Accumulate totals
           totals.A1_supply += monthData.A1_supply || 0;
           totals.A2_total += monthData.A2_total || 0;
           totals.A3_total += monthData.A3_total || 0;
@@ -582,11 +598,12 @@ export const calculateAggregatedDataForPeriod = (startMonth: string, endMonth: s
       stage3LossPercent: totals.A3_total > 0 ? (stage3Loss / totals.A3_total) * 100 : 0,
       totalLossPercent: totals.A1_supply > 0 ? (totalLoss / totals.A1_supply) * 100 : 0,
       systemEfficiency: totals.A1_supply > 0 ? (totals.A4_total / totals.A1_supply) * 100 : 0,
-      period: startMonth === endMonth ? startMonth : `${startMonth} to ${endMonth}`
+      period: startMonth === endMonth ? startMonth : `${startMonth} to ${endMonth}`,
+      monthlyData // Add the monthly data for chart consumption
     };
   } catch (error) {
     console.error('Error in calculateAggregatedDataForPeriod:', error);
-    return defaultReturn;
+    return { ...defaultReturn, monthlyData: {} };
   }
 };
 
