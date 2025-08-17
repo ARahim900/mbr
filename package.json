@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm run type-check && npm run lint && vite build",
+    "build": "npm run type-check && vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -18,7 +18,7 @@
     "test:run": "vitest run",
     "type-check": "tsc --noEmit",
     "lint": "eslint \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"utils/**/*.{ts,tsx}\" \"database/**/*.{ts,tsx}\" \"services/**/*.{ts,tsx}\" \"store/**/*.{ts,tsx}\" \"src/**/*.{ts,tsx}\" \"types.ts\" \"App.tsx\" \"index.tsx\" --report-unused-disable-directives --max-warnings 100",
-    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "lint:fix": "eslint \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"utils/**/*.{ts,tsx}\" \"database/**/*.{ts,tsx}\" \"services/**/*.{ts,tsx}\" \"store/**/*.{ts,tsx}\" \"src/**/*.{ts,tsx}\" \"types.ts\" \"App.tsx\" \"index.tsx\" --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md,html}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md,html}\"",
     "verify": "npm run type-check && npm run lint && npm run test:run",

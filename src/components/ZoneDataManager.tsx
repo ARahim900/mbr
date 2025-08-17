@@ -148,7 +148,13 @@ const ZoneDataManager: React.FC<ZoneDataManagerProps> = ({ onDataUpdate }) => {
                   : 'medium',
                 timestamp: alarm.timestamp instanceof Date 
                   ? alarm.timestamp 
-                  : new Date(alarm.timestamp) || new Date(),
+                  : (() => {
+                      try {
+                        return new Date(alarm.timestamp);
+                      } catch {
+                        return new Date();
+                      }
+                    })(),
                 location: alarm.location || 'Unknown Location',
                 resolved: Boolean(alarm.resolved),
                 description: alarm.description || ''
