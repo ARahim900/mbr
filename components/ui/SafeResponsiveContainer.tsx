@@ -28,10 +28,12 @@ const SafeResponsiveContainer: React.FC<Props> = ({
     const updateDimensions = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        setContainerDimensions({
+        const dimensions = {
           width: rect.width || 400,
           height: typeof height === 'number' ? height : rect.height || minHeight
-        });
+        };
+        console.log('SafeResponsiveContainer dimensions:', dimensions, 'Original rect:', rect);
+        setContainerDimensions(dimensions);
       }
     };
 
@@ -91,6 +93,31 @@ const SafeResponsiveContainer: React.FC<Props> = ({
     );
   }
 
+  console.log('SafeResponsiveContainer rendering with dimensions:', containerDimensions);
+
+  // Try bypassing ResponsiveContainer entirely if dimensions are valid
+  if (containerDimensions.width > 0 && containerDimensions.height > 0) {
+    const chartElement = React.cloneElement(children as React.ReactElement, {
+      width: containerDimensions.width,
+      height: containerDimensions.height
+    });
+
+    return (
+      <div 
+        ref={containerRef}
+        style={{ 
+          width, 
+          height: typeof height === 'number' ? `${height}px` : height,
+          minHeight: `${minHeight}px`,
+          position: 'relative',
+          border: '2px solid green' // Debug border - green for fixed dimensions
+        }}
+      >
+        {chartElement}
+      </div>
+    );
+  }
+
   return (
     <div 
       ref={containerRef}
@@ -98,12 +125,13 @@ const SafeResponsiveContainer: React.FC<Props> = ({
         width, 
         height: typeof height === 'number' ? `${height}px` : height,
         minHeight: `${minHeight}px`,
-        position: 'relative'
+        position: 'relative',
+        border: '2px solid red' // Debug border - red for ResponsiveContainer fallback
       }}
     >
       <ResponsiveContainer 
-        width={containerDimensions.width} 
-        height={containerDimensions.height}
+        width={containerDimensions.width || 400} 
+        height={containerDimensions.height || minHeight}
         debounce={debounceMs}
       >
         {children as React.ReactElement}
