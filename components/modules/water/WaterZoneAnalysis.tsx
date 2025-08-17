@@ -15,8 +15,7 @@ import {
   waterSystemData, 
   waterMonthsAvailable, 
   getZoneAnalysis,
-  getAvailableZones,
-  calculateWaterLoss
+  getAvailableZones
 } from '../../../database/waterDatabase';
 import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
 import SafeChart from '../../ui/SafeChart';
@@ -56,10 +55,10 @@ const WaterZoneAnalysis: React.FC = () => {
   const validatedMonths = dataValidation.safeMonths;
   
   // State for date range and zone selection
-  const [dateRange, setDateRange] = useState(() => {
+  const [dateRange, setDateRange] = useState<{start: string, end: string}>(() => {
     const lastMonth = validatedMonths[validatedMonths.length - 1];
     const firstMonth = validatedMonths[0];
-    return [firstMonth, lastMonth];
+    return { start: firstMonth, end: lastMonth };
   });
   
   const [selectedZone, setSelectedZone] = useState('all');
@@ -68,20 +67,20 @@ const WaterZoneAnalysis: React.FC = () => {
   // Get available zones
   const availableZones = useMemo(() => getAvailableZones(), []);
   
-  // Calculate current month data
-  const currentMonth = validatedMonths[validatedMonths.length - 1] || 'Jul-25';
+
 
   // Get zone analysis data
   const zoneAnalysisData = useMemo(() => {
-    if (dateRange.length !== 2) return null;
-    return getZoneAnalysis(dateRange[0], dateRange[1], selectedZone === 'all' ? undefined : selectedZone);
+    if (!dateRange.start || !dateRange.end) return null;
+    if (selectedZone === 'all') return null;
+    return getZoneAnalysis(selectedZone, dateRange.start);
   }, [dateRange, selectedZone]);
 
   // Reset date range to full period
   const resetDateRange = () => {
     const lastMonth = validatedMonths[validatedMonths.length - 1];
     const firstMonth = validatedMonths[0];
-    setDateRange([firstMonth, lastMonth]);
+    setDateRange({ start: firstMonth, end: lastMonth });
   };
 
   // Filter zones based on search term
@@ -155,15 +154,18 @@ const WaterZoneAnalysis: React.FC = () => {
 
   // Generate zone trend data
   const zoneTrendData = useMemo(() => {
-    if (!zoneAnalysisData?.monthlyData) return [];
+    if (!zoneAnalysisData || selectedZone === 'all') return [];
     
-    return validatedMonths.map((month: string) => ({
-      month,
-      totalConsumption: (zoneAnalysisData as any)?.monthlyData?.[month]?.totalConsumption || 0,
-      averageEfficiency: (zoneAnalysisData as any)?.monthlyData?.[month]?.averageEfficiency || 0,
-      totalLoss: (zoneAnalysisData as any)?.monthlyData?.[month]?.totalLoss || 0
-    }));
-  }, [zoneAnalysisData, validatedMonths]);
+    return validatedMonths.map((month: string) => {
+      const monthData = getZoneAnalysis(selectedZone, month);
+      return {
+        month,
+        totalConsumption: monthData?.zoneBulkConsumption || 0,
+        averageEfficiency: monthData?.efficiency || 0,
+        totalLoss: monthData?.difference || 0
+      };
+    });
+  }, [zoneAnalysisData, selectedZone, validatedMonths]);
 
   if (dataValidation.hasErrors) {
     return (
@@ -319,7 +321,7 @@ const WaterZoneAnalysis: React.FC = () => {
                   outerRadius={80}
                   innerRadius={30}
                 >
-                  {zoneComparisonData.map((entry, index) => (
+                  {zoneComparisonData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>

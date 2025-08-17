@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
-import { format, parseISO, isValid, differenceInDays, startOfMonth, endOfMonth } from 'date-fns';
+import { format, isValid, differenceInDays, startOfMonth, endOfMonth } from 'date-fns';
 
 // Utility for combining class names
 export function cn(...inputs: ClassValue[]) {
@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 // Date utilities
 export const dateUtils = {
   format: (date: Date | string, formatStr: string = 'MMM dd, yyyy') => {
-    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
     return isValid(dateObj) ? format(dateObj, formatStr) : 'Invalid Date';
   },
   

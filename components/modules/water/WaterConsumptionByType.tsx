@@ -310,7 +310,7 @@ const WaterConsumptionByType: React.FC = () => {
                     borderRadius: '8px'
                   }}
                 />
-                <Bar dataKey="Total Consumption" fill={(entry: any, index: number) => byTypeData.barChart[index]?.fill} />
+                <Bar dataKey="Total Consumption" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
           </SafeChart>

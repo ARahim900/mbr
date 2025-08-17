@@ -54,10 +54,10 @@ const WaterLossAnalysis: React.FC = () => {
   const validatedMonths = dataValidation.safeMonths;
   
   // State for date range selection
-  const [dateRange, setDateRange] = useState(() => {
+  const [dateRange, setDateRange] = useState<{start: string, end: string}>(() => {
     const lastMonth = validatedMonths[validatedMonths.length - 1];
     const firstMonth = validatedMonths[0];
-    return [firstMonth, lastMonth];
+    return { start: firstMonth, end: lastMonth };
   });
 
   // Calculate current month data
@@ -69,15 +69,15 @@ const WaterLossAnalysis: React.FC = () => {
 
   // Calculate aggregated data for selected range
   const aggregatedData = useMemo(() => {
-    if (dateRange.length !== 2) return null;
-    return calculateAggregatedDataForPeriod(dateRange[0], dateRange[1]);
+    if (!dateRange.start || !dateRange.end) return null;
+    return calculateAggregatedDataForPeriod(dateRange.start, dateRange.end);
   }, [dateRange]);
 
   // Reset date range to full period
   const resetDateRange = () => {
     const lastMonth = validatedMonths[validatedMonths.length - 1];
     const firstMonth = validatedMonths[0];
-    setDateRange([firstMonth, lastMonth]);
+    setDateRange({ start: firstMonth, end: lastMonth });
   };
 
   // Generate loss analysis metrics
@@ -142,10 +142,10 @@ const WaterLossAnalysis: React.FC = () => {
     
     return validatedMonths.map((month: string) => ({
       month,
-      totalLoss: aggregatedData.monthlyData[month]?.totalLoss || 0,
-      stage1Loss: aggregatedData.monthlyData[month]?.stage1Loss || 0,
-      stage2Loss: aggregatedData.monthlyData[month]?.stage2Loss || 0,
-      stage3Loss: aggregatedData.monthlyData[month]?.stage3Loss || 0
+      totalLoss: aggregatedData.totalLoss || 0,
+      stage1Loss: aggregatedData.stage1Loss || 0,
+      stage2Loss: aggregatedData.stage2Loss || 0,
+      stage3Loss: aggregatedData.stage3Loss || 0
     }));
   }, [aggregatedData, validatedMonths]);
 
