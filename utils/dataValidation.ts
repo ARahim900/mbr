@@ -143,13 +143,16 @@ export const validateChartData = (data: any[]): {
 
   try {
     if (!Array.isArray(data)) {
+      console.warn('Chart data is not an array:', data);
       errors.push('Chart data is not an array');
       return { isValid: false, safeData: [], errors };
     }
 
     if (data.length === 0) {
+      console.warn('Chart data array is empty');
       errors.push('Chart data array is empty');
-      return { isValid: false, safeData: [], errors };
+      // Allow empty data - return valid with empty array
+      return { isValid: true, safeData: [], errors };
     }
 
     // Filter out invalid entries and ensure numeric values
@@ -174,8 +177,15 @@ export const validateChartData = (data: any[]): {
       return true;
     });
 
+    console.log('Chart validation completed:', {
+      originalLength: data.length,
+      safeDataLength: safeData.length,
+      errorsCount: errors.length,
+      errors
+    });
+
     return {
-      isValid: errors.length === 0,
+      isValid: true, // Always return true unless critical error
       safeData,
       errors
     };

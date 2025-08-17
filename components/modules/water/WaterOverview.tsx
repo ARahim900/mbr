@@ -221,23 +221,69 @@ const WaterOverview: React.FC = () => {
         ))}
       </div>
 
-      {/* Debug Information */}
-      <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold mb-2">Debug Information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      {/* Enhanced Debug Information */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200">
+        <h3 className="text-lg font-semibold mb-2 text-blue-800 dark:text-blue-200">🔍 Chart Debug Information</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm">
           <div>
-            <p><strong>Consumption Trend Data:</strong></p>
-            <pre className="bg-white dark:bg-gray-700 p-2 rounded text-xs overflow-auto">
+            <p><strong>Consumption Trend Data ({consumptionTrendData.length} items):</strong></p>
+            <pre className="bg-white dark:bg-gray-700 p-2 rounded text-xs overflow-auto max-h-40 border">
               {JSON.stringify(consumptionTrendData, null, 2)}
             </pre>
           </div>
           <div>
-            <p><strong>Zone Distribution Data:</strong></p>
-            <pre className="bg-white dark:bg-gray-700 p-2 rounded text-xs overflow-auto">
+            <p><strong>Zone Distribution Data ({zoneDistributionData.length} items):</strong></p>
+            <pre className="bg-white dark:bg-gray-700 p-2 rounded text-xs overflow-auto max-h-40 border">
               {JSON.stringify(zoneDistributionData, null, 2)}
             </pre>
           </div>
+          <div>
+            <p><strong>Current Month Data:</strong></p>
+            <pre className="bg-white dark:bg-gray-700 p-2 rounded text-xs overflow-auto max-h-40 border">
+              {JSON.stringify({
+                currentMonth,
+                systemEfficiency: currentMonthData?.systemEfficiency,
+                totalLoss: currentMonthData?.totalLoss,
+                A4_total: currentMonthData?.A4_total
+              }, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <p><strong>Aggregated Data Status:</strong></p>
+            <pre className="bg-white dark:bg-gray-700 p-2 rounded text-xs overflow-auto max-h-40 border">
+              {JSON.stringify({
+                hasAggregatedData: !!aggregatedData,
+                dateRange,
+                validatedMonthsCount: validatedMonths.length,
+                firstMonth: validatedMonths[0],
+                lastMonth: validatedMonths[validatedMonths.length - 1]
+              }, null, 2)}
+            </pre>
+          </div>
         </div>
+      </div>
+
+      {/* Simple Test Chart */}
+      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200">
+        <h3 className="text-lg font-semibold mb-4 text-green-800 dark:text-green-200">🧪 Simple Test Chart</h3>
+        <div style={{ height: '200px', width: '100%' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={[
+              { name: 'Test 1', value: 100 },
+              { name: 'Test 2', value: 200 },
+              { name: 'Test 3', value: 150 }
+            ]}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Area type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+          ✅ If you see a chart above, Recharts is working. The issue is with data processing.
+        </p>
       </div>
 
       {/* Charts Section */}
@@ -248,40 +294,34 @@ const WaterOverview: React.FC = () => {
           subtitle="Monthly supply vs consumption vs loss"
           
         >
-          <SafeChart 
-            data={consumptionTrendData} 
-            title="Water Consumption Trend"
-            fallbackMessage="Unable to load consumption trend data"
-            minDataPoints={1}
-          >
-            <div style={{ height: '300px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={consumptionTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis 
-                    dataKey="month" 
-                    stroke="rgba(255,255,255,0.6)"
-                    tick={{ fill: 'rgba(255,255,255,0.6)' }}
-                  />
-                  <YAxis 
-                    stroke="rgba(255,255,255,0.6)"
-                    tick={{ fill: 'rgba(255,255,255,0.6)' }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'rgba(78, 68, 86, 0.9)', 
-                      border: 'none',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Legend />
-                  <Area type="monotone" dataKey="supply" stackId="1" stroke={COLORS.info} fill={COLORS.info} fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="consumption" stackId="2" stroke={COLORS.success} fill={COLORS.success} fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="loss" stackId="3" stroke={COLORS.error} fill={COLORS.error} fillOpacity={0.6} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </SafeChart>
+          {/* TEMPORARY: Bypass SafeChart for debugging */}
+          <div style={{ height: '300px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={consumptionTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="supply" stackId="1" stroke={COLORS.info} fill={COLORS.info} fillOpacity={0.6} />
+                <Area type="monotone" dataKey="consumption" stackId="2" stroke={COLORS.success} fill={COLORS.success} fillOpacity={0.6} />
+                <Area type="monotone" dataKey="loss" stackId="3" stroke={COLORS.error} fill={COLORS.error} fillOpacity={0.6} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </ChartCard>
 
         {/* Zone Distribution Chart */}
@@ -290,40 +330,34 @@ const WaterOverview: React.FC = () => {
           subtitle="Water consumption by zone"
           
         >
-          <SafeChart 
-            data={zoneDistributionData} 
-            title="Zone Distribution"
-            fallbackMessage="Unable to load zone distribution data"
-            minDataPoints={1}
-          >
-            <div style={{ height: '300px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={zoneDistributionData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    innerRadius={30}
-                  >
-                    {zoneDistributionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'rgba(78, 68, 86, 0.9)', 
-                      border: 'none',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </SafeChart>
+          {/* TEMPORARY: Bypass SafeChart for debugging */}
+          <div style={{ height: '300px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={zoneDistributionData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={30}
+                >
+                  {zoneDistributionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </ChartCard>
       </div>
 
