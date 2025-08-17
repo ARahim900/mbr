@@ -1,9 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { 
   Building2, 
-  BarChart3, 
-  PieChart,
-  LineChart,
   TrendingUp,
   Activity,
   Target,
@@ -17,14 +14,14 @@ import {
   waterSystemData, 
   waterMonthsAvailable, 
   calculateWaterLoss
-} from '../../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
-import SafeChart from '../../ui/SafeChart';
-import MetricCard from '../../ui/MetricCard';
-import ChartCard from '../../ui/ChartCard';
-import Button from '../../ui/Button';
-import MonthRangeSlider from '../../ui/MonthRangeSlider';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+} from '../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
+import SafeChart from '../ui/SafeChart';
+import MetricCard from '../ui/MetricCard';
+import ChartCard from '../ui/ChartCard';
+import Button from '../ui/Button';
+import MonthRangeSlider from '../ui/MonthRangeSlider';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -159,10 +156,10 @@ const WaterConsumptionByType: React.FC = () => {
     if (selectedType === 'all') {
       return byTypeData.months.map(month => ({
         month,
-        commercial: byTypeData.table[0][month] || 0,
-        residential: byTypeData.table[1][month] || 0,
-        irrigation: byTypeData.table[2][month] || 0,
-        common: byTypeData.table[3][month] || 0
+        commercial: (byTypeData.table[0] as any)[month] || 0,
+        residential: (byTypeData.table[1] as any)[month] || 0,
+        irrigation: (byTypeData.table[2] as any)[month] || 0,
+        common: (byTypeData.table[3] as any)[month] || 0
       }));
     }
     
@@ -171,7 +168,7 @@ const WaterConsumptionByType: React.FC = () => {
     
     return byTypeData.months.map(month => ({
       month,
-      consumption: selectedTypeData[month] || 0
+      consumption: (selectedTypeData as any)[month] || 0
     }));
   }, [selectedType]);
 
@@ -204,8 +201,8 @@ const WaterConsumptionByType: React.FC = () => {
             </h3>
             <MonthRangeSlider 
               months={validatedMonths} 
-              value={dateRange} 
-              onChange={setDateRange}
+              value={dateRange as any} 
+              onChange={setDateRange as any}
             />
           </div>
           <div className="space-y-4">
@@ -225,11 +222,11 @@ const WaterConsumptionByType: React.FC = () => {
               </select>
             </div>
             <div className="flex gap-2">
-              <Button onClick={resetDateRange} variant="outline" size="sm">
+              <Button onClick={resetDateRange} variant="secondary" size="sm">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Reset Range
               </Button>
-              <Button onClick={() => {}} variant="default" size="sm">
+              <Button onClick={() => {}} variant="primary" size="sm">
                 <Download className="w-4 h-4 mr-2" />
                 Export Data
               </Button>
@@ -261,7 +258,7 @@ const WaterConsumptionByType: React.FC = () => {
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            icon={metric.icon}
+            
             color={metric.color}
             trend={metric.trend}
             change={metric.change}
@@ -275,11 +272,9 @@ const WaterConsumptionByType: React.FC = () => {
         <ChartCard
           title="Total Consumption by Type"
           subtitle="Annual consumption breakdown"
-          icon={BarChart3}
         >
           <SafeChart
             data={byTypeData.barChart}
-            chartType="bar"
             xKey="name"
             yKeys={['Total Consumption']}
             colors={byTypeData.barChart.map(item => item.fill)}
@@ -291,11 +286,9 @@ const WaterConsumptionByType: React.FC = () => {
         <ChartCard
           title="Consumption Distribution"
           subtitle="Percentage breakdown by type"
-          icon={PieChart}
         >
           <SafeChart
             data={byTypeData.donutChart}
-            chartType="pie"
             dataKey="value"
             nameKey="name"
             colors={byTypeData.donutChart.map(item => item.color)}
@@ -308,11 +301,9 @@ const WaterConsumptionByType: React.FC = () => {
       <ChartCard
         title="Consumption Trends by Type"
         subtitle="Monthly consumption patterns"
-        icon={LineChart}
       >
         <SafeChart
           data={typeTrendData}
-          chartType="line"
           xKey="month"
           yKeys={selectedType === 'all' ? ['commercial', 'residential', 'irrigation', 'common'] : ['consumption']}
           colors={selectedType === 'all' ? [COLORS.success, COLORS.info, COLORS.warning, COLORS.error] : [COLORS.accent]}
@@ -355,7 +346,7 @@ const WaterConsumptionByType: React.FC = () => {
                   </td>
                   {byTypeData.months.map(month => (
                     <td key={month} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                      {type[month]?.toLocaleString() || '0'}
+                      {(type as any)[month]?.toLocaleString() || '0'}
                     </td>
                   ))}
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">

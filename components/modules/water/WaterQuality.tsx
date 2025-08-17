@@ -5,19 +5,16 @@ import {
   TrendingUp, 
   Activity,
   Target,
-  Zap,
   RefreshCw,
   Download,
   Filter,
-  Search,
-  Thermometer,
-  Droplets
+  Search
 } from 'lucide-react';
-import { useIsMobile } from '../../../hooks/useIsMobile';
-import MetricCard from '../../ui/MetricCard';
-import ChartCard from '../../ui/ChartCard';
-import Button from '../../ui/Button';
-import SafeChart from '../../ui/SafeChart';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import MetricCard from '../ui/MetricCard';
+import ChartCard from '../ui/ChartCard';
+import Button from '../ui/Button';
+import SafeChart from '../ui/SafeChart';
 
 // Design System Colors
 const COLORS = {
@@ -173,11 +170,11 @@ const WaterQuality: React.FC = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => {}} variant="outline" size="sm">
+            <Button onClick={() => {}} variant="secondary" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh Data
             </Button>
-            <Button onClick={() => {}} variant="default" size="sm">
+            <Button onClick={() => {}} variant="primary" size="sm">
               <Download className="w-4 h-4 mr-2" />
               Export Report
             </Button>
@@ -193,7 +190,7 @@ const WaterQuality: React.FC = () => {
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            icon={metric.icon}
+            
             color={metric.color}
             trend={metric.trend}
             change={metric.change}
@@ -297,11 +294,11 @@ const WaterQuality: React.FC = () => {
       <ChartCard
         title="Water Quality Trends"
         subtitle="Parameter values over time"
-        icon={TrendingUp}
+        
       >
         <SafeChart
           data={parameterTrendData}
-          chartType="line"
+          
           xKey="month"
           yKeys={selectedParameter === 'all' ? ['ph', 'turbidity', 'chlorine', 'tds', 'hardness', 'bacteria'] : ['value']}
           colors={selectedParameter === 'all' ? COLORS.chart.slice(0, 6) : [COLORS.accent]}

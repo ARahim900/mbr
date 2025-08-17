@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   Droplets, 
   BarChart3, 
@@ -7,9 +7,7 @@ import {
   Building2, 
   MapPin,
   Database,
-  Gauge,
-  Activity,
-  Zap
+  Gauge
 } from 'lucide-react';
 import ModuleNavigation from '../ui/ModuleNavigation';
 import WaterOverview from './water/WaterOverview';

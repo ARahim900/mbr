@@ -2,9 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { 
   TrendingDown, 
   AlertTriangle, 
-  BarChart3, 
-  PieChart,
-  LineChart,
   Activity,
   Target,
   Zap,
@@ -16,15 +13,15 @@ import {
   waterMonthsAvailable, 
   calculateWaterLoss,
   calculateAggregatedDataForPeriod
-} from '../../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
-import SafeChart from '../../ui/SafeChart';
-import GaugeChart from '../../ui/GaugeChart';
-import MetricCard from '../../ui/MetricCard';
-import ChartCard from '../../ui/ChartCard';
-import Button from '../../ui/Button';
-import MonthRangeSlider from '../../ui/MonthRangeSlider';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+} from '../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
+import SafeChart from '../ui/SafeChart';
+import GaugeChart from '../ui/GaugeChart';
+import MetricCard from '../ui/MetricCard';
+import ChartCard from '../ui/ChartCard';
+import Button from '../ui/Button';
+import MonthRangeSlider from '../ui/MonthRangeSlider';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -201,11 +198,11 @@ const WaterLossAnalysis: React.FC = () => {
             />
           </div>
           <div className="lg:col-span-1 flex flex-col gap-3 sm:gap-4">
-            <Button onClick={resetDateRange} variant="outline" size="sm">
+            <Button onClick={resetDateRange} variant="secondary" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
               Reset Range
             </Button>
-            <Button onClick={() => {}} variant="default" size="sm">
+            <Button onClick={() => {}} variant="primary" size="sm">
               <Download className="w-4 h-4 mr-2" />
               Export Report
             </Button>
@@ -221,7 +218,7 @@ const WaterLossAnalysis: React.FC = () => {
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            icon={metric.icon}
+            
             color={metric.color}
             trend={metric.trend}
             change={metric.change}
@@ -235,11 +232,11 @@ const WaterLossAnalysis: React.FC = () => {
         <ChartCard
           title="Water Loss Trends"
           subtitle="Monthly loss breakdown by stage"
-          icon={LineChart}
+          
         >
           <SafeChart
             data={lossTrendData}
-            chartType="line"
+            
             xKey="month"
             yKeys={['totalLoss', 'stage1Loss', 'stage2Loss', 'stage3Loss']}
             colors={[COLORS.error, COLORS.warning, COLORS.info, COLORS.accent]}
@@ -251,11 +248,11 @@ const WaterLossAnalysis: React.FC = () => {
         <ChartCard
           title="Current Month Loss Breakdown"
           subtitle="Loss distribution by stage"
-          icon={PieChart}
+          
         >
           <SafeChart
             data={lossBreakdownData}
-            chartType="pie"
+            
             dataKey="value"
             nameKey="name"
             colors={lossBreakdownData.map(item => item.color)}
@@ -268,14 +265,14 @@ const WaterLossAnalysis: React.FC = () => {
       <ChartCard
         title="System Efficiency vs Loss"
         subtitle="Current month performance"
-        icon={GaugeChart}
+        
       >
         <div className="flex justify-center items-center py-8">
           <GaugeChart
             value={currentMonthData?.systemEfficiency || 0}
-            min={0}
-            max={100}
-            label="Efficiency %"
+            percentage={currentMonthData?.systemEfficiency || 0}
+            title="Efficiency %"
+            subtitle="System Performance"
             color={COLORS.success}
             size={200}
           />
@@ -286,11 +283,11 @@ const WaterLossAnalysis: React.FC = () => {
       <ChartCard
         title="Zone Loss Comparison"
         subtitle="Loss analysis by distribution zone"
-        icon={BarChart3}
+        
       >
         <SafeChart
           data={zoneLossData}
-          chartType="bar"
+          
           xKey="name"
           yKeys={['consumption', 'loss']}
           colors={[COLORS.info, COLORS.error]}

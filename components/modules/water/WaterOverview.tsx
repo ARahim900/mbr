@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { 
   Droplets, 
-  TrendingUp, 
   AlertTriangle, 
   CheckCircle, 
   Activity,
@@ -17,15 +16,15 @@ import {
   waterMonthsAvailable, 
   calculateWaterLoss,
   calculateAggregatedDataForPeriod
-} from '../../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
-import SafeChart from '../../ui/SafeChart';
-import GaugeChart from '../../ui/GaugeChart';
-import MetricCard from '../../ui/MetricCard';
-import ChartCard from '../../ui/ChartCard';
-import Button from '../../ui/Button';
-import MonthRangeSlider from '../../ui/MonthRangeSlider';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+} from '../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
+import SafeChart from '../ui/SafeChart';
+import GaugeChart from '../ui/GaugeChart';
+import MetricCard from '../ui/MetricCard';
+import ChartCard from '../ui/ChartCard';
+import Button from '../ui/Button';
+import MonthRangeSlider from '../ui/MonthRangeSlider';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -133,9 +132,9 @@ const WaterOverview: React.FC = () => {
     
     return validatedMonths.map(month => ({
       month,
-      supply: aggregatedData.monthlyData[month]?.A1_supply || 0,
-      consumption: aggregatedData.monthlyData[month]?.A4_total || 0,
-      loss: aggregatedData.monthlyData[month]?.totalLoss || 0
+      supply: (aggregatedData as any).monthlyData?.[month]?.A1_supply || 0,
+      consumption: (aggregatedData as any).monthlyData?.[month]?.A4_total || 0,
+      loss: (aggregatedData as any).monthlyData?.[month]?.totalLoss || 0
     }));
   }, [aggregatedData, validatedMonths]);
 
@@ -179,16 +178,16 @@ const WaterOverview: React.FC = () => {
             </h3>
             <MonthRangeSlider 
               months={validatedMonths} 
-              value={dateRange} 
-              onChange={setDateRange}
+              value={dateRange as any} 
+              onChange={setDateRange as any}
             />
           </div>
           <div className="lg:col-span-1 flex flex-col gap-3 sm:gap-4">
-            <Button onClick={resetDateRange} variant="outline" size="sm">
+            <Button onClick={resetDateRange} variant="secondary" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
               Reset Range
             </Button>
-            <Button onClick={() => {}} variant="default" size="sm">
+            <Button onClick={() => {}} variant="primary" size="sm">
               <BarChart3 className="w-4 h-4 mr-2" />
               AI Analysis
             </Button>
@@ -204,7 +203,7 @@ const WaterOverview: React.FC = () => {
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            icon={metric.icon}
+            
             color={metric.color}
             trend={metric.trend}
             change={metric.change}
@@ -218,11 +217,11 @@ const WaterOverview: React.FC = () => {
         <ChartCard
           title="Water Consumption Trend"
           subtitle="Monthly supply vs consumption vs loss"
-          icon={LineChart}
+          
         >
           <SafeChart
             data={consumptionTrendData}
-            chartType="line"
+            
             xKey="month"
             yKeys={['supply', 'consumption', 'loss']}
             colors={[COLORS.info, COLORS.success, COLORS.error]}
@@ -234,11 +233,11 @@ const WaterOverview: React.FC = () => {
         <ChartCard
           title="Zone Distribution"
           subtitle="Water consumption by zone"
-          icon={PieChart}
+          
         >
           <SafeChart
             data={zoneDistributionData}
-            chartType="pie"
+            
             dataKey="value"
             nameKey="name"
             colors={zoneDistributionData.map(item => item.color)}
@@ -251,14 +250,14 @@ const WaterOverview: React.FC = () => {
       <ChartCard
         title="System Efficiency Overview"
         subtitle="Current month system performance"
-        icon={GaugeChart}
+        
       >
         <div className="flex justify-center items-center py-8">
           <GaugeChart
             value={currentMonthData?.systemEfficiency || 0}
-            min={0}
-            max={100}
-            label="Efficiency %"
+            percentage={currentMonthData?.systemEfficiency || 0}
+            title="Efficiency %"
+            subtitle="System Performance"
             color={COLORS.success}
             size={200}
           />
@@ -271,19 +270,19 @@ const WaterOverview: React.FC = () => {
           Quick Actions
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Button onClick={() => {}} variant="outline" className="h-12">
+          <Button onClick={() => {}} variant="secondary" className="h-12">
             <Download className="w-4 h-4 mr-2" />
             Export Data
           </Button>
-          <Button onClick={() => {}} variant="outline" className="h-12">
+          <Button onClick={() => {}} variant="secondary" className="h-12">
             <BarChart3 className="w-4 h-4 mr-2" />
             Generate Report
           </Button>
-          <Button onClick={() => {}} variant="outline" className="h-12">
+          <Button onClick={() => {}} variant="secondary" className="h-12">
             <AlertTriangle className="w-4 h-4 mr-2" />
             View Alerts
           </Button>
-          <Button onClick={() => {}} variant="outline" className="h-12">
+          <Button onClick={() => {}} variant="secondary" className="h-12">
             <Calendar className="w-4 h-4 mr-2" />
             Schedule Maintenance
           </Button>

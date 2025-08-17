@@ -19,14 +19,14 @@ import {
   getZoneAnalysis,
   getAvailableZones,
   calculateWaterLoss
-} from '../../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
-import SafeChart from '../../ui/SafeChart';
-import MetricCard from '../../ui/MetricCard';
-import ChartCard from '../../ui/ChartCard';
-import Button from '../../ui/Button';
-import MonthRangeSlider from '../../ui/MonthRangeSlider';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+} from '../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
+import SafeChart from '../ui/SafeChart';
+import MetricCard from '../ui/MetricCard';
+import ChartCard from '../ui/ChartCard';
+import Button from '../ui/Button';
+import MonthRangeSlider from '../ui/MonthRangeSlider';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -80,7 +80,7 @@ const WaterZoneAnalysis: React.FC = () => {
   // Get zone analysis data
   const zoneAnalysisData = useMemo(() => {
     if (dateRange.length !== 2) return null;
-    return getZoneAnalysis(dateRange[0], dateRange[1], selectedZone);
+    return getZoneAnalysis(dateRange[0], dateRange[1], selectedZone === 'all' ? undefined : selectedZone);
   }, [dateRange, selectedZone]);
 
   // Reset date range to full period
@@ -94,7 +94,7 @@ const WaterZoneAnalysis: React.FC = () => {
   const filteredZones = useMemo(() => {
     if (!searchTerm) return availableZones;
     return availableZones.filter(zone => 
-      zone.toLowerCase().includes(searchTerm.toLowerCase())
+      (typeof zone === 'string' ? zone : zone.toString()).toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [availableZones, searchTerm]);
 
@@ -105,7 +105,7 @@ const WaterZoneAnalysis: React.FC = () => {
     return [
       {
         title: 'Total Zone Consumption',
-        value: zoneAnalysisData.totalConsumption?.toLocaleString() || '0',
+        value: (zoneAnalysisData as any)?.totalConsumption?.toLocaleString() || '0',
         unit: 'm³',
         icon: Activity,
         color: 'blue',
@@ -114,7 +114,7 @@ const WaterZoneAnalysis: React.FC = () => {
       },
       {
         title: 'Average Zone Efficiency',
-        value: zoneAnalysisData.averageEfficiency?.toFixed(1) || '0',
+        value: (zoneAnalysisData as any)?.averageEfficiency?.toFixed(1) || '0',
         unit: '%',
         icon: Target,
         color: 'green',
@@ -123,7 +123,7 @@ const WaterZoneAnalysis: React.FC = () => {
       },
       {
         title: 'Highest Consuming Zone',
-        value: zoneAnalysisData.topZone?.name || 'N/A',
+        value: (zoneAnalysisData as any)?.topZone?.name || 'N/A',
         unit: '',
         icon: TrendingUp,
         color: 'orange',
@@ -132,7 +132,7 @@ const WaterZoneAnalysis: React.FC = () => {
       },
       {
         title: 'Total Zones',
-        value: zoneAnalysisData.zoneCount?.toString() || '0',
+        value: (zoneAnalysisData as any)?.zoneCount?.toString() || '0',
         unit: '',
         icon: MapPin,
         color: 'purple',
@@ -144,9 +144,9 @@ const WaterZoneAnalysis: React.FC = () => {
 
   // Generate zone comparison data
   const zoneComparisonData = useMemo(() => {
-    if (!zoneAnalysisData?.zoneData) return [];
+    if (!(zoneAnalysisData as any)?.zoneData) return [];
     
-    return zoneAnalysisData.zoneData.map(zone => ({
+    return (zoneAnalysisData as any).zoneData.map((zone: any) => ({
       name: zone.name,
       consumption: zone.totalConsumption,
       efficiency: zone.efficiency,
@@ -161,9 +161,9 @@ const WaterZoneAnalysis: React.FC = () => {
     
     return validatedMonths.map(month => ({
       month,
-      totalConsumption: zoneAnalysisData.monthlyData[month]?.totalConsumption || 0,
-      averageEfficiency: zoneAnalysisData.monthlyData[month]?.averageEfficiency || 0,
-      totalLoss: zoneAnalysisData.monthlyData[month]?.totalLoss || 0
+      totalConsumption: (zoneAnalysisData as any)?.monthlyData?.[month]?.totalConsumption || 0,
+      averageEfficiency: (zoneAnalysisData as any)?.monthlyData?.[month]?.averageEfficiency || 0,
+      totalLoss: (zoneAnalysisData as any)?.monthlyData?.[month]?.totalLoss || 0
     }));
   }, [zoneAnalysisData, validatedMonths]);
 
@@ -196,8 +196,8 @@ const WaterZoneAnalysis: React.FC = () => {
             </h3>
             <MonthRangeSlider 
               months={validatedMonths} 
-              value={dateRange} 
-              onChange={setDateRange}
+              value={dateRange as any} 
+              onChange={setDateRange as any}
             />
           </div>
           <div className="space-y-4">
@@ -211,17 +211,17 @@ const WaterZoneAnalysis: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="all">All Zones</option>
-                {filteredZones.map(zone => (
+                {filteredZones.map((zone: any) => (
                   <option key={zone} value={zone}>{zone}</option>
                 ))}
               </select>
             </div>
             <div className="flex gap-2">
-              <Button onClick={resetDateRange} variant="outline" size="sm">
+              <Button onClick={resetDateRange} variant="secondary" size="sm">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Reset Range
               </Button>
-              <Button onClick={() => {}} variant="default" size="sm">
+              <Button onClick={() => {}} variant="primary" size="sm">
                 <Download className="w-4 h-4 mr-2" />
                 Export Data
               </Button>
@@ -253,7 +253,7 @@ const WaterZoneAnalysis: React.FC = () => {
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            icon={metric.icon}
+            
             color={metric.color}
             trend={metric.trend}
             change={metric.change}
@@ -267,11 +267,11 @@ const WaterZoneAnalysis: React.FC = () => {
         <ChartCard
           title="Zone Consumption Comparison"
           subtitle="Water consumption by zone"
-          icon={BarChart3}
+          
         >
           <SafeChart
             data={zoneComparisonData}
-            chartType="bar"
+            
             xKey="name"
             yKeys={['consumption']}
             colors={zoneComparisonData.map(item => item.color)}
@@ -283,11 +283,11 @@ const WaterZoneAnalysis: React.FC = () => {
         <ChartCard
           title="Zone Efficiency Analysis"
           subtitle="Efficiency vs loss by zone"
-          icon={PieChart}
+          
         >
           <SafeChart
             data={zoneComparisonData}
-            chartType="pie"
+            
             dataKey="efficiency"
             nameKey="name"
             colors={zoneComparisonData.map(item => item.color)}
@@ -300,11 +300,11 @@ const WaterZoneAnalysis: React.FC = () => {
       <ChartCard
         title="Zone Performance Trends"
         subtitle="Monthly performance metrics"
-        icon={LineChart}
+        
       >
         <SafeChart
           data={zoneTrendData}
-          chartType="line"
+          
           xKey="month"
           yKeys={['totalConsumption', 'averageEfficiency', 'totalLoss']}
           colors={[COLORS.info, COLORS.success, COLORS.error]}
@@ -313,7 +313,7 @@ const WaterZoneAnalysis: React.FC = () => {
       </ChartCard>
 
       {/* Zone Details Table */}
-      {zoneAnalysisData?.zoneData && (
+      {(zoneAnalysisData as any)?.zoneData && (
         <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg border border-neutral-border dark:border-gray-700">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -342,7 +342,7 @@ const WaterZoneAnalysis: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {zoneAnalysisData.zoneData.map((zone, index) => (
+                {(zoneAnalysisData as any)?.zoneData?.map((zone: any, index: number) => (
                   <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                       {zone.name}

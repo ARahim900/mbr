@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { 
-  Database, 
   Search, 
   Filter, 
   Download, 
@@ -8,30 +7,17 @@ import {
   Eye,
   Edit,
   Trash2,
-  Plus,
-  ChevronDown,
-  ChevronUp,
   SortAsc,
   SortDesc
 } from 'lucide-react';
 import { 
   waterSystemData, 
   waterMonthsAvailable 
-} from '../../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
-import Button from '../../ui/Button';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+} from '../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
+import Button from '../ui/Button';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
-// Design System Colors
-const COLORS = {
-  primary: '#0D1A26',
-  accent: '#00D2B3',
-  success: '#10B981',
-  warning: '#F59E0B',
-  info: '#3B82F6',
-  error: '#EF4444',
-  chart: ['#1E3A8A', '#2563EB', '#60A5FA', '#93C5FD', '#FF69B4', '#F08080', '#4682B4', '#32CD32', '#FF6347', '#4169E1']
-};
 
 const WaterDatabase: React.FC = () => {
   const isMobile = useIsMobile(1024);
@@ -215,11 +201,11 @@ const WaterDatabase: React.FC = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => setShowFilters(!showFilters)} variant="outline" size="sm">
+            <Button onClick={() => setShowFilters(!showFilters)} variant="secondary" size="sm">
               <Filter className="w-4 h-4 mr-2" />
               {showFilters ? 'Hide' : 'Show'} Filters
             </Button>
-            <Button onClick={exportData} variant="default" size="sm">
+            <Button onClick={exportData} variant="primary" size="sm">
               <Download className="w-4 h-4 mr-2" />
               Export CSV
             </Button>
@@ -238,7 +224,7 @@ const WaterDatabase: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
-          <Button onClick={resetFilters} variant="outline" size="sm">
+          <Button onClick={resetFilters} variant="secondary" size="sm">
             <RefreshCw className="w-4 h-4 mr-2" />
             Reset
           </Button>
@@ -450,7 +436,7 @@ const WaterDatabase: React.FC = () => {
               <Button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                variant="outline"
+                variant="secondary"
                 size="sm"
               >
                 Previous
@@ -472,7 +458,7 @@ const WaterDatabase: React.FC = () => {
               <Button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                variant="outline"
+                variant="secondary"
                 size="sm"
               >
                 Next

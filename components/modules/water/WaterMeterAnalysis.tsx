@@ -16,14 +16,14 @@ import {
 import { 
   waterSystemData, 
   waterMonthsAvailable 
-} from '../../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
-import SafeChart from '../../ui/SafeChart';
-import MetricCard from '../../ui/MetricCard';
-import ChartCard from '../../ui/ChartCard';
-import Button from '../../ui/Button';
-import MonthRangeSlider from '../../ui/MonthRangeSlider';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+} from '../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
+import SafeChart from '../ui/SafeChart';
+import MetricCard from '../ui/MetricCard';
+import ChartCard from '../ui/ChartCard';
+import Button from '../ui/Button';
+import MonthRangeSlider from '../ui/MonthRangeSlider';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -217,8 +217,8 @@ const WaterMeterAnalysis: React.FC = () => {
             </h3>
             <MonthRangeSlider 
               months={validatedMonths} 
-              value={dateRange} 
-              onChange={setDateRange}
+              value={dateRange as any} 
+              onChange={setDateRange as any}
             />
           </div>
           <div className="space-y-4">
@@ -255,11 +255,11 @@ const WaterMeterAnalysis: React.FC = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={resetDateRange} variant="outline" size="sm">
+              <Button onClick={resetDateRange} variant="secondary" size="sm">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Reset Range
               </Button>
-              <Button onClick={() => {}} variant="default" size="sm">
+              <Button onClick={() => {}} variant="primary" size="sm">
                 <Download className="w-4 h-4 mr-2" />
                 Export Data
               </Button>
@@ -291,7 +291,7 @@ const WaterMeterAnalysis: React.FC = () => {
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            icon={metric.icon}
+            
             color={metric.color}
             trend={metric.trend}
             change={metric.change}
@@ -305,11 +305,11 @@ const WaterMeterAnalysis: React.FC = () => {
         <ChartCard
           title="Top 20 Meters by Consumption"
           subtitle="Current month consumption ranking"
-          icon={BarChart3}
+          
         >
           <SafeChart
             data={meterConsumptionData}
-            chartType="bar"
+            
             xKey="name"
             yKeys={['consumption']}
             colors={meterConsumptionData.map(item => item.color)}
@@ -321,7 +321,7 @@ const WaterMeterAnalysis: React.FC = () => {
         <ChartCard
           title="Meter Type Distribution"
           subtitle="Meters by type and consumption"
-          icon={Gauge}
+          
         >
           <SafeChart
             data={meterTypes.map(type => ({
@@ -331,7 +331,7 @@ const WaterMeterAnalysis: React.FC = () => {
                 .filter(m => m.type === type)
                 .reduce((sum, m) => sum + (m.consumption[currentMonth] || 0), 0)
             }))}
-            chartType="bar"
+            
             xKey="name"
             yKeys={['count', 'consumption']}
             colors={[COLORS.info, COLORS.success]}
@@ -344,11 +344,11 @@ const WaterMeterAnalysis: React.FC = () => {
       <ChartCard
         title="Meter Performance Trends"
         subtitle="Monthly performance metrics"
-        icon={TrendingUp}
+        
       >
         <SafeChart
           data={meterTrendData}
-          chartType="line"
+          
           xKey="month"
           yKeys={['totalConsumption', 'averageConsumption', 'activeMeters']}
           colors={[COLORS.info, COLORS.success, COLORS.warning]}
