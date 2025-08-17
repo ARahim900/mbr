@@ -1,0 +1,7 @@
+{
+  "skipCI": true,
+  "skipInstall": true,
+  "hooks": {
+    "pre-commit": "lint-staged"
+  }
+}
