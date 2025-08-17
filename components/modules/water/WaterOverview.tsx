@@ -221,6 +221,25 @@ const WaterOverview: React.FC = () => {
         ))}
       </div>
 
+      {/* Debug Information */}
+      <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold mb-2">Debug Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <p><strong>Consumption Trend Data:</strong></p>
+            <pre className="bg-white dark:bg-gray-700 p-2 rounded text-xs overflow-auto">
+              {JSON.stringify(consumptionTrendData, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <p><strong>Zone Distribution Data:</strong></p>
+            <pre className="bg-white dark:bg-gray-700 p-2 rounded text-xs overflow-auto">
+              {JSON.stringify(zoneDistributionData, null, 2)}
+            </pre>
+          </div>
+        </div>
+      </div>
+
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Consumption Trend Chart */}
@@ -229,12 +248,9 @@ const WaterOverview: React.FC = () => {
           subtitle="Monthly supply vs consumption vs loss"
           
         >
-          <SafeChart
-            data={consumptionTrendData}
-            title="Water Consumption Trend"
-            fallbackMessage="Unable to load consumption trend data"
-          >
-            <ResponsiveContainer width="100%" height={300}>
+          {/* Temporarily bypass SafeChart to test direct rendering */}
+          <div style={{ height: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={consumptionTrendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                 <XAxis 
@@ -259,7 +275,7 @@ const WaterOverview: React.FC = () => {
                 <Area type="monotone" dataKey="loss" stackId="3" stroke={COLORS.error} fill={COLORS.error} fillOpacity={0.6} />
               </AreaChart>
             </ResponsiveContainer>
-          </SafeChart>
+          </div>
         </ChartCard>
 
         {/* Zone Distribution Chart */}
@@ -268,12 +284,9 @@ const WaterOverview: React.FC = () => {
           subtitle="Water consumption by zone"
           
         >
-          <SafeChart
-            data={zoneDistributionData}
-            title="Zone Distribution"
-            fallbackMessage="Unable to load zone distribution data"
-          >
-            <ResponsiveContainer width="100%" height={300}>
+          {/* Temporarily bypass SafeChart to test direct rendering */}
+          <div style={{ height: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={zoneDistributionData}
@@ -298,7 +311,7 @@ const WaterOverview: React.FC = () => {
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
-          </SafeChart>
+          </div>
         </ChartCard>
       </div>
 

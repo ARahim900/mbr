@@ -1,0 +1,128 @@
+/* Recharts Fixes - Addresses common chart rendering issues */
+
+/* Ensure charts are visible */
+.recharts-wrapper {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.recharts-responsive-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 200px !important;
+}
+
+.recharts-surface {
+  overflow: visible !important;
+}
+
+/* Fix chart container dimensions */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+
+/* Ensure chart elements are visible */
+.recharts-cartesian-axis-tick-value {
+  fill: #666 !important;
+  font-size: 12px !important;
+}
+
+.recharts-cartesian-axis-line {
+  stroke: #ccc !important;
+}
+
+.recharts-cartesian-grid-line {
+  stroke: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix tooltip visibility */
+.recharts-tooltip-wrapper {
+  z-index: 1000 !important;
+}
+
+.recharts-default-tooltip {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  color: white !important;
+  padding: 8px !important;
+}
+
+/* Fix legend visibility */
+.recharts-legend-wrapper {
+  position: relative !important;
+  z-index: 100 !important;
+}
+
+.recharts-legend-item-text {
+  fill: #333 !important;
+  font-size: 12px !important;
+}
+
+/* Mobile responsiveness fixes */
+@media (max-width: 768px) {
+  .recharts-responsive-container {
+    min-height: 250px !important;
+  }
+  
+  .recharts-cartesian-axis-tick-value {
+    font-size: 10px !important;
+  }
+  
+  .recharts-legend-item-text {
+    font-size: 10px !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .recharts-cartesian-axis-tick-value {
+    fill: #ccc !important;
+  }
+  
+  .recharts-cartesian-axis-line {
+    stroke: #666 !important;
+  }
+  
+  .recharts-cartesian-grid-line {
+    stroke: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .recharts-legend-item-text {
+    fill: #ccc !important;
+  }
+}
+
+/* Fix for hidden charts */
+.recharts-wrapper[style*="display: none"],
+.recharts-wrapper[style*="visibility: hidden"] {
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Ensure proper stacking context */
+.recharts-wrapper {
+  z-index: 1 !important;
+}
+
+/* Fix for chart overflow issues */
+.recharts-surface {
+  overflow: visible !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Debug styles - remove in production */
+.chart-debug {
+  border: 2px solid red !important;
+  background: rgba(255, 0, 0, 0.1) !important;
+}
+
+.chart-debug .recharts-wrapper {
+  border: 2px solid blue !important;
+  background: rgba(0, 0, 255, 0.1) !important;
+}

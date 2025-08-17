@@ -9,6 +9,8 @@ import HvacSystemModule from './components/modules/HvacSystemModule';
 import ContractorTrackerModule from './components/modules/ContractorTrackerModule';
 import StpPlantModule from './components/modules/StpPlantModule';
 import FirefightingAlarmModule from './components/modules/FirefightingAlarmModule';
+import ChartTest from './src/components/ChartTest';
+import ChartFix from './src/components/ChartFix';
 import useAOS from './hooks/useAOS';
 
 // Create a client
@@ -39,6 +41,8 @@ export default function App() {
             <Route path="/firefighting" element={<FirefightingAlarmModule />} />
             <Route path="/contractor" element={<ContractorTrackerModule />} />
             <Route path="/stp" element={<StpPlantModule />} />
+            <Route path="/chart-test" element={<ChartTest />} />
+            <Route path="/chart-fix" element={<ChartFix />} />
             <Route path="*" element={<Navigate to="/water" replace />} />
           </Routes>
         </Layout>

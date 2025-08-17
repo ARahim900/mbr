@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Recharts fixes */
+@import './src/styles/recharts-fixes.css';
+
 /* Base styles */
 * {
   margin: 0;
