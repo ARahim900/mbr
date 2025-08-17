@@ -274,27 +274,70 @@ const WaterOverview: React.FC = () => {
         </div>
       </div>
 
-      {/* Simple Test Chart */}
-      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200">
-        <h3 className="text-lg font-semibold mb-4 text-green-800 dark:text-green-200">🧪 Simple Test Chart</h3>
-        <div style={{ height: '200px', width: '100%' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={[
-              { name: 'Test 1', value: 100 },
-              { name: 'Test 2', value: 200 },
-              { name: 'Test 3', value: 150 }
+      {/* Comprehensive Chart Debugging */}
+      <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200">
+        <h3 className="text-lg font-semibold mb-4 text-yellow-800 dark:text-yellow-200">🔧 Comprehensive Chart Debugging</h3>
+        
+        {/* Test 1: Absolute basic chart without ResponsiveContainer */}
+        <div className="mb-4">
+          <h4 className="font-medium mb-2">Test 1: Basic Chart (No ResponsiveContainer)</h4>
+          <div style={{ background: 'lightblue', height: '200px', width: '400px', border: '2px solid red' }}>
+            <AreaChart width={400} height={200} data={[
+              { name: 'A', value: 100 },
+              { name: 'B', value: 200 },
+              { name: 'C', value: 150 }
             ]}>
-              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip />
-              <Area type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+              <Area type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" />
             </AreaChart>
-          </ResponsiveContainer>
+          </div>
         </div>
-        <p className="text-sm text-green-700 dark:text-green-300 mt-2">
-          ✅ If you see a chart above, Recharts is working. The issue is with data processing.
-        </p>
+
+        {/* Test 2: Check if ResponsiveContainer works */}
+        <div className="mb-4">
+          <h4 className="font-medium mb-2">Test 2: ResponsiveContainer Test</h4>
+          <div style={{ background: 'lightgreen', height: '200px', width: '100%', border: '2px solid blue' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={[
+                { name: 'X', value: 300 },
+                { name: 'Y', value: 400 },
+                { name: 'Z', value: 250 }
+              ]}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Area type="monotone" dataKey="value" stroke="#82ca9d" fill="#82ca9d" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Test 3: Check imports */}
+        <div className="mb-4">
+          <h4 className="font-medium mb-2">Test 3: Component Check</h4>
+          <div className="bg-white p-2 rounded border text-sm">
+            <p>ResponsiveContainer: {typeof ResponsiveContainer !== 'undefined' ? '✅ Loaded' : '❌ Missing'}</p>
+            <p>AreaChart: {typeof AreaChart !== 'undefined' ? '✅ Loaded' : '❌ Missing'}</p>
+            <p>PieChart: {typeof PieChart !== 'undefined' ? '✅ Loaded' : '❌ Missing'}</p>
+            <p>React: {typeof React !== 'undefined' ? '✅ Loaded' : '❌ Missing'}</p>
+          </div>
+        </div>
+
+        {/* Test 4: CSS/Visibility check */}
+        <div className="mb-4">
+          <h4 className="font-medium mb-2">Test 4: CSS Visibility Test</h4>
+          <div style={{ 
+            background: 'red', 
+            height: '100px', 
+            width: '100%', 
+            color: 'white', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            If you see this red box, CSS positioning works
+          </div>
+        </div>
       </div>
 
       {/* Charts Section */}
@@ -305,9 +348,26 @@ const WaterOverview: React.FC = () => {
           subtitle="Monthly supply vs consumption vs loss"
           
         >
-          {/* TEMPORARY: Bypass SafeChart for debugging */}
-          <div style={{ height: '300px', width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
+          {/* DEBUGGING: Add debug classes and error catching */}
+          <div className="chart-debug" style={{ 
+            height: '300px', 
+            width: '100%', 
+            background: 'rgba(255, 0, 0, 0.1)',
+            border: '3px solid red',
+            position: 'relative'
+          }}>
+            <div style={{ 
+              position: 'absolute', 
+              top: '5px', 
+              left: '5px', 
+              background: 'yellow', 
+              padding: '2px 5px', 
+              fontSize: '12px',
+              zIndex: 1000
+            }}>
+              Chart Container - Data Length: {consumptionTrendData.length}
+            </div>
+            <ResponsiveContainer width="100%" height="100%" className="chart-debug">
               <AreaChart data={consumptionTrendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                 <XAxis 
@@ -341,9 +401,26 @@ const WaterOverview: React.FC = () => {
           subtitle="Water consumption by zone"
           
         >
-          {/* TEMPORARY: Bypass SafeChart for debugging */}
-          <div style={{ height: '300px', width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
+          {/* DEBUGGING: Add debug classes for pie chart */}
+          <div className="chart-debug" style={{ 
+            height: '300px', 
+            width: '100%', 
+            background: 'rgba(0, 255, 0, 0.1)',
+            border: '3px solid green',
+            position: 'relative'
+          }}>
+            <div style={{ 
+              position: 'absolute', 
+              top: '5px', 
+              left: '5px', 
+              background: 'yellow', 
+              padding: '2px 5px', 
+              fontSize: '12px',
+              zIndex: 1000
+            }}>
+              Pie Chart - Data Length: {zoneDistributionData.length}
+            </div>
+            <ResponsiveContainer width="100%" height="100%" className="chart-debug">
               <PieChart>
                 <Pie
                   data={zoneDistributionData}
