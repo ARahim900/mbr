@@ -1,6 +1,3 @@
-# SPA fallback - redirect all routes to index.html
-/*    /index.html   200
-
 # API routes (if any) - add specific API redirects above the catch-all
 # /api/*  https://your-api-endpoint.com/:splat  200
 
@@ -10,7 +7,7 @@
 /package-lock.json  /404.html  404
 /yarn.lock  /404.html  404
 
-# Security headers for all pages
+# SPA fallback with security headers
 /*    /index.html   200
   X-Frame-Options: DENY
   X-XSS-Protection: 1; mode=block
