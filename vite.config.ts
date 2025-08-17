@@ -31,6 +31,7 @@ export default defineConfig({
         drop_debugger: true
       }
     },
+    copyPublicDir: true,
     rollupOptions: {
       output: {
         chunkFileNames: 'assets/[name]-[hash].js',
