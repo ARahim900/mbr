@@ -32,12 +32,14 @@ const ChartFix: React.FC = () => {
         </div>
       );
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       console.error(`Chart error in ${title}:`, error);
+      setChartError(`${title}: ${errorMessage}`);
       return (
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-2">{title}</h3>
           <div className="border-2 border-red-500 p-4 rounded bg-red-50">
-            <p className="text-red-600">Chart failed to render: {error instanceof Error ? error.message : 'Unknown error'}</p>
+            <p className="text-red-600">Chart failed to render: {errorMessage}</p>
           </div>
         </div>
       );

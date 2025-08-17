@@ -16,7 +16,6 @@ import {
   calculateAggregatedDataForPeriod
 } from '../../../database/waterDatabase';
 import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
-import SafeChart from '../../ui/SafeChart';
 import GaugeChart from '../../ui/GaugeChart';
 import MetricCard from '../../ui/MetricCard';
 import ChartCard from '../../ui/ChartCard';
