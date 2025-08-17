@@ -10,18 +10,19 @@ import {
   Filter,
   Search
 } from 'lucide-react';
+import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { 
   waterSystemData, 
   waterMonthsAvailable, 
   calculateWaterLoss
-} from '../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
-import SafeChart from '../ui/SafeChart';
-import MetricCard from '../ui/MetricCard';
-import ChartCard from '../ui/ChartCard';
-import Button from '../ui/Button';
-import MonthRangeSlider from '../ui/MonthRangeSlider';
-import { useIsMobile } from '../../hooks/useIsMobile';
+} from '../../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
+import SafeChart from '../../ui/SafeChart';
+import MetricCard from '../../ui/MetricCard';
+import ChartCard from '../../ui/ChartCard';
+import Button from '../../ui/Button';
+import MonthRangeSlider from '../../ui/MonthRangeSlider';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -117,36 +118,48 @@ const WaterConsumptionByType: React.FC = () => {
         value: byTypeData.table[0]['Jul-25']?.toLocaleString() || '0',
         unit: 'm³',
         icon: Building2,
-        color: 'green',
-        trend: 'up',
-        change: '+15.2%'
+        iconColor: 'text-green-500',
+        subtitle: 'Current month consumption',
+        trend: {
+          value: 15.2,
+          isPositive: true
+        }
       },
       {
         title: 'Residential Consumption',
         value: byTypeData.table[1]['Jul-25']?.toLocaleString() || '0',
         unit: 'm³',
         icon: Activity,
-        color: 'blue',
-        trend: 'up',
-        change: '+8.7%'
+        iconColor: 'text-blue-500',
+        subtitle: 'Current month consumption',
+        trend: {
+          value: 8.7,
+          isPositive: true
+        }
       },
       {
         title: 'Irrigation Consumption',
         value: byTypeData.table[2]['Jul-25']?.toLocaleString() || '0',
         unit: 'm³',
         icon: Target,
-        color: 'yellow',
-        trend: 'down',
-        change: '-12.3%'
+        iconColor: 'text-yellow-500',
+        subtitle: 'Current month consumption',
+        trend: {
+          value: 12.3,
+          isPositive: false
+        }
       },
       {
         title: 'Common Areas',
         value: byTypeData.table[3]['Jul-25']?.toLocaleString() || '0',
         unit: 'm³',
         icon: Zap,
-        color: 'purple',
-        trend: 'up',
-        change: '+5.6%'
+        iconColor: 'text-purple-500',
+        subtitle: 'Current month consumption',
+        trend: {
+          value: 5.6,
+          isPositive: true
+        }
       }
     ];
   }, [currentMonthData]);
@@ -258,10 +271,10 @@ const WaterConsumptionByType: React.FC = () => {
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            
-            color={metric.color}
+            icon={metric.icon}
+            iconColor={metric.iconColor}
+            subtitle={metric.subtitle}
             trend={metric.trend}
-            change={metric.change}
           />
         ))}
       </div>
@@ -275,11 +288,32 @@ const WaterConsumptionByType: React.FC = () => {
         >
           <SafeChart
             data={byTypeData.barChart}
-            xKey="name"
-            yKeys={['Total Consumption']}
-            colors={byTypeData.barChart.map(item => item.fill)}
-            height={300}
-          />
+            title="Consumption by Type"
+            fallbackMessage="Unable to load consumption data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={byTypeData.barChart}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="Total Consumption" fill={(entry: any, index: number) => byTypeData.barChart[index]?.fill} />
+              </BarChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
 
         {/* Consumption Distribution Pie Chart */}
@@ -289,11 +323,35 @@ const WaterConsumptionByType: React.FC = () => {
         >
           <SafeChart
             data={byTypeData.donutChart}
-            dataKey="value"
-            nameKey="name"
-            colors={byTypeData.donutChart.map(item => item.color)}
-            height={300}
-          />
+            title="Consumption Distribution"
+            fallbackMessage="Unable to load distribution data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={byTypeData.donutChart}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={30}
+                >
+                  {byTypeData.donutChart.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
       </div>
 
@@ -304,11 +362,42 @@ const WaterConsumptionByType: React.FC = () => {
       >
         <SafeChart
           data={typeTrendData}
-          xKey="month"
-          yKeys={selectedType === 'all' ? ['commercial', 'residential', 'irrigation', 'common'] : ['consumption']}
-          colors={selectedType === 'all' ? [COLORS.success, COLORS.info, COLORS.warning, COLORS.error] : [COLORS.accent]}
-          height={300}
-        />
+          title="Consumption Trends"
+          fallbackMessage="Unable to load trend data"
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={typeTrendData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis 
+                dataKey="month" 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <YAxis 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                  border: 'none',
+                  borderRadius: '8px'
+                }}
+              />
+              <Legend />
+              {selectedType === 'all' ? (
+                <>
+                  <Line type="monotone" dataKey="commercial" stroke={COLORS.success} strokeWidth={2} />
+                  <Line type="monotone" dataKey="residential" stroke={COLORS.info} strokeWidth={2} />
+                  <Line type="monotone" dataKey="irrigation" stroke={COLORS.warning} strokeWidth={2} />
+                  <Line type="monotone" dataKey="common" stroke={COLORS.error} strokeWidth={2} />
+                </>
+              ) : (
+                <Line type="monotone" dataKey="consumption" stroke={COLORS.accent} strokeWidth={2} />
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </SafeChart>
       </ChartCard>
 
       {/* Detailed Consumption Table */}

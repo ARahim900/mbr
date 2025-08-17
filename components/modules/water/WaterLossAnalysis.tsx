@@ -8,20 +8,21 @@ import {
   RefreshCw,
   Download
 } from 'lucide-react';
+import { AreaChart, Area, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { 
   waterSystemData, 
   waterMonthsAvailable, 
   calculateWaterLoss,
   calculateAggregatedDataForPeriod
-} from '../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
-import SafeChart from '../ui/SafeChart';
-import GaugeChart from '../ui/GaugeChart';
-import MetricCard from '../ui/MetricCard';
-import ChartCard from '../ui/ChartCard';
-import Button from '../ui/Button';
-import MonthRangeSlider from '../ui/MonthRangeSlider';
-import { useIsMobile } from '../../hooks/useIsMobile';
+} from '../../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
+import SafeChart from '../../ui/SafeChart';
+import GaugeChart from '../../ui/GaugeChart';
+import MetricCard from '../../ui/MetricCard';
+import ChartCard from '../../ui/ChartCard';
+import Button from '../../ui/Button';
+import MonthRangeSlider from '../../ui/MonthRangeSlider';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -89,36 +90,48 @@ const WaterLossAnalysis: React.FC = () => {
         value: currentMonthData.totalLoss?.toLocaleString() || '0',
         unit: 'm³',
         icon: TrendingDown,
-        color: 'red',
-        trend: 'down',
-        change: '-8.3%'
+        iconColor: 'text-red-500',
+        subtitle: 'Current month water loss',
+        trend: {
+          value: 8.3,
+          isPositive: false
+        }
       },
       {
         title: 'Loss Percentage',
         value: currentMonthData.totalLossPercent?.toFixed(1) || '0',
         unit: '%',
         icon: Target,
-        color: 'orange',
-        trend: 'down',
-        change: '-1.2%'
+        iconColor: 'text-orange-600',
+        subtitle: 'Percentage of total supply',
+        trend: {
+          value: 1.2,
+          isPositive: false
+        }
       },
       {
         title: 'System Efficiency',
         value: currentMonthData.systemEfficiency?.toFixed(1) || '0',
         unit: '%',
         icon: Activity,
-        color: 'green',
-        trend: 'up',
-        change: '+2.1%'
+        iconColor: 'text-green-500',
+        subtitle: 'System performance efficiency',
+        trend: {
+          value: 2.1,
+          isPositive: true
+        }
       },
       {
         title: 'Stage 1 Loss',
         value: currentMonthData.stage1Loss?.toLocaleString() || '0',
         unit: 'm³',
         icon: AlertTriangle,
-        color: 'yellow',
-        trend: 'down',
-        change: '-5.7%'
+        iconColor: 'text-yellow-500',
+        subtitle: 'Primary stage water loss',
+        trend: {
+          value: 5.7,
+          isPositive: false
+        }
       }
     ];
   }, [currentMonthData]);
@@ -127,7 +140,7 @@ const WaterLossAnalysis: React.FC = () => {
   const lossTrendData = useMemo(() => {
     if (!aggregatedData) return [];
     
-    return validatedMonths.map(month => ({
+    return validatedMonths.map((month: string) => ({
       month,
       totalLoss: aggregatedData.monthlyData[month]?.totalLoss || 0,
       stage1Loss: aggregatedData.monthlyData[month]?.stage1Loss || 0,
@@ -144,14 +157,14 @@ const WaterLossAnalysis: React.FC = () => {
       { name: 'Stage 1 Loss', value: currentMonthData.stage1Loss || 0, color: COLORS.warning },
       { name: 'Stage 2 Loss', value: currentMonthData.stage2Loss || 0, color: COLORS.error },
       { name: 'Stage 3 Loss', value: currentMonthData.stage3Loss || 0, color: COLORS.info }
-    ].filter(item => item.value > 0);
+    ].filter((item: any) => item.value > 0);
   }, [currentMonthData]);
 
   // Generate zone loss comparison data
   const zoneLossData = useMemo(() => {
     if (!currentMonthData?.zoneBulkMeters) return [];
     
-    return currentMonthData.zoneBulkMeters.map(meter => {
+    return currentMonthData.zoneBulkMeters.map((meter: any) => {
       const zoneConsumption = meter.consumption[currentMonth] || 0;
       const zoneLoss = zoneConsumption * 0.15; // Estimated 15% loss per zone
       
@@ -212,16 +225,16 @@ const WaterLossAnalysis: React.FC = () => {
 
       {/* Key Loss Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {lossMetrics.map((metric, index) => (
+        {lossMetrics.map((metric: any, index: number) => (
           <MetricCard
             key={index}
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            
-            color={metric.color}
+            icon={metric.icon}
+            iconColor={metric.iconColor}
+            subtitle={metric.subtitle}
             trend={metric.trend}
-            change={metric.change}
           />
         ))}
       </div>
@@ -236,12 +249,36 @@ const WaterLossAnalysis: React.FC = () => {
         >
           <SafeChart
             data={lossTrendData}
-            
-            xKey="month"
-            yKeys={['totalLoss', 'stage1Loss', 'stage2Loss', 'stage3Loss']}
-            colors={[COLORS.error, COLORS.warning, COLORS.info, COLORS.accent]}
-            height={300}
-          />
+            title="Water Loss Trends"
+            fallbackMessage="Unable to load loss trend data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={lossTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="totalLoss" stackId="1" stroke={COLORS.error} fill={COLORS.error} fillOpacity={0.6} />
+                <Area type="monotone" dataKey="stage1Loss" stackId="2" stroke={COLORS.warning} fill={COLORS.warning} fillOpacity={0.6} />
+                <Area type="monotone" dataKey="stage2Loss" stackId="3" stroke={COLORS.info} fill={COLORS.info} fillOpacity={0.6} />
+                <Area type="monotone" dataKey="stage3Loss" stackId="4" stroke={COLORS.accent} fill={COLORS.accent} fillOpacity={0.6} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
 
         {/* Loss Breakdown Chart */}
@@ -252,12 +289,35 @@ const WaterLossAnalysis: React.FC = () => {
         >
           <SafeChart
             data={lossBreakdownData}
-            
-            dataKey="value"
-            nameKey="name"
-            colors={lossBreakdownData.map(item => item.color)}
-            height={300}
-          />
+            title="Loss Breakdown"
+            fallbackMessage="Unable to load loss breakdown data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={lossBreakdownData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={30}
+                >
+                  {lossBreakdownData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
       </div>
 
@@ -287,12 +347,34 @@ const WaterLossAnalysis: React.FC = () => {
       >
         <SafeChart
           data={zoneLossData}
-          
-          xKey="name"
-          yKeys={['consumption', 'loss']}
-          colors={[COLORS.info, COLORS.error]}
-          height={300}
-        />
+          title="Zone Loss Comparison"
+          fallbackMessage="Unable to load zone loss data"
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={zoneLossData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis 
+                dataKey="name" 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <YAxis 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                  border: 'none',
+                  borderRadius: '8px'
+                }}
+              />
+              <Legend />
+              <Line type="monotone" dataKey="consumption" stroke={COLORS.info} strokeWidth={2} />
+              <Line type="monotone" dataKey="loss" stroke={COLORS.error} strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </SafeChart>
       </ChartCard>
 
       {/* Loss Analysis Summary */}

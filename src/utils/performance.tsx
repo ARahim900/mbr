@@ -1,5 +1,5 @@
 // src/utils/performance.ts
-import { lazy, Suspense, ComponentType, ReactNode } from 'react';
+import React, { lazy, Suspense, ComponentType, ReactNode } from 'react';
 
 // Lazy loading wrapper with loading state
 export function lazyLoadComponent<T extends ComponentType<any>>(

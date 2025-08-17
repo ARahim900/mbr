@@ -7,24 +7,22 @@ import {
   Calendar,
   RefreshCw,
   Download,
-  BarChart3,
-  PieChart,
-  LineChart
 } from 'lucide-react';
+import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { 
   waterSystemData, 
   waterMonthsAvailable, 
   calculateWaterLoss,
   calculateAggregatedDataForPeriod
-} from '../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
-import SafeChart from '../ui/SafeChart';
-import GaugeChart from '../ui/GaugeChart';
-import MetricCard from '../ui/MetricCard';
-import ChartCard from '../ui/ChartCard';
-import Button from '../ui/Button';
-import MonthRangeSlider from '../ui/MonthRangeSlider';
-import { useIsMobile } from '../../hooks/useIsMobile';
+} from '../../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
+import SafeChart from '../../ui/SafeChart';
+import GaugeChart from '../../ui/GaugeChart';
+import MetricCard from '../../ui/MetricCard';
+import ChartCard from '../../ui/ChartCard';
+import Button from '../../ui/Button';
+import MonthRangeSlider from '../../ui/MonthRangeSlider';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -92,36 +90,48 @@ const WaterOverview: React.FC = () => {
         value: currentMonthData.A1_supply?.toLocaleString() || '0',
         unit: 'm³',
         icon: Droplets,
-        color: 'blue',
-        trend: 'up',
-        change: '+12.5%'
+        iconColor: 'text-blue-500',
+        subtitle: 'Total water supply',
+        trend: {
+          value: 12.5,
+          isPositive: true
+        }
       },
       {
         title: 'System Efficiency',
         value: currentMonthData.systemEfficiency?.toFixed(1) || '0',
         unit: '%',
         icon: CheckCircle,
-        color: 'green',
-        trend: 'up',
-        change: '+2.1%'
+        iconColor: 'text-green-500',
+        subtitle: 'System performance',
+        trend: {
+          value: 2.1,
+          isPositive: true
+        }
       },
       {
         title: 'Total Water Loss',
         value: currentMonthData.totalLoss?.toLocaleString() || '0',
         unit: 'm³',
         icon: AlertTriangle,
-        color: 'red',
-        trend: 'down',
-        change: '-8.3%'
+        iconColor: 'text-red-500',
+        subtitle: 'Total water loss',
+        trend: {
+          value: 8.3,
+          isPositive: false
+        }
       },
       {
         title: 'End User Consumption',
         value: currentMonthData.A4_total?.toLocaleString() || '0',
         unit: 'm³',
         icon: Activity,
-        color: 'purple',
-        trend: 'up',
-        change: '+5.7%'
+        iconColor: 'text-purple-500',
+        subtitle: 'End user consumption',
+        trend: {
+          value: 5.7,
+          isPositive: true
+        }
       }
     ];
   }, [currentMonthData]);
@@ -130,7 +140,7 @@ const WaterOverview: React.FC = () => {
   const consumptionTrendData = useMemo(() => {
     if (!aggregatedData) return [];
     
-    return validatedMonths.map(month => ({
+    return validatedMonths.map((month: string) => ({
       month,
       supply: (aggregatedData as any).monthlyData?.[month]?.A1_supply || 0,
       consumption: (aggregatedData as any).monthlyData?.[month]?.A4_total || 0,
@@ -142,7 +152,7 @@ const WaterOverview: React.FC = () => {
   const zoneDistributionData = useMemo(() => {
     if (!currentMonthData?.zoneBulkMeters) return [];
     
-    return currentMonthData.zoneBulkMeters.map(meter => ({
+    return currentMonthData.zoneBulkMeters.map((meter: any) => ({
       name: meter.zone,
       value: meter.consumption[currentMonth] || 0,
       color: COLORS.chart[Math.floor(Math.random() * COLORS.chart.length)]
@@ -188,7 +198,7 @@ const WaterOverview: React.FC = () => {
               Reset Range
             </Button>
             <Button onClick={() => {}} variant="primary" size="sm">
-              <BarChart3 className="w-4 h-4 mr-2" />
+              <Activity className="w-4 h-4 mr-2" />
               AI Analysis
             </Button>
           </div>
@@ -197,16 +207,16 @@ const WaterOverview: React.FC = () => {
 
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {overviewMetrics.map((metric, index) => (
+        {overviewMetrics.map((metric: any, index: number) => (
           <MetricCard
             key={index}
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            
-            color={metric.color}
+            icon={metric.icon}
+            iconColor={metric.iconColor}
+            subtitle={metric.subtitle}
             trend={metric.trend}
-            change={metric.change}
           />
         ))}
       </div>
@@ -221,12 +231,35 @@ const WaterOverview: React.FC = () => {
         >
           <SafeChart
             data={consumptionTrendData}
-            
-            xKey="month"
-            yKeys={['supply', 'consumption', 'loss']}
-            colors={[COLORS.info, COLORS.success, COLORS.error]}
-            height={300}
-          />
+            title="Water Consumption Trend"
+            fallbackMessage="Unable to load consumption trend data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={consumptionTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="supply" stackId="1" stroke={COLORS.info} fill={COLORS.info} fillOpacity={0.6} />
+                <Area type="monotone" dataKey="consumption" stackId="2" stroke={COLORS.success} fill={COLORS.success} fillOpacity={0.6} />
+                <Area type="monotone" dataKey="loss" stackId="3" stroke={COLORS.error} fill={COLORS.error} fillOpacity={0.6} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
 
         {/* Zone Distribution Chart */}
@@ -237,12 +270,35 @@ const WaterOverview: React.FC = () => {
         >
           <SafeChart
             data={zoneDistributionData}
-            
-            dataKey="value"
-            nameKey="name"
-            colors={zoneDistributionData.map(item => item.color)}
-            height={300}
-          />
+            title="Zone Distribution"
+            fallbackMessage="Unable to load zone distribution data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={zoneDistributionData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={30}
+                >
+                  {zoneDistributionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
       </div>
 
@@ -275,7 +331,7 @@ const WaterOverview: React.FC = () => {
             Export Data
           </Button>
           <Button onClick={() => {}} variant="secondary" className="h-12">
-            <BarChart3 className="w-4 h-4 mr-2" />
+            <Activity className="w-4 h-4 mr-2" />
             Generate Report
           </Button>
           <Button onClick={() => {}} variant="secondary" className="h-12">

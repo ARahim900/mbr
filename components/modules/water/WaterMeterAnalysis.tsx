@@ -1,8 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { 
   Gauge, 
-  BarChart3, 
-  TrendingUp, 
   Activity,
   Target,
   Zap,
@@ -13,17 +11,18 @@ import {
   AlertTriangle,
   CheckCircle
 } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { 
   waterSystemData, 
   waterMonthsAvailable 
-} from '../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
-import SafeChart from '../ui/SafeChart';
-import MetricCard from '../ui/MetricCard';
-import ChartCard from '../ui/ChartCard';
-import Button from '../ui/Button';
-import MonthRangeSlider from '../ui/MonthRangeSlider';
-import { useIsMobile } from '../../hooks/useIsMobile';
+} from '../../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
+import SafeChart from '../../ui/SafeChart';
+import MetricCard from '../../ui/MetricCard';
+import ChartCard from '../../ui/ChartCard';
+import Button from '../../ui/Button';
+import MonthRangeSlider from '../../ui/MonthRangeSlider';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -80,11 +79,11 @@ const WaterMeterAnalysis: React.FC = () => {
     let meters = dataValidation.safeWaterData;
     
     if (meterType !== 'all') {
-      meters = meters.filter(meter => meter.type === meterType);
+      meters = meters.filter((meter: any) => meter.type === meterType);
     }
     
     if (searchTerm) {
-      meters = meters.filter(meter => 
+      meters = meters.filter((meter: any) => 
         meter.meterLabel.toLowerCase().includes(searchTerm.toLowerCase()) ||
         meter.zone.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -98,13 +97,13 @@ const WaterMeterAnalysis: React.FC = () => {
     if (!filteredMeters.length) return [];
     
     const totalMeters = filteredMeters.length;
-    const activeMeters = filteredMeters.filter(meter => 
+    const activeMeters = filteredMeters.filter((meter: any) => 
       (meter.consumption[currentMonth] || 0) > 0
     ).length;
-    const highConsumptionMeters = filteredMeters.filter(meter => 
+    const highConsumptionMeters = filteredMeters.filter((meter: any) => 
       (meter.consumption[currentMonth] || 0) > 100
     ).length;
-    const averageConsumption = filteredMeters.reduce((sum, meter) => 
+    const averageConsumption = filteredMeters.reduce((sum: number, meter: any) => 
       sum + (meter.consumption[currentMonth] || 0), 0
     ) / totalMeters;
     
@@ -114,36 +113,44 @@ const WaterMeterAnalysis: React.FC = () => {
         value: totalMeters.toString(),
         unit: '',
         icon: Gauge,
-        color: 'blue',
-        trend: 'neutral',
-        change: ''
+        iconColor: 'text-blue-500',
+        subtitle: 'Total installed meters'
       },
       {
         title: 'Active Meters',
         value: activeMeters.toString(),
         unit: '',
         icon: CheckCircle,
-        color: 'green',
-        trend: 'up',
-        change: '+5.2%'
+        iconColor: 'text-green-500',
+        subtitle: 'Currently active meters',
+        trend: {
+          value: 5.2,
+          isPositive: true
+        }
       },
       {
         title: 'High Consumption',
         value: highConsumptionMeters.toString(),
         unit: '',
         icon: AlertTriangle,
-        color: 'orange',
-        trend: 'down',
-        change: '-2.1%'
+        iconColor: 'text-orange-600',
+        subtitle: 'Meters with high usage',
+        trend: {
+          value: 2.1,
+          isPositive: false
+        }
       },
       {
         title: 'Avg Consumption',
         value: averageConsumption.toFixed(1),
         unit: 'm³',
         icon: Activity,
-        color: 'purple',
-        trend: 'up',
-        change: '+8.7%'
+        iconColor: 'text-purple-500',
+        subtitle: 'Average meter consumption',
+        trend: {
+          value: 8.7,
+          isPositive: true
+        }
       }
     ];
   }, [filteredMeters, currentMonth]);
@@ -153,9 +160,9 @@ const WaterMeterAnalysis: React.FC = () => {
     if (!filteredMeters.length) return [];
     
     return filteredMeters
-      .sort((a, b) => (b.consumption[currentMonth] || 0) - (a.consumption[currentMonth] || 0))
+      .sort((a: any, b: any) => (b.consumption[currentMonth] || 0) - (a.consumption[currentMonth] || 0))
       .slice(0, 20)
-      .map(meter => ({
+      .map((meter: any) => ({
         name: meter.meterLabel,
         consumption: meter.consumption[currentMonth] || 0,
         zone: meter.zone,
@@ -168,15 +175,15 @@ const WaterMeterAnalysis: React.FC = () => {
   const meterTrendData = useMemo(() => {
     if (!filteredMeters.length) return [];
     
-    return validatedMonths.map(month => ({
+    return validatedMonths.map((month: string) => ({
       month,
-      totalConsumption: filteredMeters.reduce((sum, meter) => 
+      totalConsumption: filteredMeters.reduce((sum: number, meter: any) => 
         sum + (meter.consumption[month] || 0), 0
       ),
-      averageConsumption: filteredMeters.reduce((sum, meter) => 
+      averageConsumption: filteredMeters.reduce((sum: number, meter: any) => 
         sum + (meter.consumption[month] || 0), 0
       ) / filteredMeters.length,
-      activeMeters: filteredMeters.filter(meter => 
+      activeMeters: filteredMeters.filter((meter: any) => 
         (meter.consumption[month] || 0) > 0
       ).length
     }));
@@ -184,7 +191,7 @@ const WaterMeterAnalysis: React.FC = () => {
 
   // Get meter types for filtering
   const meterTypes = useMemo(() => {
-    const types = [...new Set(dataValidation.safeWaterData.map(meter => meter.type))];
+    const types = [...new Set(dataValidation.safeWaterData.map((meter: any) => meter.type))];
     return types.sort();
   }, [dataValidation.safeWaterData]);
 
@@ -291,10 +298,10 @@ const WaterMeterAnalysis: React.FC = () => {
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            
-            color={metric.color}
+            icon={metric.icon}
+            iconColor={metric.iconColor}
+            subtitle={metric.subtitle}
             trend={metric.trend}
-            change={metric.change}
           />
         ))}
       </div>
@@ -309,12 +316,35 @@ const WaterMeterAnalysis: React.FC = () => {
         >
           <SafeChart
             data={meterConsumptionData}
-            
-            xKey="name"
-            yKeys={['consumption']}
-            colors={meterConsumptionData.map(item => item.color)}
-            height={300}
-          />
+            title="Top Meters Consumption"
+            fallbackMessage="Unable to load meter consumption data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={meterConsumptionData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 10 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="consumption" fill={COLORS.info} />
+              </BarChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
 
         {/* Meter Type Distribution Chart */}
@@ -331,12 +361,40 @@ const WaterMeterAnalysis: React.FC = () => {
                 .filter(m => m.type === type)
                 .reduce((sum, m) => sum + (m.consumption[currentMonth] || 0), 0)
             }))}
-            
-            xKey="name"
-            yKeys={['count', 'consumption']}
-            colors={[COLORS.info, COLORS.success]}
-            height={300}
-          />
+            title="Meter Type Distribution"
+            fallbackMessage="Unable to load meter type data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={meterTypes.map(type => ({
+                name: type,
+                count: filteredMeters.filter(m => m.type === type).length,
+                consumption: filteredMeters
+                  .filter(m => m.type === type)
+                  .reduce((sum, m) => sum + (m.consumption[currentMonth] || 0), 0)
+              }))}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="count" fill={COLORS.info} name="Count" />
+                <Bar dataKey="consumption" fill={COLORS.success} name="Consumption" />
+              </BarChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
       </div>
 
@@ -348,12 +406,35 @@ const WaterMeterAnalysis: React.FC = () => {
       >
         <SafeChart
           data={meterTrendData}
-          
-          xKey="month"
-          yKeys={['totalConsumption', 'averageConsumption', 'activeMeters']}
-          colors={[COLORS.info, COLORS.success, COLORS.warning]}
-          height={300}
-        />
+          title="Meter Performance Trends"
+          fallbackMessage="Unable to load meter trend data"
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={meterTrendData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis 
+                dataKey="month" 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <YAxis 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                  border: 'none',
+                  borderRadius: '8px'
+                }}
+              />
+              <Legend />
+              <Line type="monotone" dataKey="totalConsumption" stroke={COLORS.info} strokeWidth={2} name="Total Consumption" />
+              <Line type="monotone" dataKey="averageConsumption" stroke={COLORS.success} strokeWidth={2} name="Average Consumption" />
+              <Line type="monotone" dataKey="activeMeters" stroke={COLORS.warning} strokeWidth={2} name="Active Meters" />
+            </LineChart>
+          </ResponsiveContainer>
+        </SafeChart>
       </ChartCard>
 
       {/* Detailed Meter Table */}

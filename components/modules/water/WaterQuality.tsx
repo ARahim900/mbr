@@ -10,11 +10,12 @@ import {
   Filter,
   Search
 } from 'lucide-react';
-import { useIsMobile } from '../../hooks/useIsMobile';
-import MetricCard from '../ui/MetricCard';
-import ChartCard from '../ui/ChartCard';
-import Button from '../ui/Button';
-import SafeChart from '../ui/SafeChart';
+import { useIsMobile } from '../../../hooks/useIsMobile';
+import MetricCard from '../../ui/MetricCard';
+import ChartCard from '../../ui/ChartCard';
+import Button from '../../ui/Button';
+import SafeChart from '../../ui/SafeChart';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // Design System Colors
 const COLORS = {
@@ -62,17 +63,17 @@ const WaterQuality: React.FC = () => {
   // Filter parameters based on search term
   const filteredParameters = useMemo(() => {
     if (!searchTerm) return waterQualityData.parameters;
-    return waterQualityData.parameters.filter(param => 
+    return waterQualityData.parameters.filter((param: any) => 
       param.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
 
   // Generate quality metrics
   const qualityMetrics = useMemo(() => {
-    const excellentCount = waterQualityData.parameters.filter(p => p.status === 'excellent').length;
-    const goodCount = waterQualityData.parameters.filter(p => p.status === 'good').length;
-    const warningCount = waterQualityData.parameters.filter(p => p.status === 'warning').length;
-    const criticalCount = waterQualityData.parameters.filter(p => p.status === 'critical').length;
+    const excellentCount = waterQualityData.parameters.filter((p: any) => p.status === 'excellent').length;
+    const goodCount = waterQualityData.parameters.filter((p: any) => p.status === 'good').length;
+    const warningCount = waterQualityData.parameters.filter((p: any) => p.status === 'warning').length;
+    const criticalCount = waterQualityData.parameters.filter((p: any) => p.status === 'critical').length;
     
     return [
       {
@@ -80,36 +81,32 @@ const WaterQuality: React.FC = () => {
         value: excellentCount.toString(),
         unit: '',
         icon: CheckCircle,
-        color: 'green',
-        trend: 'neutral',
-        change: ''
+        iconColor: 'text-green-500',
+        subtitle: 'Parameters in excellent status'
       },
       {
         title: 'Good Parameters',
         value: goodCount.toString(),
         unit: '',
         icon: CheckCircle,
-        color: 'blue',
-        trend: 'neutral',
-        change: ''
+        iconColor: 'text-blue-500',
+        subtitle: 'Parameters in good status'
       },
       {
         title: 'Warning Parameters',
         value: warningCount.toString(),
         unit: '',
         icon: AlertCircle,
-        color: 'yellow',
-        trend: 'neutral',
-        change: ''
+        iconColor: 'text-yellow-500',
+        subtitle: 'Parameters needing attention'
       },
       {
         title: 'Critical Parameters',
         value: criticalCount.toString(),
         unit: '',
         icon: AlertCircle,
-        color: 'red',
-        trend: 'neutral',
-        change: ''
+        iconColor: 'text-red-500',
+        subtitle: 'Parameters requiring immediate action'
       }
     ];
   }, []);
@@ -117,7 +114,7 @@ const WaterQuality: React.FC = () => {
   // Generate trend data for selected parameter
   const parameterTrendData = useMemo(() => {
     if (selectedParameter === 'all') {
-      return waterQualityData.monthlyTrends.map(month => ({
+      return waterQualityData.monthlyTrends.map((month: any) => ({
         month,
         ph: month.ph,
         turbidity: month.turbidity,
@@ -129,7 +126,7 @@ const WaterQuality: React.FC = () => {
     }
     
     const paramKey = selectedParameter.toLowerCase().replace(/\s+/g, '');
-    return waterQualityData.monthlyTrends.map(month => ({
+    return waterQualityData.monthlyTrends.map((month: any) => ({
       month,
       value: month[paramKey as keyof typeof month] || 0
     }));
@@ -184,16 +181,15 @@ const WaterQuality: React.FC = () => {
 
       {/* Quality Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {qualityMetrics.map((metric, index) => (
+        {qualityMetrics.map((metric: any, index: number) => (
           <MetricCard
             key={index}
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            
-            color={metric.color}
-            trend={metric.trend}
-            change={metric.change}
+            icon={metric.icon}
+            iconColor={metric.iconColor}
+            subtitle={metric.subtitle}
           />
         ))}
       </div>
@@ -211,7 +207,7 @@ const WaterQuality: React.FC = () => {
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="all">All Parameters</option>
-              {waterQualityData.parameters.map(param => (
+              {waterQualityData.parameters.map((param: any) => (
                 <option key={param.name} value={param.name}>{param.name}</option>
               ))}
             </select>
@@ -264,7 +260,7 @@ const WaterQuality: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredParameters.map((param, index) => (
+              {filteredParameters.map((param: any, index: number) => (
                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                     {param.name}
@@ -298,12 +294,44 @@ const WaterQuality: React.FC = () => {
       >
         <SafeChart
           data={parameterTrendData}
-          
-          xKey="month"
-          yKeys={selectedParameter === 'all' ? ['ph', 'turbidity', 'chlorine', 'tds', 'hardness', 'bacteria'] : ['value']}
-          colors={selectedParameter === 'all' ? COLORS.chart.slice(0, 6) : [COLORS.accent]}
-          height={300}
-        />
+          title="Water Quality Trends"
+          fallbackMessage="Unable to load quality trend data"
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={parameterTrendData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis 
+                dataKey="month" 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <YAxis 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                  border: 'none',
+                  borderRadius: '8px'
+                }}
+              />
+              <Legend />
+              {selectedParameter === 'all' ? (
+                <>
+                  <Line type="monotone" dataKey="ph" stroke={COLORS.chart[0]} strokeWidth={2} name="pH Level" />
+                  <Line type="monotone" dataKey="turbidity" stroke={COLORS.chart[1]} strokeWidth={2} name="Turbidity" />
+                  <Line type="monotone" dataKey="chlorine" stroke={COLORS.chart[2]} strokeWidth={2} name="Chlorine" />
+                  <Line type="monotone" dataKey="tds" stroke={COLORS.chart[3]} strokeWidth={2} name="TDS" />
+                  <Line type="monotone" dataKey="hardness" stroke={COLORS.chart[4]} strokeWidth={2} name="Hardness" />
+                  <Line type="monotone" dataKey="bacteria" stroke={COLORS.chart[5]} strokeWidth={2} name="Bacteria" />
+                </>
+              ) : (
+                <Line type="monotone" dataKey="value" stroke={COLORS.accent} strokeWidth={2} name={selectedParameter} />
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </SafeChart>
       </ChartCard>
 
       {/* Quality Alerts */}
@@ -315,7 +343,7 @@ const WaterQuality: React.FC = () => {
             </h3>
           </div>
           <div className="p-6 space-y-4">
-            {waterQualityData.alerts.map(alert => (
+            {waterQualityData.alerts.map((alert: any) => (
               <div key={alert.id} className={`p-4 rounded-lg border ${
                 alert.severity === 'critical' ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800' :
                 alert.severity === 'warning' ? 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800' :

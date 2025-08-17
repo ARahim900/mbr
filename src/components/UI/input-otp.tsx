@@ -7,7 +7,7 @@ import { cn } from "@/src/lib/utils"
 const InputOTP = React.forwardRef<
   React.ElementRef<typeof OTPInput>,
   React.ComponentPropsWithoutRef<typeof OTPInput>
->(({ className, containerClassName, ...props }, ref) => (
+>(({ className, containerClassName, maxLength = 6, ...props }, ref) => (
   <OTPInput
     ref={ref}
     containerClassName={cn(
@@ -15,6 +15,7 @@ const InputOTP = React.forwardRef<
       containerClassName
     )}
     className={cn("disabled:cursor-not-allowed", className)}
+    maxLength={maxLength}
     {...props}
   />
 ))

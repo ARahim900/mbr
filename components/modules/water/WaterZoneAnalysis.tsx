@@ -1,9 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { 
   MapPin, 
-  BarChart3, 
-  PieChart,
-  LineChart,
   TrendingUp,
   Activity,
   Target,
@@ -13,20 +10,21 @@ import {
   Filter,
   Search
 } from 'lucide-react';
+import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { 
   waterSystemData, 
   waterMonthsAvailable, 
   getZoneAnalysis,
   getAvailableZones,
   calculateWaterLoss
-} from '../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
-import SafeChart from '../ui/SafeChart';
-import MetricCard from '../ui/MetricCard';
-import ChartCard from '../ui/ChartCard';
-import Button from '../ui/Button';
-import MonthRangeSlider from '../ui/MonthRangeSlider';
-import { useIsMobile } from '../../hooks/useIsMobile';
+} from '../../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
+import SafeChart from '../../ui/SafeChart';
+import MetricCard from '../../ui/MetricCard';
+import ChartCard from '../../ui/ChartCard';
+import Button from '../../ui/Button';
+import MonthRangeSlider from '../../ui/MonthRangeSlider';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 // Design System Colors
 const COLORS = {
@@ -72,10 +70,6 @@ const WaterZoneAnalysis: React.FC = () => {
   
   // Calculate current month data
   const currentMonth = validatedMonths[validatedMonths.length - 1] || 'Jul-25';
-  const currentMonthData = useMemo(() => {
-    if (!currentMonth) return null;
-    return calculateWaterLoss(currentMonth);
-  }, [currentMonth]);
 
   // Get zone analysis data
   const zoneAnalysisData = useMemo(() => {
@@ -93,7 +87,7 @@ const WaterZoneAnalysis: React.FC = () => {
   // Filter zones based on search term
   const filteredZones = useMemo(() => {
     if (!searchTerm) return availableZones;
-    return availableZones.filter(zone => 
+    return availableZones.filter((zone: any) => 
       (typeof zone === 'string' ? zone : zone.toString()).toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [availableZones, searchTerm]);
@@ -108,36 +102,40 @@ const WaterZoneAnalysis: React.FC = () => {
         value: (zoneAnalysisData as any)?.totalConsumption?.toLocaleString() || '0',
         unit: 'm³',
         icon: Activity,
-        color: 'blue',
-        trend: 'up',
-        change: '+8.5%'
+        iconColor: 'text-blue-500',
+        subtitle: 'Total consumption across zones',
+        trend: {
+          value: 8.5,
+          isPositive: true
+        }
       },
       {
         title: 'Average Zone Efficiency',
         value: (zoneAnalysisData as any)?.averageEfficiency?.toFixed(1) || '0',
         unit: '%',
         icon: Target,
-        color: 'green',
-        trend: 'up',
-        change: '+3.2%'
+        iconColor: 'text-green-500',
+        subtitle: 'Average efficiency across zones',
+        trend: {
+          value: 3.2,
+          isPositive: true
+        }
       },
       {
         title: 'Highest Consuming Zone',
         value: (zoneAnalysisData as any)?.topZone?.name || 'N/A',
         unit: '',
         icon: TrendingUp,
-        color: 'orange',
-        trend: 'neutral',
-        change: ''
+        iconColor: 'text-orange-600',
+        subtitle: 'Zone with highest consumption'
       },
       {
         title: 'Total Zones',
         value: (zoneAnalysisData as any)?.zoneCount?.toString() || '0',
         unit: '',
         icon: MapPin,
-        color: 'purple',
-        trend: 'neutral',
-        change: ''
+        iconColor: 'text-purple-500',
+        subtitle: 'Total number of zones'
       }
     ];
   }, [zoneAnalysisData]);
@@ -159,7 +157,7 @@ const WaterZoneAnalysis: React.FC = () => {
   const zoneTrendData = useMemo(() => {
     if (!zoneAnalysisData?.monthlyData) return [];
     
-    return validatedMonths.map(month => ({
+    return validatedMonths.map((month: string) => ({
       month,
       totalConsumption: (zoneAnalysisData as any)?.monthlyData?.[month]?.totalConsumption || 0,
       averageEfficiency: (zoneAnalysisData as any)?.monthlyData?.[month]?.averageEfficiency || 0,
@@ -247,16 +245,16 @@ const WaterZoneAnalysis: React.FC = () => {
 
       {/* Zone Performance Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {zoneMetrics.map((metric, index) => (
+        {zoneMetrics.map((metric: any, index: number) => (
           <MetricCard
             key={index}
             title={metric.title}
             value={metric.value}
             unit={metric.unit}
-            
-            color={metric.color}
+            icon={metric.icon}
+            iconColor={metric.iconColor}
+            subtitle={metric.subtitle}
             trend={metric.trend}
-            change={metric.change}
           />
         ))}
       </div>
@@ -271,12 +269,32 @@ const WaterZoneAnalysis: React.FC = () => {
         >
           <SafeChart
             data={zoneComparisonData}
-            
-            xKey="name"
-            yKeys={['consumption']}
-            colors={zoneComparisonData.map(item => item.color)}
-            height={300}
-          />
+            title="Zone Comparison"
+            fallbackMessage="Unable to load zone comparison data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={zoneComparisonData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <YAxis 
+                  stroke="rgba(255,255,255,0.6)"
+                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="consumption" fill={COLORS.info} />
+              </BarChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
 
         {/* Zone Efficiency Chart */}
@@ -287,12 +305,35 @@ const WaterZoneAnalysis: React.FC = () => {
         >
           <SafeChart
             data={zoneComparisonData}
-            
-            dataKey="efficiency"
-            nameKey="name"
-            colors={zoneComparisonData.map(item => item.color)}
-            height={300}
-          />
+            title="Zone Efficiency"
+            fallbackMessage="Unable to load zone efficiency data"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={zoneComparisonData}
+                  dataKey="efficiency"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={30}
+                >
+                  {zoneComparisonData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                    border: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </SafeChart>
         </ChartCard>
       </div>
 
@@ -304,12 +345,35 @@ const WaterZoneAnalysis: React.FC = () => {
       >
         <SafeChart
           data={zoneTrendData}
-          
-          xKey="month"
-          yKeys={['totalConsumption', 'averageEfficiency', 'totalLoss']}
-          colors={[COLORS.info, COLORS.success, COLORS.error]}
-          height={300}
-        />
+          title="Zone Trends"
+          fallbackMessage="Unable to load zone trend data"
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={zoneTrendData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis 
+                dataKey="month" 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <YAxis 
+                stroke="rgba(255,255,255,0.6)"
+                tick={{ fill: 'rgba(255,255,255,0.6)' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                  border: 'none',
+                  borderRadius: '8px'
+                }}
+              />
+              <Legend />
+              <Line type="monotone" dataKey="totalConsumption" stroke={COLORS.info} strokeWidth={2} name="Total Consumption" />
+              <Line type="monotone" dataKey="averageEfficiency" stroke={COLORS.success} strokeWidth={2} name="Average Efficiency" />
+              <Line type="monotone" dataKey="totalLoss" stroke={COLORS.error} strokeWidth={2} name="Total Loss" />
+            </LineChart>
+          </ResponsiveContainer>
+        </SafeChart>
       </ChartCard>
 
       {/* Zone Details Table */}

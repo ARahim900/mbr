@@ -13,10 +13,10 @@ import {
 import { 
   waterSystemData, 
   waterMonthsAvailable 
-} from '../../database/waterDatabase';
-import { validateWaterData, validateMonthsAvailable } from '../../utils/dataValidation';
-import Button from '../ui/Button';
-import { useIsMobile } from '../../hooks/useIsMobile';
+} from '../../../database/waterDatabase';
+import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
+import Button from '../../ui/Button';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 
 const WaterDatabase: React.FC = () => {
@@ -50,12 +50,12 @@ const WaterDatabase: React.FC = () => {
 
   // Get unique values for filters
   const zones = useMemo(() => 
-    [...new Set(dataValidation.safeWaterData.map(item => item.zone))].sort(), 
+    [...new Set(dataValidation.safeWaterData.map((item: any) => item.zone))].sort(), 
     [dataValidation.safeWaterData]
   );
   
   const types = useMemo(() => 
-    [...new Set(dataValidation.safeWaterData.map(item => item.type))].sort(), 
+    [...new Set(dataValidation.safeWaterData.map((item: any) => item.type))].sort(), 
     [dataValidation.safeWaterData]
   );
 
@@ -65,7 +65,7 @@ const WaterDatabase: React.FC = () => {
     
     // Apply filters
     if (searchTerm) {
-      data = data.filter(item => 
+      data = data.filter((item: any) => 
         item.meterLabel.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.zone.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,19 +74,19 @@ const WaterDatabase: React.FC = () => {
     }
     
     if (selectedZone !== 'all') {
-      data = data.filter(item => item.zone === selectedZone);
+      data = data.filter((item: any) => item.zone === selectedZone);
     }
     
     if (selectedType !== 'all') {
-      data = data.filter(item => item.type === selectedType);
+      data = data.filter((item: any) => item.type === selectedType);
     }
     
     if (selectedMonth !== 'all') {
-      data = data.filter(item => (item.consumption[selectedMonth] || 0) > 0);
+      data = data.filter((item: any) => (item.consumption[selectedMonth] || 0) > 0);
     }
     
     // Apply sorting
-    data.sort((a, b) => {
+    data.sort((a: any, b: any) => {
       let aValue: any = a[sortField as keyof typeof a];
       let bValue: any = b[sortField as keyof typeof b];
       
@@ -134,14 +134,14 @@ const WaterDatabase: React.FC = () => {
       // Header row
       ['Meter Label', 'Account #', 'Zone', 'Type', 'Parent Meter', 'Label', ...validatedMonths, 'Total Consumption'].join(','),
       // Data rows
-      ...filteredData.map(item => [
+      ...filteredData.map((item: any) => [
         item.meterLabel,
         item.acctNo,
         item.zone,
         item.type,
         item.parentMeter,
         item.label,
-        ...validatedMonths.map(month => item.consumption[month] || 0),
+        ...validatedMonths.map((month: string) => item.consumption[month] || 0),
         item.totalConsumption || 0
       ].join(','))
     ].join('\n');
@@ -355,7 +355,7 @@ const WaterDatabase: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Label
                 </th>
-                {validatedMonths.slice(0, 3).map(month => (
+                {validatedMonths.slice(0, 3).map((month: string) => (
                   <th key={month} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     {month}
                   </th>
@@ -377,7 +377,7 @@ const WaterDatabase: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {paginatedData.map((item, index) => (
+              {paginatedData.map((item: any, index: number) => (
                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                     {item.meterLabel}
@@ -397,7 +397,7 @@ const WaterDatabase: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {item.label}
                   </td>
-                  {validatedMonths.slice(0, 3).map(month => (
+                  {validatedMonths.slice(0, 3).map((month: string) => (
                     <td key={month} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                       {item.consumption[month]?.toLocaleString() || '0'}
                     </td>
@@ -447,7 +447,7 @@ const WaterDatabase: React.FC = () => {
                   <Button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    variant={currentPage === page ? 'default' : 'outline'}
+                    variant={currentPage === page ? 'primary' : 'outline'}
                     size="sm"
                     className="w-10"
                   >
