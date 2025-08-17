@@ -11,7 +11,7 @@
 /yarn.lock  /404.html  404
 
 # Security headers for all pages
-/*
+/*    /index.html   200
   X-Frame-Options: DENY
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff

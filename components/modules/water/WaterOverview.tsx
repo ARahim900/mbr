@@ -16,6 +16,7 @@ import {
   calculateAggregatedDataForPeriod
 } from '../../../database/waterDatabase';
 import { validateWaterData, validateMonthsAvailable } from '../../../utils/dataValidation';
+import SafeChart from '../../ui/SafeChart';
 import GaugeChart from '../../ui/GaugeChart';
 import MetricCard from '../../ui/MetricCard';
 import ChartCard from '../../ui/ChartCard';
@@ -247,34 +248,40 @@ const WaterOverview: React.FC = () => {
           subtitle="Monthly supply vs consumption vs loss"
           
         >
-          {/* Temporarily bypass SafeChart to test direct rendering */}
-          <div style={{ height: '300px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={consumptionTrendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis 
-                  dataKey="month" 
-                  stroke="rgba(255,255,255,0.6)"
-                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
-                />
-                <YAxis 
-                  stroke="rgba(255,255,255,0.6)"
-                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
-                    border: 'none',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Legend />
-                <Area type="monotone" dataKey="supply" stackId="1" stroke={COLORS.info} fill={COLORS.info} fillOpacity={0.6} />
-                <Area type="monotone" dataKey="consumption" stackId="2" stroke={COLORS.success} fill={COLORS.success} fillOpacity={0.6} />
-                <Area type="monotone" dataKey="loss" stackId="3" stroke={COLORS.error} fill={COLORS.error} fillOpacity={0.6} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          <SafeChart 
+            data={consumptionTrendData} 
+            title="Water Consumption Trend"
+            fallbackMessage="Unable to load consumption trend data"
+            minDataPoints={1}
+          >
+            <div style={{ height: '300px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={consumptionTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="rgba(255,255,255,0.6)"
+                    tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                  />
+                  <YAxis 
+                    stroke="rgba(255,255,255,0.6)"
+                    tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                      border: 'none',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Area type="monotone" dataKey="supply" stackId="1" stroke={COLORS.info} fill={COLORS.info} fillOpacity={0.6} />
+                  <Area type="monotone" dataKey="consumption" stackId="2" stroke={COLORS.success} fill={COLORS.success} fillOpacity={0.6} />
+                  <Area type="monotone" dataKey="loss" stackId="3" stroke={COLORS.error} fill={COLORS.error} fillOpacity={0.6} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </SafeChart>
         </ChartCard>
 
         {/* Zone Distribution Chart */}
@@ -283,34 +290,40 @@ const WaterOverview: React.FC = () => {
           subtitle="Water consumption by zone"
           
         >
-          {/* Temporarily bypass SafeChart to test direct rendering */}
-          <div style={{ height: '300px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={zoneDistributionData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  innerRadius={30}
-                >
-                  {zoneDistributionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(78, 68, 86, 0.9)', 
-                    border: 'none',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <SafeChart 
+            data={zoneDistributionData} 
+            title="Zone Distribution"
+            fallbackMessage="Unable to load zone distribution data"
+            minDataPoints={1}
+          >
+            <div style={{ height: '300px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={zoneDistributionData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    innerRadius={30}
+                  >
+                    {zoneDistributionData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(78, 68, 86, 0.9)', 
+                      border: 'none',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </SafeChart>
         </ChartCard>
       </div>
 
