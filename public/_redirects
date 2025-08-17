@@ -1,8 +1,2 @@
-# Prevent access to sensitive files
-/.env*  404
-/package.json  404
-/package-lock.json  404
-/yarn.lock  404
-
 # SPA fallback - redirect all routes to index.html
 /*    /index.html   200

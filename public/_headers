@@ -4,4 +4,16 @@
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+
+# Block sensitive files
+/.env
+  X-Robots-Tag: noindex
+
+/package.json
+  X-Robots-Tag: noindex
+
+/package-lock.json
+  X-Robots-Tag: noindex
+
+/yarn.lock
   X-Robots-Tag: noindex
